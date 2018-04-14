@@ -17,6 +17,9 @@ public class EntryDialog extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         // Inflate and set the layout for the dialog
         builder.setView(inflater.inflate(R.layout.dialog_entry, null));
+
+        setStyle(STYLE_NO_FRAME, android.R.style.Theme_Holo_Light); // makes it fullscreen?
+
         return builder.create();
     }
 }
