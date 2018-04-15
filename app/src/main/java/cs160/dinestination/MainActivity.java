@@ -20,6 +20,9 @@ import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.maps.MapView;
+
 import java.util.logging.Filter;
 
 public class MainActivity extends FragmentActivity { // implements OnMapReadyCallback {
@@ -34,6 +37,8 @@ public class MainActivity extends FragmentActivity { // implements OnMapReadyCal
     ImageView checkButton;
     ImageView backButton;
 //    MapFragment mapFragment;
+
+    private MapView mapView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +79,11 @@ public class MainActivity extends FragmentActivity { // implements OnMapReadyCal
 //        MapFragment mapFragment = (MapFragment) getFragmentManager()
 //                .findFragmentById(R.id.map);
 //        mapFragment.getMapAsync(this);
+
+        Mapbox.getInstance(this, "pk.eyJ1IjoiYWRyaWFuYWJhYmFrYW5pYW4iLCJhIjoiY2pnMTgxeDQ4MWdwOTJ4dGxnbzU4OTVyMCJ9.CetiZIb8bdIEolkPM4AHbg");
+        mapView = (MapView) findViewById(R.id.mapView);
+        mapView.onCreate(savedInstanceState);
+
     }
 
     // get a handle to the GoogleMap object
