@@ -77,7 +77,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="60px">
+            android:padding="80px">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -98,13 +98,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="60px"
+        android:padding="80px"
         android:background="@drawable/textlines">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/cuisine_text"
-            android:paddingLeft="20px"
             android:paddingBottom="20px"
             android:text="Cuisine"
             android:textColor="@color/textColorDark"
@@ -113,37 +112,26 @@
         <LinearLayout
             android:layout_width="400px"
             android:layout_height="wrap_content"
+            android:paddingLeft="-20px"
             android:id="@+id/cuisine_left_checks"
             android:layout_below="@id/cuisine_text"
             android:layout_marginLeft="0px"
             android:orientation="vertical">
             <CheckBox
+                style="@style/CheckBoxTheme"
                 android:id="@+id/thai_check"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:buttonTint="@color/colorPrimary"
-                android:textColor="@color/textColorDark"
                 android:text="Thai" />
             <CheckBox
+                style="@style/CheckBoxTheme"
                 android:id="@+id/italian_check"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:buttonTint="@color/colorPrimary"
-                android:textColor="@color/textColorDark"
                 android:text="Italian" />
             <CheckBox
+                style="@style/CheckBoxTheme"
                 android:id="@+id/chinese_check"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:buttonTint="@color/colorPrimary"
-                android:textColor="@color/textColorDark"
                 android:text="Chinese" />
             <CheckBox
+                style="@style/CheckBoxTheme"
                 android:id="@+id/mexican_check"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:buttonTint="@color/colorPrimary"
-                android:textColor="@color/textColorDark"
                 android:text="Mexican" />
         </LinearLayout>
         <LinearLayout
@@ -154,38 +142,49 @@
             android:layout_marginLeft="500px"
             android:orientation="vertical">
             <CheckBox
+                style="@style/CheckBoxTheme"
                 android:id="@+id/indian_check"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:buttonTint="@color/colorPrimary"
-                android:textColor="@color/textColorDark"
                 android:text="Indian" />
             <CheckBox
+                style="@style/CheckBoxTheme"
                 android:id="@+id/american_check"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:buttonTint="@color/colorPrimary"
-                android:textColor="@color/textColorDark"
                 android:text="American" />
             <CheckBox
+                style="@style/CheckBoxTheme"
                 android:id="@+id/japanese_check"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:buttonTint="@color/colorPrimary"
-                android:textColor="@color/textColorDark"
                 android:text="Japanese" />
             <CheckBox
-                android:id="@+id/mexican_check"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:buttonTint="@color/colorPrimary"
-                android:textColor="@color/textColorDark"
-                android:text="Mexican" />
+                style="@style/CheckBoxTheme"
+                android:id="@+id/burmese_check"
+                android:text="Burmese" />
         </LinearLayout>
 
-
-
     </RelativeLayout>
+
+    <!-- good for groups section wrapper -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="80px"
+        android:background="@drawable/textlines">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/good_for_groups_text"
+            android:text="Good for groups"
+            android:textColor="@color/textColorDark"
+            android:fontFamily="@font/lucia_grande"
+            android:textSize="16dp" />
+        <Switch
+            android:id="@+id/switch1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="30dp"
+            android:text="Switch" />
+    </LinearLayout>
 
 
 
