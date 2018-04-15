@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bottom_sheet"
     android:layout_width="match_parent"
-    android:layout_height="1200px"
+    android:layout_height="1300px"
     android:background="#fff"
     android:orientation="vertical"
     app:behavior_hideable="true"
@@ -14,7 +14,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/textlines">
+        android:background="@drawable/textlines"
+        android:paddingBottom="20px">
         <!-- back button content -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,7 +31,6 @@
                 android:layout_gravity="left"
                 android:layout_marginLeft="60px"/>
         </LinearLayout>
-
         <!-- preferences title content -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -50,7 +50,6 @@
                 android:layout_margin="8dp"
                 android:textStyle="bold" />
         </LinearLayout>
-
         <!-- check button content -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -59,7 +58,6 @@
             android:paddingTop="50px"
             android:orientation="horizontal"
             android:gravity="right">
-
             <ImageView
                 android:layout_width="50px"
                 android:layout_height="match_parent"
@@ -69,42 +67,128 @@
         </LinearLayout>
     </RelativeLayout>
 
+    <!-- price slider wrapper -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/textlines">
+        <!-- price slider header text -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="60px">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Price range"
+                android:textColor="@color/textColorDark"
+                android:fontFamily="@font/lucia_grande"
+                android:textSize="16dp" />
+        </LinearLayout>
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:useLevel="true"/>
+    </LinearLayout>
 
+    <!-- cuisine section wrapper -->
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/btnPhoto"
-            android:text="Photo"
-            android:textColor="#1e1e1e"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="60px"
+        android:background="@drawable/textlines">
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:id="@+id/cuisine_text"
+            android:paddingLeft="20px"
+            android:paddingBottom="20px"
+            android:text="Cuisine"
+            android:textColor="@color/textColorDark"
+            android:fontFamily="@font/lucia_grande"
+            android:textSize="16dp" />
+        <LinearLayout
+            android:layout_width="400px"
+            android:layout_height="wrap_content"
+            android:id="@+id/cuisine_left_checks"
+            android:layout_below="@id/cuisine_text"
+            android:layout_marginLeft="0px"
+            android:orientation="vertical">
+            <CheckBox
+                android:id="@+id/thai_check"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorPrimary"
+                android:textColor="@color/textColorDark"
+                android:text="Thai" />
+            <CheckBox
+                android:id="@+id/italian_check"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorPrimary"
+                android:textColor="@color/textColorDark"
+                android:text="Italian" />
+            <CheckBox
+                android:id="@+id/chinese_check"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorPrimary"
+                android:textColor="@color/textColorDark"
+                android:text="Chinese" />
+            <CheckBox
+                android:id="@+id/mexican_check"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorPrimary"
+                android:textColor="@color/textColorDark"
+                android:text="Mexican" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="400px"
+            android:layout_height="wrap_content"
+            android:id="@+id/cuisine_right_checks"
+            android:layout_below="@id/cuisine_text"
+            android:layout_marginLeft="500px"
+            android:orientation="vertical">
+            <CheckBox
+                android:id="@+id/indian_check"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorPrimary"
+                android:textColor="@color/textColorDark"
+                android:text="Indian" />
+            <CheckBox
+                android:id="@+id/american_check"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorPrimary"
+                android:textColor="@color/textColorDark"
+                android:text="American" />
+            <CheckBox
+                android:id="@+id/japanese_check"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorPrimary"
+                android:textColor="@color/textColorDark"
+                android:text="Japanese" />
+            <CheckBox
+                android:id="@+id/mexican_check"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorPrimary"
+                android:textColor="@color/textColorDark"
+                android:text="Mexican" />
+        </LinearLayout>
 
-        <Button
-            android:id="@+id/btnCamera"
-            android:text="Camera"
-            android:textColor="#1e1e1e"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_below="@id/btnPhoto"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
 
-        <Button
-            android:id="@+id/btnCancel"
-            android:text="Cancel"
-            android:background="#a2a2a3"
-            android:textColor="#1e1e1e"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_below="@id/btnCamera"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
 
     </RelativeLayout>
+
+
+
 
 
 </LinearLayout>

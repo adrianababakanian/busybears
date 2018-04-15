@@ -11,6 +11,8 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 
 import java.util.logging.Filter;
 
@@ -21,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     BottomSheetBehavior sheetBehavior;
     LinearLayout layoutBottomSheet;
     Button testButton;
+    SeekBar mSeekBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,10 +38,17 @@ public class MainActivity extends AppCompatActivity {
         layoutBottomSheet = findViewById(R.id.bottom_sheet);
         sheetBehavior = BottomSheetBehavior.from(layoutBottomSheet);
         testButton = (Button)findViewById(R.id.test_button);
+        mSeekBar = findViewById(R.id.seekBar);
+
+        mSeekBar.setZ(999);
+        mSeekBar.setMax(70);
+        mSeekBar.setProgress(10);
 
         // set up bottom sheet
         setBottomSheetCallback();
         setOnClickForTestButton();
+
+        sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
     }
 
