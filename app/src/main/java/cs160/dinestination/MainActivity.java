@@ -13,29 +13,27 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.TimePicker;
 
 public class MainActivity extends AppCompatActivity {
-
 
     BottomSheetBehavior sheetBehavior;
     LinearLayout layoutBottomSheet;
     Button testButton;
+    TextView testText;
+    TimePicker timePicker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        DialogFragment d = new EntryDialog();
-//        final Dialog dialog = new Dialog(new ContextThemeWrapper(this, R.style.DialogSlideAnim));
-//        getWindow().setGravity(Gravity.BOTTOM);
-//        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
-//        Dialog dialog = new Dialog(this);
-//        dialog.getWindow().getAttributes().windowAnimations = animationSource;
         testButton = (Button)findViewById(R.id.button);
         layoutBottomSheet = findViewById(R.id.bottom_sheet);
         sheetBehavior = BottomSheetBehavior.from(layoutBottomSheet);
+        testText = (TextView)findViewById(R.id.textView);
+        timePicker = (TimePicker)findViewById(R.id.time_picker);
 
         sheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -60,20 +58,19 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
             }
         });
-
 
         testButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (sheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
                     sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-//                    testButton.setText("Close Bottom sheet");
                 } else {
                     sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-//                    testButton.setText("Expand Bottom sheet");
+                    int hour = timePicker.getCurrentHour();
+                    int min = timePicker.getCurrentMinute();
+                    testText.setText(hour + ":" + min);
                 }
             }
         });

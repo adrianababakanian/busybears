@@ -17,6 +17,12 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    <include layout="@layout/bottom_sheet" />
+    <include layout="@layout/bottom_sheet_entry_time" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView" />
 
 </android.support.design.widget.CoordinatorLayout>
