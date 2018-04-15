@@ -31,7 +31,8 @@
         android:layout_marginLeft="80px"
         android:layout_alignParentRight="true"
         android:background="@color/colorPrimary"
-        android:text="filters"
+        android:text="close"
+        android:fontFamily="@font/lucia_grande"
         android:textColor="@color/white"
         android:textSize="18sp" />
 
@@ -41,6 +42,21 @@
         <!--android:id="@+id/map"-->
         <!--android:layout_width="match_parent"-->
         <!--android:layout_height="match_parent"/>-->
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lorem ipsum dolor sit amet."
+        android:paddingLeft="80px"
+        android:paddingTop="280px"
+        android:fontFamily="@font/lucia_grande"
+        android:textColor="@color/textColorDark"/>
+
+    <ImageView
+        android:id="@+id/layover_rectangle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/layover_rectangle" />
 
 
     <!-- include the bottom sheet from layouts  -->

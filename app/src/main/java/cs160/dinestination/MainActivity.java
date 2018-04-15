@@ -13,10 +13,12 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import java.util.logging.Filter;
 
@@ -27,6 +29,10 @@ public class MainActivity extends FragmentActivity { // implements OnMapReadyCal
     Button testButton;
     SeekBar mSeekBar;
     Switch mSwitch;
+    TextView priceRangeFromSeekBar;
+    ImageView layoverRectangle;
+    ImageView checkButton;
+    ImageView backButton;
 //    MapFragment mapFragment;
 
     @Override
@@ -42,15 +48,26 @@ public class MainActivity extends FragmentActivity { // implements OnMapReadyCal
         testButton = findViewById(R.id.test_button);
         mSeekBar = findViewById(R.id.seekBar);
         mSwitch = findViewById(R.id.switch1);
+        priceRangeFromSeekBar = findViewById(R.id.price_range_from_seek_bar);
+        layoverRectangle = findViewById(R.id.layover_rectangle);
+        checkButton = findViewById(R.id.check_button);
+        backButton = findViewById(R.id.back_button);
 
         mSeekBar.setZ(999);
-        mSeekBar.setMax(70);
-        mSeekBar.setProgress(10);
+        mSeekBar.setMax(100);
+        mSeekBar.setProgress(30);
         mSwitch.setZ(999);
+
+        // set price range listener and update price range from seek bar
+        setPriceRangeListener();
 
         // set up bottom sheet
         setBottomSheetCallback();
         setOnClickForTestButton();
+
+        setOnClickForFilterTrigger(checkButton);
+        setOnClickForFilterTrigger(backButton);
+
         sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
         // get a handle to the map fragment
@@ -74,8 +91,28 @@ public class MainActivity extends FragmentActivity { // implements OnMapReadyCal
             public void onClick(View view) {
                 if (sheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
                     sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    layoverRectangle.setImageAlpha(100);
                 } else {
                     sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    layoverRectangle.setImageAlpha(0);
+
+                }
+            }
+        });
+    }
+
+    // temporary set on clicks for back and check button triggers
+    private void setOnClickForFilterTrigger(ImageView iv) {
+        iv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (sheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+                    sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    layoverRectangle.setImageAlpha(100);
+                } else {
+                    sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    layoverRectangle.setImageAlpha(0);
+
                 }
             }
         });
@@ -110,5 +147,53 @@ public class MainActivity extends FragmentActivity { // implements OnMapReadyCal
             }
         });
     }
+
+    // update price range from seek bar
+    private void setPriceRangeListener() {
+
+        Integer progUpper = 10*Math.round(mSeekBar.getProgress()/10);
+        Integer progLower;
+        if (progUpper < 10) {
+            progLower = 1;
+        } else {
+            progLower = progUpper - 10;
+        }
+        String upperStr = progUpper.toString();
+        String lowerStr = progLower.toString();
+        priceRangeFromSeekBar.setText("$".concat(lowerStr).concat("-").concat(upperStr));
+
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
+                // TODO Auto-generated method stub
+
+                Integer progUpper = 10*Math.round(mSeekBar.getProgress()/10);
+                Integer progLower;
+                if (progUpper < 10) {
+                    progUpper = 10;
+                    progLower = 1;
+                } else {
+                    progLower = progUpper - 10;
+                }
+                String upperStr = progUpper.toString();
+                String lowerStr = progLower.toString();
+                priceRangeFromSeekBar.setText("$".concat(lowerStr).concat("-").concat(upperStr));
+
+            }
+        });
+
+    }
+
 
 }

@@ -25,6 +25,7 @@
             android:orientation="horizontal"
             android:gravity="left">
             <ImageView
+                android:id="@+id/back_button"
                 android:layout_width="30px"
                 android:layout_height="match_parent"
                 android:src="@drawable/back"
@@ -59,6 +60,7 @@
             android:orientation="horizontal"
             android:gravity="right">
             <ImageView
+                android:id="@+id/check_button"
                 android:layout_width="50px"
                 android:layout_height="match_parent"
                 android:src="@drawable/check"
@@ -167,7 +169,7 @@
                     android:layout_marginRight="40px"
                     android:useLevel="true"/>
                 <!-- price slider header text -->
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="40px"
@@ -180,8 +182,18 @@
                         android:text="Price range"
                         android:textColor="@color/textColorDark"
                         android:fontFamily="@font/lucia_grande"
+                        android:layout_alignParentLeft="true"
                         android:textSize="16dp" />
-                </LinearLayout>
+                    <TextView
+                        android:id="@+id/price_range_from_seek_bar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="Update"
+                        android:textColor="@color/textColorDark"
+                        android:fontFamily="@font/lucia_grande"
+                        android:layout_alignParentRight="true"
+                        android:textSize="16dp" />
+                </RelativeLayout>
             </FrameLayout>
 
             <!-- attire section wrapper -->
@@ -294,7 +306,6 @@
                     android:layout_alignParentStart="true"
                     android:layout_marginLeft="800px" />
             </FrameLayout>
-
 
         </LinearLayout>
     </ScrollView>
