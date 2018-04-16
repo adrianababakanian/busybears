@@ -61,7 +61,7 @@
         mapbox:mapbox_cameraTargetLat="41.885"
         mapbox:mapbox_cameraTargetLng="-87.679"
         mapbox:mapbox_styleUrl="@string/mapbox_style_light"
-        mapbox:mapbox_cameraTilt="60"
+        mapbox:mapbox_cameraTilt="0"
         mapbox:mapbox_cameraZoom="12"/>
 
     <!-- layover rectangle, activated when filters open -->
