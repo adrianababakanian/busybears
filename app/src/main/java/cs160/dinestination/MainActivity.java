@@ -36,6 +36,7 @@ public class MainActivity extends FragmentActivity { // implements OnMapReadyCal
     ImageView layoverRectangle;
     ImageView checkButton;
     ImageView backButton;
+    ImageView whereTo;
 //    MapFragment mapFragment;
 
     private MapView mapView;
@@ -62,6 +63,9 @@ public class MainActivity extends FragmentActivity { // implements OnMapReadyCal
         layoverRectangle = findViewById(R.id.layover_rectangle);
         checkButton = findViewById(R.id.check_button);
         backButton = findViewById(R.id.back_button);
+        //whereTo = findViewById(R.id.where_to_rectangle);
+
+        //whereTo.setTranslationZ(80);
 
         mSeekBar.setZ(999);
         mSeekBar.setMax(100);

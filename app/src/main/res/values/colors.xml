@@ -6,5 +6,6 @@
     <color name="textColorDark">#857B80</color>
     <color name="white">#ffffff</color>
     <color name="lightGray">#E9E6E8</color>
+    <color name="lighterGray">#f5f4f5</color>
     <color name="layoverFill">#80C7C9C9</color>
 </resources>
