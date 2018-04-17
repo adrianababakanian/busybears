@@ -25,6 +25,7 @@
 
     <!-- test bottom sheet button  -->
     <Button
+        style="@style/MainFont"
         android:id="@+id/test_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -33,17 +34,15 @@
         android:layout_alignParentRight="true"
         android:background="@color/colorPrimary"
         android:text="close"
-        android:fontFamily="@font/lucia_grande"
-        android:textColor="@color/white"
-        android:textSize="18sp" />
+        android:textColor="@color/white" />
 
     <TextView
+        style="@style/MainFont"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Lorem ipsum dolor sit amet."
         android:paddingLeft="80px"
         android:paddingTop="280px"
-        android:fontFamily="@font/lucia_grande"
         android:textColor="@color/textColorDark"/>
 
     <!-- mapbox mapview element -->
@@ -55,9 +54,9 @@
         mapbox:mapbox_cameraTargetLng="-87.679"
         mapbox:mapbox_styleUrl="@string/mapbox_style_light"
         mapbox:mapbox_cameraTilt="0"
-        mapbox:mapbox_cameraZoom="12"/>
+        mapbox:mapbox_cameraZoom="5.0"/>
 
-    <!-- where to entry element -->
+    <!-- "where to" preview element -->
     <RelativeLayout
         android:layout_width="900px"
         android:layout_height="180px"
@@ -79,13 +78,12 @@
             android:layout_marginLeft="80px"
             android:src="@drawable/blue_square" />
         <TextView
+            style="@style/LargeFont"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
-            android:fontFamily="@font/lucia_grande"
             android:layout_marginTop="55px"
             android:layout_marginLeft="140px"
-            android:textSize="18dp"
             android:hint="Where to?"/>
         <LinearLayout
             android:layout_width="wrap_content"
@@ -95,17 +93,15 @@
             android:layout_marginTop="55px"
             android:layout_marginRight="120px">
             <TextView
+                style="@style/SmallFont"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginTop="8px"
-                android:fontFamily="@font/lucia_grande"
-                android:textSize="14dp"
                 android:hint="by"/>
             <TextView
+                style="@style/LargeFont"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:fontFamily="@font/lucia_grande"
-                android:textSize="18dp"
                 android:hint=" 9:00pm"/>
         </LinearLayout>
     </RelativeLayout>
@@ -117,8 +113,16 @@
         android:layout_height="match_parent"
         android:src="@drawable/layover_rectangle" />
 
+    <ImageView
+        android:id="@+id/marker"
+        android:layout_width="50px"
+        android:layout_height="50px"
+        android:src="@drawable/custom_marker"/>
 
-    <!-- include the bottom sheet from layouts  -->
+    <!-- include the filters bottom sheet  -->
     <include layout="@layout/bottom_sheet" />
+
+    <!-- include the filters bottom sheet  -->
+    <include layout="@layout/preview_bottom_sheet" />
 
 </android.support.design.widget.CoordinatorLayout>
