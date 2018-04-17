@@ -27,6 +27,7 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
+import com.mapbox.mapboxsdk.style.layers.PropertyValue;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.services.commons.geojson.Feature;
@@ -71,6 +72,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         mapView = (MapView) findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
+        mapView.getMapAsync(this);
 
         getApplicationContext().setTheme(R.style.AppTheme);
 
@@ -108,7 +110,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         layoverRectangle.setImageAlpha(0);
 
         previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        // previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     // on click for button to trigger filters
@@ -128,7 +129,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    // on click for button to trigger filters
+    // on click for market to trigger preview popup
     private void setOnClickForTestMarker() {
         marker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -267,10 +268,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     // mapbox overrides
     @Override
     public void onMapReady(MapboxMap mapboxMap) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
         MainActivity.this.mapboxMap = mapboxMap;
         /* Image: An image is loaded and added to the map. */
         Bitmap icon = BitmapFactory.decodeResource(
-                MainActivity.this.getResources(), R.drawable.custom_marker);
+                MainActivity.this.getResources(), R.drawable.custom_marker, options);
         mapboxMap.addImage(MARKER_IMAGE, icon);
         addMarkers();
     }

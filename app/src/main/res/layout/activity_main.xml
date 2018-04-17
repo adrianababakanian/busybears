@@ -54,7 +54,7 @@
         mapbox:mapbox_cameraTargetLng="-87.679"
         mapbox:mapbox_styleUrl="@string/mapbox_style_light"
         mapbox:mapbox_cameraTilt="0"
-        mapbox:mapbox_cameraZoom="5.0"/>
+        mapbox:mapbox_cameraZoom="12"/>
 
     <!-- "where to" preview element -->
     <RelativeLayout
