@@ -391,7 +391,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private void addMarkers() {
         List<Feature> features = new ArrayList<>();
         /* Source: A data source specifies the geographic coordinate where the image marker gets placed. */
-        features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-87.689,41.885})));
+        features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.258722,37.866528})));
         FeatureCollection featureCollection = FeatureCollection.fromFeatures(features);
         GeoJsonSource source = new GeoJsonSource(MARKER_SOURCE, featureCollection);
         mapboxMap.addSource(source);
