@@ -44,6 +44,7 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.PropertyValue;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+import com.mapbox.services.android.telemetry.location.AndroidLocationEngine;
 import com.mapbox.services.android.telemetry.location.LocationEngine;
 import com.mapbox.services.android.telemetry.location.LocationEnginePriority;
 import com.mapbox.services.android.telemetry.location.LostLocationEngine;
@@ -87,6 +88,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     ImageView checkButton;
     ImageView backButton;
     ImageView marker;
+    Location lastLocation;
 
     // Mapbox-related elements
     private static final String MARKER_SOURCE = "markers-source";
@@ -103,6 +105,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mapbox.getInstance(this, "pk.eyJ1IjoiYWRyaWFuYWJhYmFrYW5pYW4iLCJhIjoiY2pnMTgxeDQ4MWdwOTJ4dGxnbzU4OTVyMCJ9.CetiZIb8bdIEolkPM4AHbg");
+
+        lastLocation = new Location("");
+        lastLocation.setLatitude(37.866528);
+        lastLocation.setLongitude(-122.258722);
 
         setContentView(R.layout.activity_main);
 
@@ -158,42 +164,43 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
 //        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
-//        locationEngine = new LostLocationEngine(MainActivity.this);
-//        locationEngine.setPriority(LocationEnginePriority.HIGH_ACCURACY);
-//        locationEngine.setInterval(5000);
-//        locationEngine.activate();
-//
-//        // Here, thisActivity is the current activity
-//        if (ContextCompat.checkSelfPermission(MainActivity.this,
-//                Manifest.permission.READ_CONTACTS)
-//                != PackageManager.PERMISSION_GRANTED) {
-//
-//            // Permission is not granted
-//            // Should we show an explanation?
-//            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-//                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-//
-//                // Show an explanation to the user *asynchronously* -- don't block
-//                // this thread waiting for the user's response! After the user
-//                // sees the explanation, try again to request the permission.
-//
-//            } else {
-//
-//                // No explanation needed; request the permission
-//                ActivityCompat.requestPermissions(MainActivity.this,
-//                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-//                        REQUEST_PERMISSIONS_REQUEST_CODE);
-//
-//                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-//                // app-defined int constant. The callback method gets the
-//                // result of the request.
-//            }
-//        } else {
-//            // Permission has already been granted
-//            Location lastLocation = locationEngine.getLastLocation();
-//            System.out.println(lastLocation.getLatitude());
-//            System.out.println(lastLocation.getLatitude());
-//        }
+        locationEngine = new LostLocationEngine(MainActivity.this);
+        // locationEngine = new AndroidLocationEngine.getLocationEngine(MainActivity.this);
+        locationEngine.setPriority(LocationEnginePriority.HIGH_ACCURACY);
+        locationEngine.setInterval(5000);
+        locationEngine.activate();
+
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Permission is not granted
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed; request the permission
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        REQUEST_PERMISSIONS_REQUEST_CODE);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        } else {
+            // Permission has already been granted
+            lastLocation = locationEngine.getLastLocation();
+//            Log.d("Latitude: ", Double.toString(lastLocation.getLatitude()));
+//            Log.d("Longitude: ", Double.toString(lastLocation.getLongitude()));
+        }
 
     }
 
