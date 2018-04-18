@@ -3,6 +3,8 @@ package cs160.dinestination;
 import android.app.FragmentTransaction;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PointF;
+import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
@@ -21,8 +23,11 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
@@ -30,6 +35,9 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.PropertyValue;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+import com.mapbox.services.android.telemetry.location.LocationEngine;
+import com.mapbox.services.android.telemetry.location.LocationEnginePriority;
+import com.mapbox.services.android.telemetry.location.LostLocationEngine;
 import com.mapbox.services.commons.geojson.Feature;
 import com.mapbox.services.commons.geojson.FeatureCollection;
 import com.mapbox.services.commons.geojson.Point;
@@ -63,6 +71,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private MapView mapView;
 
+    private LocationEngine locationEngine;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +83,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         mapView = (MapView) findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+//        mapView.getMapAsync(new OnMapReadyCallback() {
+//            @Override
+//            public void onMapReady(MapboxMap mapboxMap) {
+//                // One way to add a marker view
+//                mapboxMap.addMarker(new MarkerOptions()
+//                        .position(new LatLng(41.885,-87.679))
+//                        .title("Chicago")
+//                        .snippet("Illinois")
+//                );
+//            }
+//        });
 
         getApplicationContext().setTheme(R.style.AppTheme);
 
@@ -110,6 +131,16 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         layoverRectangle.setImageAlpha(0);
 
         previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+//        locationEngine = new LostLocationEngine(MainActivity.this);
+//        locationEngine.setPriority(LocationEnginePriority.HIGH_ACCURACY);
+//        locationEngine.setInterval(5000);
+//        locationEngine.activate();
+//        Location lastLocation = locationEngine.getLastLocation();
+//        System.out.println(lastLocation.getLatitude());
+//        System.out.println(lastLocation.getLatitude());
+
+
     }
 
     // on click for button to trigger filters
@@ -272,15 +303,28 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         MainActivity.this.mapboxMap = mapboxMap;
         /* Image: An image is loaded and added to the map. */
         Bitmap icon = BitmapFactory.decodeResource(
-                MainActivity.this.getResources(), R.drawable.custom_marker, options);
+                MainActivity.this.getResources(), R.drawable.pinpoint, options);
         mapboxMap.addImage(MARKER_IMAGE, icon);
         addMarkers();
+
+        mapboxMap.setOnMapClickListener(new MapboxMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(@NonNull LatLng point) {
+                PointF screenPoint = mapboxMap.getProjection().toScreenLocation(point);
+                List<Feature> features = mapboxMap.queryRenderedFeatures(screenPoint, "my.layer.id");
+                if (!features.isEmpty()) {
+                    Feature selectedFeature = features.get(0);
+                    String title = selectedFeature.getStringProperty("title");
+                    Toast.makeText(getApplicationContext(), "You selected " + title, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void addMarkers() {
         List<Feature> features = new ArrayList<>();
         /* Source: A data source specifies the geographic coordinate where the image marker gets placed. */
-        features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-87.679,41.885})));
+        features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-87.689,41.885})));
         FeatureCollection featureCollection = FeatureCollection.fromFeatures(features);
         GeoJsonSource source = new GeoJsonSource(MARKER_SOURCE, featureCollection);
         mapboxMap.addSource(source);
