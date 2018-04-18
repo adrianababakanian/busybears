@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- "where to" preview element -->
+    <RelativeLayout
+        android:layout_width="900px"
+        android:layout_height="180px"
+        android:layout_gravity="center"
+        android:layout_marginBottom="1020px">
+        <!-- background of where to popup -->
+        <ImageView
+            android:id="@+id/where_to_rectangle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/where_to_rectangle" />
+        <!-- blue square -->
+        <ImageView
+            android:id="@+id/blue_square"
+            android:layout_width="20px"
+            android:layout_height="20px"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="80px"
+            android:layout_marginLeft="80px"
+            android:src="@drawable/blue_square" />
+        <TextView
+            style="@style/LargeFont"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="55px"
+            android:layout_marginLeft="140px"
+            android:hint="Where to?"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="55px"
+            android:layout_marginRight="120px">
+            <TextView
+                style="@style/SmallFont"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8px"
+                android:hint="by"/>
+            <TextView
+                style="@style/LargeFont"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:hint=" 9:00pm"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+
+</RelativeLayout>

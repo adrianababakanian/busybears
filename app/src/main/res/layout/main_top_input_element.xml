@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:visibility="visible"
+    >
+
+    <EditText
+        android:id="@+id/input_curr_location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/lighterGray"
+        android:hint="Current location"
+        android:padding="5dp" />
+
+    <EditText
+        android:id="@+id/input_destination"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/input_curr_location"
+        android:background="@color/lightGray"
+        android:hint="Where to?"
+        android:padding="5dp" />
+
+
+
+</android.support.constraint.ConstraintLayout>

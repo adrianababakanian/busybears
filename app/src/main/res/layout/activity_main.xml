@@ -6,23 +6,26 @@
     android:layout_height="match_parent"
     tools:context="cs160.dinestination.MainActivity">
 
-    <Button
-        android:id="@+id/button"
+
+
+    <include
+        android:id="@+id/where_to_element"
+        android:layout_marginTop="100dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="76dp"
-        android:text="Button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        layout="@layout/where_to_preview_element" />
 
 
-    <include layout="@layout/bottom_sheet_entry_time" />
+    <include
+        android:id="@+id/top_input_element"
+        layout="@layout/main_top_input_element"
+        />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TextView" />
+
+
+    <include
+        layout="@layout/bottom_sheet_entry_time"
+        android:layout_weight="1" />
 
 </android.support.design.widget.CoordinatorLayout>
