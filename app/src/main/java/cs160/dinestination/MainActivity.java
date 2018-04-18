@@ -378,10 +378,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     String title = selectedFeature.getStringProperty("title");
                     Toast.makeText(getApplicationContext(), "You selected " + title, Toast.LENGTH_SHORT).show();
                 }
-                if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
-                    previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                } else {
-                    previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                System.out.println(point);
+                if ((point.getLatitude() <= 37.866528+0.0015 && point.getLatitude() >= 37.866528-0.0015) && (point.getLongitude() <= -122.258722+0.0015 && point.getLongitude() >= -122.258722-0.0015)) {
+                    if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
+                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    } else {
+                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    }
                 }
 
             }
