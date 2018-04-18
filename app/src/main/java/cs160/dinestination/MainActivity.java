@@ -298,7 +298,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     // mapbox overrides
     @Override
-    public void onMapReady(MapboxMap mapboxMap) {
+    public void onMapReady(final MapboxMap mapboxMap) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         MainActivity.this.mapboxMap = mapboxMap;
         /* Image: An image is loaded and added to the map. */
