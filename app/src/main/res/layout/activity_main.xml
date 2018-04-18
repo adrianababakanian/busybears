@@ -50,8 +50,8 @@
         android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        mapbox:mapbox_cameraTargetLat="41.885"
-        mapbox:mapbox_cameraTargetLng="-87.679"
+        mapbox:mapbox_cameraTargetLat="37.866528"
+        mapbox:mapbox_cameraTargetLng="-122.258722"
         mapbox:mapbox_styleUrl="@string/mapbox_style_light"
         mapbox:mapbox_cameraTilt="0"
         mapbox:mapbox_cameraZoom="12"/>
@@ -112,12 +112,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/layover_rectangle" />
-
-    <ImageView
-        android:id="@+id/marker"
-        android:layout_width="50px"
-        android:layout_height="50px"
-        android:src="@drawable/custom_marker"/>
 
     <!-- include the filters bottom sheet  -->
     <include layout="@layout/bottom_sheet" />

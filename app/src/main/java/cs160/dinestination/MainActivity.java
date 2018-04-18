@@ -1,19 +1,28 @@
 package cs160.dinestination;
 
+import android.Manifest;
 import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.location.Location;
+import android.net.Uri;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -35,6 +44,7 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.PropertyValue;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+import com.mapbox.services.android.telemetry.location.AndroidLocationEngine;
 import com.mapbox.services.android.telemetry.location.LocationEngine;
 import com.mapbox.services.android.telemetry.location.LocationEnginePriority;
 import com.mapbox.services.android.telemetry.location.LostLocationEngine;
@@ -47,6 +57,23 @@ import java.util.List;
 import java.util.logging.Filter;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
+
+    /**
+     * Code used in requesting runtime permissions.
+     */
+    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
+
+    /**
+     * Constant used in the location settings dialog.
+     */
+    private static final int REQUEST_CHECK_SETTINGS = 0x1;
+
+    /**
+     * The desired interval for location updates. Inexact. Updates may be more or less frequent.
+     */
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+
+   String MY_PERMISSIONS_ACCESS_FINE_LOCATION = "Please enable locationing!";
 
     // UI elements
     BottomSheetBehavior sheetBehavior;
@@ -61,6 +88,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     ImageView checkButton;
     ImageView backButton;
     ImageView marker;
+    Location lastLocation;
 
     // Mapbox-related elements
     private static final String MARKER_SOURCE = "markers-source";
@@ -77,6 +105,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mapbox.getInstance(this, "pk.eyJ1IjoiYWRyaWFuYWJhYmFrYW5pYW4iLCJhIjoiY2pnMTgxeDQ4MWdwOTJ4dGxnbzU4OTVyMCJ9.CetiZIb8bdIEolkPM4AHbg");
+
+        lastLocation = new Location("");
+        lastLocation.setLatitude(37.866528);
+        lastLocation.setLongitude(-122.258722);
 
         setContentView(R.layout.activity_main);
 
@@ -109,7 +141,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         layoverRectangle = findViewById(R.id.layover_rectangle);
         checkButton = findViewById(R.id.check_button);
         backButton = findViewById(R.id.back_button);
-        marker = findViewById(R.id.marker);
+        // marker = findViewById(R.id.marker);
 
         mSeekBar.setZ(999);
         mSeekBar.setMax(100);
@@ -126,20 +158,49 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         setOnClickForFilterTrigger(checkButton);
         setOnClickForFilterTrigger(backButton);
-        setOnClickForTestMarker();
+        // setOnClickForTestMarker();
 
         layoverRectangle.setImageAlpha(0);
 
-        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+//        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
-//        locationEngine = new LostLocationEngine(MainActivity.this);
-//        locationEngine.setPriority(LocationEnginePriority.HIGH_ACCURACY);
-//        locationEngine.setInterval(5000);
-//        locationEngine.activate();
-//        Location lastLocation = locationEngine.getLastLocation();
-//        System.out.println(lastLocation.getLatitude());
-//        System.out.println(lastLocation.getLatitude());
+        locationEngine = new LostLocationEngine(MainActivity.this);
+        // locationEngine = new AndroidLocationEngine.getLocationEngine(MainActivity.this);
+        locationEngine.setPriority(LocationEnginePriority.HIGH_ACCURACY);
+        locationEngine.setInterval(5000);
+        locationEngine.activate();
 
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Permission is not granted
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed; request the permission
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        REQUEST_PERMISSIONS_REQUEST_CODE);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        } else {
+            // Permission has already been granted
+            lastLocation = locationEngine.getLastLocation();
+//            Log.d("Latitude: ", Double.toString(lastLocation.getLatitude()));
+//            Log.d("Longitude: ", Double.toString(lastLocation.getLongitude()));
+        }
 
     }
 
@@ -161,18 +222,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     // on click for market to trigger preview popup
-    private void setOnClickForTestMarker() {
-        marker.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
-                    previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                } else {
-                    previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                }
-            }
-        });
-    }
+//    private void setOnClickForTestMarker() {
+//        marker.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
+//                    previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+//                } else {
+//                    previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+//                }
+//            }
+//        });
+//    }
 
     // temporary set on clicks for back and check button triggers
     private void setOnClickForFilterTrigger(ImageView iv) {
@@ -317,6 +378,15 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     String title = selectedFeature.getStringProperty("title");
                     Toast.makeText(getApplicationContext(), "You selected " + title, Toast.LENGTH_SHORT).show();
                 }
+                System.out.println(point);
+                if ((point.getLatitude() <= 37.866528+0.0015 && point.getLatitude() >= 37.866528-0.0015) && (point.getLongitude() <= -122.258722+0.0015 && point.getLongitude() >= -122.258722-0.0015)) {
+                    if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
+                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    } else {
+                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    }
+                }
+
             }
         });
     }
@@ -324,7 +394,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private void addMarkers() {
         List<Feature> features = new ArrayList<>();
         /* Source: A data source specifies the geographic coordinate where the image marker gets placed. */
-        features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-87.689,41.885})));
+        features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.258722,37.866528})));
         FeatureCollection featureCollection = FeatureCollection.fromFeatures(features);
         GeoJsonSource source = new GeoJsonSource(MARKER_SOURCE, featureCollection);
         mapboxMap.addSource(source);
@@ -378,6 +448,111 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
     }
+
+//    /**
+//     * Shows a {@link Snackbar}.
+//     *
+//     * @param mainTextStringId The id for the string resource for the Snackbar text.
+//     * @param actionStringId   The text of the action item.
+//     * @param listener         The listener associated with the Snackbar action.
+//     */
+//    private void showSnackbar(final int mainTextStringId, final int actionStringId,
+//                              View.OnClickListener listener) {
+//        Snackbar.make(
+//                findViewById(android.R.id.content),
+//                getString(mainTextStringId),
+//                Snackbar.LENGTH_INDEFINITE)
+//                .setAction(getString(actionStringId), listener).show();
+//    }
+//
+//    /**
+//     * Return the current state of the permissions needed.
+//     */
+//    private boolean checkPermissions() {
+//        int permissionState = ActivityCompat.checkSelfPermission(this,
+//                Manifest.permission.ACCESS_FINE_LOCATION);
+//        return permissionState == PackageManager.PERMISSION_GRANTED;
+//    }
+//
+//    private void requestPermissions() {
+//        boolean shouldProvideRationale =
+//                ActivityCompat.shouldShowRequestPermissionRationale(this,
+//                        Manifest.permission.ACCESS_FINE_LOCATION);
+//
+//        // Provide an additional rationale to the user. This would happen if the user denied the
+//        // request previously, but didn't check the "Don't ask again" checkbox.
+//        if (shouldProvideRationale) {
+//            Log.i(TAG, "Displaying permission rationale to provide additional context.");
+//            showSnackbar(R.string.permission_rationale,
+//                    android.R.string.ok, new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View view) {
+//                            // Request permission
+//                            ActivityCompat.requestPermissions(MainActivity.this,
+//                                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+//                                    REQUEST_PERMISSIONS_REQUEST_CODE);
+//                        }
+//                    });
+//        } else {
+//            Log.i(TAG, "Requesting permission");
+//            // Request permission. It's possible this can be auto answered if device policy
+//            // sets the permission in a given state or the user denied the permission
+//            // previously and checked "Never ask again".
+//            ActivityCompat.requestPermissions(MainActivity.this,
+//                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+//                    REQUEST_PERMISSIONS_REQUEST_CODE);
+//        }
+//    }
+//
+//    /**
+//     * Callback received when a permissions request has been completed.
+//     */
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+//                                           @NonNull int[] grantResults) {
+//        Log.i(TAG, "onRequestPermissionResult");
+//        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
+//            if (grantResults.length <= 0) {
+//                // If user interaction was interrupted, the permission request is cancelled and you
+//                // receive empty arrays.
+//                Log.i(TAG, "User interaction was cancelled.");
+//            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                if (mRequestingLocationUpdates) {
+//                    Log.i(TAG, "Permission granted, updates requested, starting location updates");
+//                    Location lastLocation = locationEngine.getLastLocation();
+//                    System.out.println(lastLocation.getLatitude());
+//                    System.out.println(lastLocation.getLatitude());
+//                }
+//            } else {
+//                // Permission denied.
+//
+//                // Notify the user via a SnackBar that they have rejected a core permission for the
+//                // app, which makes the Activity useless. In a real app, core permissions would
+//                // typically be best requested during a welcome-screen flow.
+//
+//                // Additionally, it is important to remember that a permission might have been
+//                // rejected without asking the user for permission (device policy or "Never ask
+//                // again" prompts). Therefore, a user interface affordance is typically implemented
+//                // when permissions are denied. Otherwise, your app could appear unresponsive to
+//                // touches or interactions which have required permissions.
+//                showSnackbar(R.string.permission_denied_explanation,
+//                        R.string.settings, new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View view) {
+//                                // Build intent that displays the App settings screen.
+//                                Intent intent = new Intent();
+//                                intent.setAction(
+//                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+//                                Uri uri = Uri.fromParts("package",
+//                                        BuildConfig.APPLICATION_ID, null);
+//                                intent.setData(uri);
+//                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                                startActivity(intent);
+//                            }
+//                        });
+//            }
+//        }
+//    }
 
 
 }
