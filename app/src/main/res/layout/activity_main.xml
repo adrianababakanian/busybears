@@ -113,12 +113,6 @@
         android:layout_height="match_parent"
         android:src="@drawable/layover_rectangle" />
 
-    <ImageView
-        android:id="@+id/marker"
-        android:layout_width="50px"
-        android:layout_height="50px"
-        android:src="@drawable/custom_marker"/>
-
     <!-- include the filters bottom sheet  -->
     <include layout="@layout/bottom_sheet" />
 
