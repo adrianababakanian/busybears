@@ -10,6 +10,12 @@
     >
 
 
+    <ViewFlipper
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/viewFlipper1"
+        >
+
 
     <include
         android:id="@+id/where_to_element"
@@ -33,9 +39,11 @@
 
         />
 
+    </ViewFlipper>
+
 
     <include
-        layout="@layout/bottom_sheet_entry_time"
+        layout="@layout/time_spinnner_bottom_sheet"
         android:layout_weight="1" />
 
 </android.support.design.widget.CoordinatorLayout>
