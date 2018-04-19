@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView closeTopInputElement;
     ImageView addTopInputElement;
     CoordinatorLayout rootLayout;
-    ViewFlipper viewFlipper;
+    ViewFlipper whereToInputViewFlipper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +54,9 @@ public class MainActivity extends AppCompatActivity {
         closeTopInputElement = (ImageView)findViewById(R.id.close_top_input_elem);
         addTopInputElement = (ImageView)findViewById(R.id.add_top_input_elem);
         rootLayout = (CoordinatorLayout)findViewById(R.id.mainRootView);
-        viewFlipper = (ViewFlipper)findViewById(R.id.viewFlipper1);
-        viewFlipper.setInAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in));
-        viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out));
+        whereToInputViewFlipper = (ViewFlipper)findViewById(R.id.viewFlipper1);
+        whereToInputViewFlipper.setInAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in));
+        whereToInputViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out));
 
 //        whereToRectangle.setAnimation();
 //        Animation fadeIn = new AlphaAnimation(0, 1);
@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
         final Animation fadeIn = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in);
         final Animation fadeOut = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out);
 //        whereToRectangle.setAnimation(animation);
-
 
         sheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -111,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (sheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
                     sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // but only starts anim when fully expanded
-                    viewFlipper.showNext();
+                    whereToInputViewFlipper.showNext();
 
 //                    int topInputElemHeight = topInputElement.getHeight();
 //                    int rootHeight = findViewById(R.id.mainRootView).getHeight();
@@ -130,11 +129,10 @@ public class MainActivity extends AppCompatActivity {
         closeTopInputElement.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                viewFlipper.showPrevious();
                 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0); // force close softkeyboard, else pushes layout up
-
+                sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                whereToInputViewFlipper.showPrevious();
             }
         });
 
