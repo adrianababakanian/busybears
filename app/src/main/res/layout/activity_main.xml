@@ -4,24 +4,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="cs160.dinestination.MainActivity">
+    tools:context="cs160.dinestination.MainActivity"
+    android:id="@+id/mainRootView">
 
 
 
     <include
         android:id="@+id/where_to_element"
-        android:layout_marginTop="100dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="100dp"
         layout="@layout/where_to_preview_element" />
 
 
     <include
         android:id="@+id/top_input_element"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="000dp"
         layout="@layout/main_top_input_element"
+        android:visibility="invisible"
         />
-
 
 
     <include

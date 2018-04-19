@@ -1,28 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-
-    android:visibility="visible"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
     >
 
+    <ImageView
+        android:id="@+id/close_top_input_elem"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_close_24dp" />
+
+    <ImageView
+        android:id="@+id/add_top_input_elem"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="120dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/destination_top_input_elem"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_add_24dp" />
+
+
     <EditText
-        android:id="@+id/input_curr_location"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:id="@+id/curr_location_top_input_elem"
+        android:layout_width="310dp"
+        android:layout_height="47dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
         android:background="@color/lighterGray"
         android:hint="Current location"
-        android:padding="5dp" />
+        android:inputType="text"
+        android:padding="5dp"
+        app:layout_constraintBottom_toTopOf="@+id/destination_top_input_elem"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <EditText
-        android:id="@+id/input_destination"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/input_curr_location"
+        android:id="@+id/destination_top_input_elem"
+        android:layout_width="310dp"
+        android:layout_height="47dp"
+        android:layout_below="@id/curr_location_top_input_elem"
+        android:layout_marginTop="110dp"
         android:background="@color/lightGray"
         android:hint="Where to?"
-        android:padding="5dp" />
+        android:inputType="text"
+        android:padding="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/add_filters_top_input_elem"
+        android:layout_width="107dp"
+        android:layout_height="47dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/colorPrimary"
+        android:text="Add filters"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/destination_top_input_elem"
+        app:layout_constraintTop_toBottomOf="@+id/destination_top_input_elem"
+        app:layout_constraintVertical_bias="0.0" />
 
 
 </android.support.constraint.ConstraintLayout>
