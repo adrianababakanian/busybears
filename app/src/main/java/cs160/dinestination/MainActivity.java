@@ -1,5 +1,6 @@
 package cs160.dinestination;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
@@ -14,7 +15,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
@@ -173,6 +176,20 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         addFiltersButton = (Button)findViewById(R.id.add_filters_top_input_elem);
         addMoreFiltersButton = (ImageButton)findViewById(R.id.filters_row_addmore_top_input);
 
+        whereToInputViewFlipper.setZ(999);
+        layoutBottomSheet.setZ(999);
+
+//        whereToEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View view, boolean b) {
+//                if (!b) {
+////                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+////                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//                    hideSoftKeyboard(MainActivity.this);
+//                }
+//            }
+//        });
+
         final Animation fadeIn = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in);
         final Animation fadeOut = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out);
 
@@ -284,6 +301,40 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         locationEngine.activate();
         addLocationEngineListener();
 
+        setupUI(findViewById(R.id.mainRootView));
+
+    }
+
+    public void setupUI(View view) {
+        // Set up touch listener for non-text box views to hide keyboard.
+        if (!(view instanceof EditText)) {
+            view.setOnTouchListener(new View.OnTouchListener() {
+                public boolean onTouch(View v, MotionEvent event) {
+                    hideSoftKeyboard(MainActivity.this);
+                    return false;
+                }
+            });
+        }
+        //If a layout container, iterate over children and seed recursion.
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                View innerView = ((ViewGroup) view).getChildAt(i);
+                setupUI(innerView);
+            }
+        }
+    }
+
+
+    /**
+     * Hide the soft keyboard
+     * @param activity
+     */
+    public static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) activity.getSystemService(
+                        Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(
+                activity.getCurrentFocus().getWindowToken(), 0);
     }
 
 
