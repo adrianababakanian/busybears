@@ -68,16 +68,8 @@ public class MainActivity extends AppCompatActivity {
         addFiltersButton = (Button)findViewById(R.id.add_filters_top_input_elem);
         addMoreFiltersButton = (ImageButton)findViewById(R.id.filters_row_addmore_top_input);
 
-//        whereToRectangle.setAnimation();
-//        Animation fadeIn = new AlphaAnimation(0, 1);
-//        fadeIn.setInterpolator(new DecelerateInterpolator());
-//        fadeIn.setDuration(1000);
-//        AnimationSet inputFadeInSet = new AnimationSet(true);
-//        AnimationSet inputFadeOutSet = new AnimationSet(true);
-//        animation.addAnimation(fadeIn);
         final Animation fadeIn = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in);
         final Animation fadeOut = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out);
-//        whereToRectangle.setAnimation(animation);
 
         sheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -85,21 +77,9 @@ public class MainActivity extends AppCompatActivity {
                 switch (newState) {
                     case BottomSheetBehavior.STATE_HIDDEN:
                         break;
-                    case BottomSheetBehavior.STATE_EXPANDED: {
-//                        topInputElement.startAnimation(fadeIn);
-//                        whereToRectangle.startAnimation(fadeOut);
-//                        topInputElement.setVisibility(View.VISIBLE);
-//                        whereToRectangle.setVisibility(View.INVISIBLE); // vs View.GONE?
-//                        viewFlipper.showNext(); // do in whereTo's onClick for smoothness.
-                    }
+                    case BottomSheetBehavior.STATE_EXPANDED: { }
                     break;
-                    case BottomSheetBehavior.STATE_COLLAPSED: {
-//                        topInputElement.startAnimation(fadeOut);
-//                        whereToRectangle.startAnimation(fadeIn);
-//                        topInputElement.setVisibility(View.INVISIBLE);
-//                        whereToRectangle.setVisibility(View.VISIBLE);
-//                        viewFlipper.showPrevious();
-                    }
+                    case BottomSheetBehavior.STATE_COLLAPSED: { }
                     break;
                     case BottomSheetBehavior.STATE_DRAGGING:
 //                        sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // prevents dragging
@@ -109,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
                         break;
                 }
             }
-
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
             }
@@ -121,17 +100,10 @@ public class MainActivity extends AppCompatActivity {
                 if (sheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
                     sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // but only starts anim when fully expanded
                     whereToInputViewFlipper.showNext();
-
-//                    int topInputElemHeight = topInputElement.getHeight();
-//                    int rootHeight = findViewById(R.id.mainRootView).getHeight();
-//                    // note: on first click, this topInputElem takes the hardcoded value, not what's set here.
-//                    layoutBottomSheet.getLayoutParams().height = rootHeight - topInputElemHeight;
-//                    layoutBottomSheet.requestLayout();
                 } else {
                     sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     int hour = timePicker.getCurrentHour();
                     int min = timePicker.getCurrentMinute();
-//                    testText.setText(hour + ":" + min);
                 }
             }
         });
@@ -155,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
 
         addMoreFiltersButton.setOnClickListener(new View.OnClickListener() {
             @Override
