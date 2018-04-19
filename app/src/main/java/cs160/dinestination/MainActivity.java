@@ -46,7 +46,9 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.services.android.telemetry.location.AndroidLocationEngine;
 import com.mapbox.services.android.telemetry.location.LocationEngine;
+import com.mapbox.services.android.telemetry.location.LocationEngineListener;
 import com.mapbox.services.android.telemetry.location.LocationEnginePriority;
+import com.mapbox.services.android.telemetry.location.LocationEngineProvider;
 import com.mapbox.services.android.telemetry.location.LostLocationEngine;
 import com.mapbox.services.commons.geojson.Feature;
 import com.mapbox.services.commons.geojson.FeatureCollection;
@@ -115,17 +117,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         mapView = (MapView) findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
-//        mapView.getMapAsync(new OnMapReadyCallback() {
-//            @Override
-//            public void onMapReady(MapboxMap mapboxMap) {
-//                // One way to add a marker view
-//                mapboxMap.addMarker(new MarkerOptions()
-//                        .position(new LatLng(41.885,-87.679))
-//                        .title("Chicago")
-//                        .snippet("Illinois")
-//                );
-//            }
-//        });
 
         getApplicationContext().setTheme(R.style.AppTheme);
 
@@ -158,50 +149,37 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         setOnClickForFilterTrigger(checkButton);
         setOnClickForFilterTrigger(backButton);
-        // setOnClickForTestMarker();
 
         layoverRectangle.setImageAlpha(0);
+        layoverRectangle.setZ(4);
 
-//        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-
-        locationEngine = new LostLocationEngine(MainActivity.this);
-        // locationEngine = new AndroidLocationEngine.getLocationEngine(MainActivity.this);
-        locationEngine.setPriority(LocationEnginePriority.HIGH_ACCURACY);
-        locationEngine.setInterval(5000);
+        locationEngine = new LocationEngineProvider(this).obtainBestLocationEngineAvailable();
         locationEngine.activate();
+        addLocationEngineListener();
 
+    }
+
+
+
+    private void requestLocationWithCheck() {
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(MainActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-
             // Permission is not granted
-            // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
             } else {
-
                 // No explanation needed; request the permission
                 ActivityCompat.requestPermissions(MainActivity.this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         REQUEST_PERMISSIONS_REQUEST_CODE);
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
             }
         } else {
             // Permission has already been granted
+            locationEngine.requestLocationUpdates();
             lastLocation = locationEngine.getLastLocation();
-//            Log.d("Latitude: ", Double.toString(lastLocation.getLatitude()));
-//            Log.d("Longitude: ", Double.toString(lastLocation.getLongitude()));
         }
-
     }
 
     // on click for button to trigger filters
@@ -220,20 +198,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
-
-    // on click for market to trigger preview popup
-//    private void setOnClickForTestMarker() {
-//        marker.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
-//                    previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-//                } else {
-//                    previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-//                }
-//            }
-//        });
-//    }
 
     // temporary set on clicks for back and check button triggers
     private void setOnClickForFilterTrigger(ImageView iv) {
@@ -394,7 +358,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private void addMarkers() {
         List<Feature> features = new ArrayList<>();
         /* Source: A data source specifies the geographic coordinate where the image marker gets placed. */
-        features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.258722,37.866528})));
+        features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.258875,37.865593})));
+        features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.269122,37.871856})));
+        features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.269532,37.879842})));
         FeatureCollection featureCollection = FeatureCollection.fromFeatures(features);
         GeoJsonSource source = new GeoJsonSource(MARKER_SOURCE, featureCollection);
         mapboxMap.addSource(source);
@@ -408,9 +374,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onStart() {
+    protected void onStart() {
         super.onStart();
+
         mapView.onStart();
+
+        if (locationEngine != null) {
+            requestLocationWithCheck();
+        }
     }
 
     @Override
@@ -426,8 +397,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onStop() {
+    protected void onStop() {
         super.onStop();
+
+        if (locationEngine != null) {
+            locationEngine.removeLocationUpdates();
+        }
+
         mapView.onStop();
     }
 
@@ -447,6 +423,27 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
+    }
+
+    /**
+     * Add the listener to the Mapbox location engine.
+     */
+    private void addLocationEngineListener() {
+        locationEngine.addLocationEngineListener(new LocationEngineListener() {
+            @Override
+            public void onConnected() {
+                requestLocationWithCheck();
+            }
+
+            @Override
+            public void onLocationChanged(Location location) {
+                Log.d("Latitude: ", Double.toString(location.getLatitude()));
+                Log.d("Longitude: ", Double.toString(location.getLongitude()));
+                Log.d("Latitude: ", Double.toString(lastLocation.getLatitude()));
+                Log.d("Longitude: ", Double.toString(lastLocation.getLongitude()));
+                Log.e("Location: ", lastLocation.toString());
+            }
+        });
     }
 
 //    /**
