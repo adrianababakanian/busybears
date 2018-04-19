@@ -7,6 +7,15 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- Checkbox styling theme. -->
+    <style name="CheckBoxTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@drawable/checked_text</item>
+        <item name="android:fontFamily">@font/lucia_grande</item>
+        <item name="android:textSize">14dp</item>
+        <item name="android:buttonTint">@color/colorPrimaryDark</item>
+    </style>
 
     <!-- Primary application font. -->
     <style name="MainFont" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -42,6 +51,5 @@
         <item name="android:textSize">12dp</item>
         <item name="android:textColor">@color/textColorLight</item>
     </style>s
-
 
 </resources>

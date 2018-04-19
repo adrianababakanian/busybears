@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/filters_bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="1300px"
+    android:background="#fff"
+    android:orientation="vertical"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="0dp"
+    app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+
+    <!-- navigation bar content -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/textlines"
+        android:paddingBottom="20px">
+        <!-- back button content -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0px"
+            android:paddingTop="40px"
+            android:orientation="horizontal"
+            android:gravity="left">
+            <ImageView
+                android:id="@+id/back_button"
+                android:layout_width="30px"
+                android:layout_height="match_parent"
+                android:src="@drawable/back"
+                android:layout_gravity="left"
+                android:layout_marginLeft="60px"/>
+        </LinearLayout>
+        <!-- preferences title content -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0px"
+            android:paddingTop="60px"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Preferences"
+                android:layout_gravity="center"
+                android:textColor="@color/textColorDark"
+                android:fontFamily="@font/bold_lucia_grande"
+                android:textSize="16dp"
+                android:layout_margin="8dp"
+                android:textStyle="bold" />
+        </LinearLayout>
+        <!-- check button content -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0px"
+            android:paddingTop="50px"
+            android:orientation="horizontal"
+            android:gravity="right">
+            <ImageView
+                android:id="@+id/check_button"
+                android:layout_width="50px"
+                android:layout_height="match_parent"
+                android:src="@drawable/check"
+                android:layout_gravity="right"
+                android:layout_marginRight="65px"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <!-- scroll view item wrapper -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <!-- scroll view content wrapper -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- cuisine section wrapper -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="40px"
+                android:paddingLeft="80px"
+                android:paddingRight="80px"
+                android:paddingBottom="80px"
+                android:background="@drawable/textlines">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cuisine_text"
+                    android:paddingBottom="20px"
+                    android:text="Cuisine"
+                    android:textColor="@color/textColorDark"
+                    android:fontFamily="@font/lucia_grande"
+                    android:textSize="16dp" />
+                <!-- left cuisine checks -->
+                <LinearLayout
+                    android:layout_width="400px"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="-20px"
+                    android:id="@+id/cuisine_left_checks"
+                    android:layout_below="@id/cuisine_text"
+                    android:layout_marginLeft="0px"
+                    android:orientation="vertical">
+                    <CheckBox
+                        style="@style/CheckBoxTheme"
+                        android:id="@+id/thai_check"
+                        android:text="Thai" />
+                    <CheckBox
+                        style="@style/CheckBoxTheme"
+                        android:id="@+id/italian_check"
+                        android:text="Italian" />
+                    <CheckBox
+                        style="@style/CheckBoxTheme"
+                        android:id="@+id/chinese_check"
+                        android:text="Chinese" />
+                    <CheckBox
+                        style="@style/CheckBoxTheme"
+                        android:id="@+id/mexican_check"
+                        android:text="Mexican" />
+                </LinearLayout>
+                <!-- right cuisine checks -->
+                <LinearLayout
+                    android:layout_width="400px"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cuisine_right_checks"
+                    android:layout_below="@id/cuisine_text"
+                    android:layout_marginLeft="500px"
+                    android:orientation="vertical">
+                    <CheckBox
+                        style="@style/CheckBoxTheme"
+                        android:id="@+id/indian_check"
+                        android:text="Indian" />
+                    <CheckBox
+                        style="@style/CheckBoxTheme"
+                        android:id="@+id/american_check"
+                        android:text="American" />
+                    <CheckBox
+                        style="@style/CheckBoxTheme"
+                        android:id="@+id/japanese_check"
+                        android:text="Japanese" />
+                    <CheckBox
+                        style="@style/CheckBoxTheme"
+                        android:id="@+id/burmese_check"
+                        android:text="Burmese" />
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <!-- price slider wrapper -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/textlines">
+                <!-- price seek bar -->
+                <SeekBar
+                    android:id="@+id/seekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="140px"
+                    android:layout_marginLeft="40px"
+                    android:layout_marginRight="40px"
+                    android:useLevel="true"/>
+                <!-- price slider header text -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="40px"
+                    android:paddingLeft="80px"
+                    android:paddingRight="80px"
+                    android:paddingBottom="160px">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="Price range"
+                        android:textColor="@color/textColorDark"
+                        android:fontFamily="@font/lucia_grande"
+                        android:layout_alignParentLeft="true"
+                        android:textSize="16dp" />
+                    <TextView
+                        android:id="@+id/price_range_from_seek_bar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="Update"
+                        android:textColor="@color/textColorDark"
+                        android:fontFamily="@font/lucia_grande"
+                        android:layout_alignParentRight="true"
+                        android:textSize="16dp" />
+                </RelativeLayout>
+            </FrameLayout>
+
+            <!-- attire section wrapper -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="40px"
+                android:paddingLeft="80px"
+                android:paddingRight="80px"
+                android:paddingBottom="80px"
+                android:background="@drawable/textlines">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/attire_text"
+                    android:paddingBottom="20px"
+                    android:text="Attire"
+                    android:textColor="@color/textColorDark"
+                    android:fontFamily="@font/lucia_grande"
+                    android:textSize="16dp" />
+                <!-- left attrie checks -->
+                <LinearLayout
+                    android:layout_width="400px"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="-20px"
+                    android:id="@+id/attire_left_checks"
+                    android:layout_below="@id/attire_text"
+                    android:layout_marginLeft="0px"
+                    android:orientation="vertical">
+                    <CheckBox
+                        style="@style/CheckBoxTheme"
+                        android:id="@+id/casual_check"
+                        android:text="Casual" />
+                    <CheckBox
+                        style="@style/CheckBoxTheme"
+                        android:id="@+id/relaxed_check"
+                        android:text="Relaxed" />
+                </LinearLayout>
+                <!-- right attrie checks -->
+                <LinearLayout
+                    android:layout_width="400px"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/attire_right_checks"
+                    android:layout_below="@id/attire_text"
+                    android:layout_marginLeft="500px"
+                    android:orientation="vertical">
+                    <CheckBox
+                        style="@style/CheckBoxTheme"
+                        android:id="@+id/dressy_check"
+                        android:text="Dressy" />
+                    <CheckBox
+                        style="@style/CheckBoxTheme"
+                        android:id="@+id/formal_check"
+                        android:text="Formal" />
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <!-- good for groups section wrapper -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="40px"
+                android:paddingLeft="80px"
+                android:paddingRight="80px"
+                android:paddingBottom="80px"
+                android:background="@drawable/textlines">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/good_for_groups_text"
+                    android:text="Good for groups"
+                    android:textColor="@color/textColorDark"
+                    android:fontFamily="@font/lucia_grande"
+                    android:textSize="16dp" />
+                <Switch
+                    android:id="@+id/switch1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginLeft="800px" />
+            </FrameLayout>
+
+            <!-- good for kids section wrapper -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="40px"
+                android:paddingLeft="80px"
+                android:paddingRight="80px"
+                android:paddingBottom="160px"
+                android:background="@drawable/textlines">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/good_for_kids_text"
+                    android:text="Good for kids"
+                    android:textColor="@color/textColorDark"
+                    android:fontFamily="@font/lucia_grande"
+                    android:textSize="16dp" />
+                <Switch
+                    android:id="@+id/switch2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginLeft="800px" />
+            </FrameLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+
+
+
+
+
+
+
+</LinearLayout>
