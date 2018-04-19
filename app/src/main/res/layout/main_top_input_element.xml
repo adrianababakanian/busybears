@@ -34,6 +34,49 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_add_24dp" />
 
+    <ImageView
+        android:id="@+id/blue_square_top_input_elem"
+        android:layout_width="9.5dp"
+        android:layout_height="9.5dp"
+        android:layout_marginEnd="19dp"
+        android:layout_marginTop="128dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toStartOf="@+id/destination_top_input_elem"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/blue_square" />
+
+    <ImageView
+        android:layout_width="29dp"
+        android:layout_height="29dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="48dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toStartOf="@+id/add_filters_top_input_elem"
+        app:layout_constraintTop_toBottomOf="@+id/blue_square_top_input_elem"
+        app:srcCompat="@mipmap/slider_50px" />
+
+    <ImageView
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_marginBottom="1dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="72dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintEnd_toStartOf="@+id/curr_location_top_input_elem"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_circle_grey_24dp" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="1.6dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="7dp"
+        android:layout_marginEnd="23dp"
+        android:background="@color/colorPrimaryDark"
+        app:layout_constraintBottom_toTopOf="@+id/blue_square_top_input_elem"
+        app:layout_constraintEnd_toStartOf="@+id/curr_location_top_input_elem" />
+
 
     <EditText
         android:id="@+id/curr_location_top_input_elem"
