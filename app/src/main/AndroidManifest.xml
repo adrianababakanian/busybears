@@ -8,8 +8,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        android:theme="@style/AppTheme"
+        >
+        <activity android:name=".MainActivity"
+            android:windowSoftInputMode="adjustNothing"
+            >
+            <!--softInputMode to prevent keyboard displacing other view on CloseButton click-->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

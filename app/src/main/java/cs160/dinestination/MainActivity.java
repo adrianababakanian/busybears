@@ -2,6 +2,7 @@ package cs160.dinestination;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -58,10 +60,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                     case BottomSheetBehavior.STATE_COLLAPSED: {
-//                        testButton.setText("Expand");
+                        topInputElement.setVisibility(View.INVISIBLE);
+                        whereToRectangle.setVisibility(View.VISIBLE);
                     }
                     break;
                     case BottomSheetBehavior.STATE_DRAGGING:
+//                        sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // prevents dragging
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
                         break;
@@ -81,16 +85,17 @@ public class MainActivity extends AppCompatActivity {
 
                     int topInputElemHeight = topInputElement.getHeight();
                     int rootHeight = findViewById(R.id.mainRootView).getHeight();
-                    // note: on first click, this just takes the hardcoded value.
+                    // note: on first click, this topInputElem takes the hardcoded value, not what's set here.
                     layoutBottomSheet.getLayoutParams().height = rootHeight - topInputElemHeight;
                     layoutBottomSheet.requestLayout();
-
+//                    android.R.anim.fade_in
                     topInputElement.setVisibility(View.VISIBLE);
                     whereToRectangle.setVisibility(View.INVISIBLE);
                 } else {
                     sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 //                    topInputElement.setVisibility(View.INVISIBLE);
 //                    whereToRectangle.setVisibility(View.VISIBLE);
+
 
                     int hour = timePicker.getCurrentHour();
                     int min = timePicker.getCurrentMinute();
@@ -104,7 +109,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 topInputElement.setVisibility(View.INVISIBLE);
                 sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                whereToRectangle.setVisibility(View.VISIBLE);
+                // force close soft keyboard, else pushes layout up.. hmm.. this works, but poor animation.
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//                whereToRectangle.requestFocus();
+
             }
         });
 
