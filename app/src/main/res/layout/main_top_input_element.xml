@@ -56,6 +56,7 @@
         app:srcCompat="@mipmap/slider_50px" />
 
     <ImageView
+        android:id="@+id/imageView"
         android:layout_width="8dp"
         android:layout_height="8dp"
         android:layout_marginBottom="1dp"
@@ -107,6 +108,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/applied_filters_top_input_elem"
+        android:layout_width="366dp"
+        android:layout_height="57dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="168dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="invisible"
+        app:layout_constraintVertical_bias="1.0">
+        <include
+            android:id="@+id/applied_filter_elems_top_input_elem"
+            layout="@layout/filtered_row_top_input_element"
+             />
+    </android.support.constraint.ConstraintLayout>
 
     <Button
         android:id="@+id/add_filters_top_input_elem"

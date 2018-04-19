@@ -22,6 +22,8 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -40,6 +42,10 @@ public class MainActivity extends AppCompatActivity {
     ImageView addTopInputElement;
     CoordinatorLayout rootLayout;
     ViewFlipper whereToInputViewFlipper;
+    ConstraintLayout appliedFiltersLayout;
+    Button addFiltersButton;
+    EditText whereToEditText;
+    ImageButton addMoreFiltersButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,12 +57,16 @@ public class MainActivity extends AppCompatActivity {
         timePicker = (TimePicker)findViewById(R.id.time_picker);
         whereToRectangle = (ImageView)findViewById(R.id.where_to_rectangle);
         topInputElement = (ConstraintLayout)findViewById(R.id.top_input_element);
+        whereToEditText = (EditText)findViewById(R.id.destination_top_input_elem);
         closeTopInputElement = (ImageView)findViewById(R.id.close_top_input_elem);
         addTopInputElement = (ImageView)findViewById(R.id.add_top_input_elem);
         rootLayout = (CoordinatorLayout)findViewById(R.id.mainRootView);
         whereToInputViewFlipper = (ViewFlipper)findViewById(R.id.viewFlipper1);
         whereToInputViewFlipper.setInAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in));
         whereToInputViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out));
+        appliedFiltersLayout = (ConstraintLayout)findViewById(R.id.applied_filters_top_input_elem);
+        addFiltersButton = (Button)findViewById(R.id.add_filters_top_input_elem);
+        addMoreFiltersButton = (ImageButton)findViewById(R.id.filters_row_addmore_top_input);
 
 //        whereToRectangle.setAnimation();
 //        Animation fadeIn = new AlphaAnimation(0, 1);
@@ -136,7 +146,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        addFiltersButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (appliedFiltersLayout.getVisibility() == View.INVISIBLE) {
+                    appliedFiltersLayout.setVisibility(View.VISIBLE);
+                    addFiltersButton.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
 
+
+        addMoreFiltersButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                appliedFiltersLayout.setVisibility(View.INVISIBLE);
+                addFiltersButton.setVisibility(View.VISIBLE);
+            }
+        });
 
     }
 
