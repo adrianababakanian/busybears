@@ -68,6 +68,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mapbox.api.directions.v5.models.DirectionsResponse;
+import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -78,6 +80,8 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.PropertyValue;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
+import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import com.mapbox.services.android.telemetry.location.AndroidLocationEngine;
 import com.mapbox.services.android.telemetry.location.LocationEngine;
 import com.mapbox.services.android.telemetry.location.LocationEngineListener;
@@ -91,6 +95,10 @@ import com.mapbox.services.commons.geojson.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Filter;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -156,6 +164,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private MapView mapView;
     private LocationEngine locationEngine;
     String mapboxAccessToken = "pk.eyJ1IjoiYWRyaWFuYWJhYmFrYW5pYW4iLCJhIjoiY2pnMTgxeDQ4MWdwOTJ4dGxnbzU4OTVyMCJ9.CetiZIb8bdIEolkPM4AHbg";
+
+    private com.mapbox.geojson.Point originPosition;
+    private com.mapbox.geojson.Point destinationPosition;
+    private DirectionsRoute currentRoute;
+    private static final String TAG = "DirectionsActivity";
+    private NavigationMapRoute navigationMapRoute;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -315,6 +330,51 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         //startActivity(goToHeatmapActivityIntent);
 
     } // END THE ON CREATE METHOD
+
+
+    private void getRoute(com.mapbox.geojson.Point origin, com.mapbox.geojson.Point destination) {
+        NavigationRoute.builder()
+                .accessToken(Mapbox.getAccessToken())
+                .origin(origin)
+                .destination(destination)
+                .build()
+                .getRoute(new Callback<DirectionsResponse>() {
+                    @Override
+                    public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+                        // You can get the generic HTTP info about the response
+                        Log.d(TAG, "Response code: " + response.code());
+                        if (response.body() == null) {
+                            Log.e(TAG, "No routes found, make sure you set the right user and access token.");
+                            return;
+
+                        } else if (response.body().routes().size() < 1) {
+                            Log.e(TAG, "No routes found");
+                            return;
+                        }
+
+                        currentRoute = response.body().routes().get(0);
+
+
+                        // Draw the route on the map
+                        if (navigationMapRoute != null) {
+                            navigationMapRoute.removeRoute();
+                        } else {
+                            //MapboxNavigation navigation = new MapboxNavigation(mContext, MapboxConstants.MAP_TOKEN);
+                            //navigationMapRoute = new NavigationMapRoute(navigation, mapView, mapboxMap);
+                            navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
+
+                        }
+
+                        Toast.makeText(getApplicationContext(), Double.toString(currentRoute.distance()), Toast.LENGTH_SHORT).show();
+                        navigationMapRoute.addRoute(currentRoute);
+                    }
+
+                    @Override
+                    public void onFailure(Call<DirectionsResponse> call, Throwable throwable) {
+                        Log.e(TAG, "Error: " + throwable.getMessage());
+                    }
+                });
+    }
 
 
     private void filtersRowGenerator() {
@@ -650,6 +710,25 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
         });
+
+        mapboxMap.addOnMapLongClickListener(new MapboxMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(@NonNull LatLng point) {
+                PointF screenPoint = mapboxMap.getProjection().toScreenLocation(point);
+                List<Feature> features = mapboxMap.queryRenderedFeatures(screenPoint, "my.layer.id");
+                if (!features.isEmpty()) {
+                    Feature selectedFeature = features.get(0);
+                    String title = selectedFeature.getStringProperty("title");
+                    Toast.makeText(getApplicationContext(), "You selected " + title, Toast.LENGTH_SHORT).show();
+                }
+                System.out.println(point);
+                destinationPosition = com.mapbox.geojson.Point.fromLngLat(point.getLongitude(), point.getLatitude());
+                originPosition = com.mapbox.geojson.Point.fromLngLat(-122.258875, 37.865593);
+
+                getRoute(originPosition, destinationPosition);
+            }
+        });
+
     }
 
     private void addMarkers() {
