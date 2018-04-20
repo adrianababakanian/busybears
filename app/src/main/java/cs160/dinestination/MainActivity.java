@@ -200,6 +200,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         addFiltersButton = findViewById(R.id.add_filters_top_input_elem);
         // addMoreFiltersButton = findViewById(R.id.filters_row_addmore_top_input);
         exitInputButton = findViewById(R.id.exit_input_button);
+        filtersDynamicRow = findViewById(R.id.filters_dynamic_row);
+
 
         whereToInputViewFlipper.setZ(999);
         timeSpinnerBottomSheet.setZ(999);
@@ -312,10 +314,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void filtersRowGenerator() {
         ArrayList<String> stringsForButtons = new ArrayList<>();
+
         int[] cuisine_ids = new int[] {R.id.thai_check, R.id.italian_check, R.id.chinese_check, R.id.mexican_check,
                 R.id.indian_check, R.id.american_check, R.id.japanese_check, R.id.burmese_check};
-//        priceRange;
-        int[] attire = new int[] {R.id.casual_check, R.id.relaxed_check, R.id.dressy_check, R.id.formal_check};
+        int[] attire_ids = new int[] {R.id.casual_check, R.id.relaxed_check, R.id.dressy_check, R.id.formal_check};
+
         mSwitch1.isChecked(); // groups
         mSwitch2.isChecked(); // kids
 
@@ -326,28 +329,49 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
         stringsForButtons.add(priceRange);
-        for (int i = 0; i < attire.length; i++) {
-            CheckBox cBox = findViewById(cuisine_ids[i]);
+        for (int i = 0; i < attire_ids.length; i++) {
+            CheckBox cBox = findViewById(attire_ids[i]);
             if (cBox.isChecked()) {
                 stringsForButtons.add(cBox.getText().toString());
             }
         }
+
         if (mSwitch1.isChecked()) {
-            stringsForButtons.add(mSwitch1.getText().toString());
+            stringsForButtons.add("Groups");
         }
         if (mSwitch2.isChecked()) {
-            stringsForButtons.add(mSwitch2.getText().toString());
+            stringsForButtons.add("Kids");
         }
 
-        filtersDynamicRow = findViewById(R.id.filters_dynamic_row);
+        if (stringsForButtons.size() == 0) {
+//            stringsForButtons.add();
+        }
+
+        filtersDynamicRow.removeAllViewsInLayout();
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(4,0,4,0);
+        lp.height = 105;
+
+        if (stringsForButtons.size() != 0) {
+            Button plusButton = new Button(this);
+            plusButton.setBackground(getResources().getDrawable(R.drawable.ic_add_box_24dp));
+            plusButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                }
+            });
+            filtersDynamicRow.addView(plusButton);
+            addFiltersButton.setVisibility(View.INVISIBLE);
+        } else {
+            addFiltersButton.setVisibility(View.VISIBLE); // NOT YET TESTED!!!! Not sure if it shows up again.
+        }
 
         for (String label : stringsForButtons) {
             Button buttonToAdd = new Button(this);
             buttonToAdd.setText(label);
             buttonToAdd.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
             buttonToAdd.setTextColor(getResources().getColor(R.color.white));
-            buttonToAdd.ma
             filtersDynamicRow.addView(buttonToAdd, lp);
         }
 
