@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.graphics.Color;
 import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -25,6 +26,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -87,6 +89,7 @@ import com.mapbox.services.commons.geojson.Feature;
 import com.mapbox.services.commons.geojson.FeatureCollection;
 import com.mapbox.services.commons.geojson.Point;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Filter;
@@ -121,7 +124,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     LinearLayout filtersBottomSheet;
     Button testButton;
     SeekBar mSeekBar;
-    Switch mSwitch;
+    Switch mSwitch1;
+    Switch mSwitch2;
     TextView priceRangeFromSeekBar;
     ImageView layoverRectangle;
     ImageView checkButton;
@@ -143,6 +147,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     EditText whereToEditText;
     ImageButton addMoreFiltersButton;
     Button exitInputButton;
+    LinearLayout filtersDynamicRow;
 
     // Mapbox items
     private static final String MARKER_SOURCE = "markers-source";
@@ -172,7 +177,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         filtersSheetBehavior = BottomSheetBehavior.from(filtersBottomSheet);
 
         mSeekBar = findViewById(R.id.seekBar);
-        mSwitch = findViewById(R.id.switch1);
+        mSwitch1 = findViewById(R.id.switch1);
+        mSwitch2 = findViewById(R.id.switch2);
         priceRangeFromSeekBar = findViewById(R.id.price_range_from_seek_bar);
         layoverRectangle = findViewById(R.id.layover_rectangle);
         checkButton = findViewById(R.id.check_button);
@@ -269,7 +275,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         mSeekBar.setZ(999);
         mSeekBar.setMax(100);
         mSeekBar.setProgress(30);
-        mSwitch.setZ(999);
+        mSwitch1.setZ(999);
 
         // set price range listener and update price range from seek bar
         setPriceRangeListener();
@@ -293,7 +299,60 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         goToHeatmapActivityIntent = new Intent(MainActivity.this, HeatmapActivity.class);
         //startActivity(goToHeatmapActivityIntent);
 
+
+
+
+
+
+
+
+
     } // END THE ON CREATE METHOD
+
+
+    private void filtersRowGenerator() {
+        ArrayList<String> stringsForButtons = new ArrayList<>();
+        int[] cuisine_ids = new int[] {R.id.thai_check, R.id.italian_check, R.id.chinese_check, R.id.mexican_check,
+                R.id.indian_check, R.id.american_check, R.id.japanese_check, R.id.burmese_check};
+//        priceRange;
+        int[] attire = new int[] {R.id.casual_check, R.id.relaxed_check, R.id.dressy_check, R.id.formal_check};
+        mSwitch1.isChecked(); // groups
+        mSwitch2.isChecked(); // kids
+
+        for (int i = 0; i < cuisine_ids.length; i++) {
+            CheckBox cBox = findViewById(cuisine_ids[i]);
+            if (cBox.isChecked()) {
+                stringsForButtons.add(cBox.getText().toString());
+            }
+        }
+        stringsForButtons.add(priceRange);
+        for (int i = 0; i < attire.length; i++) {
+            CheckBox cBox = findViewById(cuisine_ids[i]);
+            if (cBox.isChecked()) {
+                stringsForButtons.add(cBox.getText().toString());
+            }
+        }
+        if (mSwitch1.isChecked()) {
+            stringsForButtons.add(mSwitch1.getText().toString());
+        }
+        if (mSwitch2.isChecked()) {
+            stringsForButtons.add(mSwitch2.getText().toString());
+        }
+
+        filtersDynamicRow = findViewById(R.id.filters_dynamic_row);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        for (String label : stringsForButtons) {
+            Button buttonToAdd = new Button(this);
+            buttonToAdd.setText(label);
+            buttonToAdd.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            buttonToAdd.setTextColor(getResources().getColor(R.color.white));
+            buttonToAdd.ma
+            filtersDynamicRow.addView(buttonToAdd, lp);
+        }
+
+    }
+
 
     private void setOnClickForExitInputButton() {
         exitInputButton.setOnClickListener(new View.OnClickListener() {
@@ -351,7 +410,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 } else {
                     filtersSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     layoverRectangle.setImageAlpha(0);
-
+                    filtersRowGenerator();
                 }
             }
         });
