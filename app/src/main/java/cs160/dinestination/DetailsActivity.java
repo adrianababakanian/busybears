@@ -35,9 +35,9 @@ public class DetailsActivity extends AppCompatActivity {
         back = findViewById(R.id.back);
 
         Bundle bundle = getIntent().getExtras();
-        name = bundle.getString("");
-        addr = bundle.getString("");
-        estimate = bundle.getString("");
+//        name = bundle.getString("");
+//        addr = bundle.getString("");
+//        estimate = bundle.getString("");
 //        wait = bundle.getString("");
 
         /* Get data from prev page:
