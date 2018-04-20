@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
-import android.graphics.Color;
 import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -89,7 +88,6 @@ import com.mapbox.services.commons.geojson.Feature;
 import com.mapbox.services.commons.geojson.FeatureCollection;
 import com.mapbox.services.commons.geojson.Point;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Filter;
@@ -147,7 +145,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     EditText whereToEditText;
     ImageButton addMoreFiltersButton;
     Button exitInputButton;
-    LinearLayout filtersDynamicRow;
+    LinearLayout appliedFiltersWrapper;
+    ConstraintLayout mainTopInputElement;
 
     // Mapbox items
     private static final String MARKER_SOURCE = "markers-source";
@@ -200,12 +199,16 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         addFiltersButton = findViewById(R.id.add_filters_top_input_elem);
         // addMoreFiltersButton = findViewById(R.id.filters_row_addmore_top_input);
         exitInputButton = findViewById(R.id.exit_input_button);
-        filtersDynamicRow = findViewById(R.id.filters_dynamic_row);
+        appliedFiltersWrapper = findViewById(R.id.applied_filters_wrapper);
+        mainTopInputElement = findViewById(R.id.main_top_input_element);
+        addFiltersButton = findViewById(R.id.add_filters_top_input_elem);
+        exitInputButton = findViewById(R.id.exit_input_button);
 
 
         whereToInputViewFlipper.setZ(999);
         timeSpinnerBottomSheet.setZ(999);
         filtersBottomSheet.setZ(1000);
+        timeSpinnerBottomSheet.setZ(2);
 
         timeSpinnerSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -297,17 +300,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         setupUI(findViewById(R.id.mainRootView));
 
+        //appliedFiltersWrapper.addView(backButton);
+
 
         goToHeatmapActivityIntent = new Intent(MainActivity.this, HeatmapActivity.class);
         //startActivity(goToHeatmapActivityIntent);
-
-
-
-
-
-
-
-
 
     } // END THE ON CREATE METHOD
 
@@ -347,7 +344,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 //            stringsForButtons.add();
         }
 
-        filtersDynamicRow.removeAllViewsInLayout();
+        appliedFiltersWrapper.removeAllViewsInLayout();
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         lp.setMargins(4,0,4,0);
         lp.height = 105;
@@ -361,7 +358,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 }
             });
-            filtersDynamicRow.addView(plusButton);
+            appliedFiltersWrapper.addView(plusButton);
             addFiltersButton.setVisibility(View.INVISIBLE);
         } else {
             addFiltersButton.setVisibility(View.VISIBLE); // NOT YET TESTED!!!! Not sure if it shows up again.
@@ -372,10 +369,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             buttonToAdd.setText(label);
             buttonToAdd.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
             buttonToAdd.setTextColor(getResources().getColor(R.color.white));
-            filtersDynamicRow.addView(buttonToAdd, lp);
+            appliedFiltersWrapper.addView(buttonToAdd, lp);
         }
 
     }
+
+
 
 
     private void setOnClickForExitInputButton() {
@@ -651,6 +650,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.258875,37.865593})));
         features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.269122,37.871856})));
         features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.269532,37.879842})));
+
+        // START: CHANNING BOWDITCH
+        features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.257290,37.867460})));
+        // END: NORTH BERKELEY
+        features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.283399,37.873960})));
         FeatureCollection featureCollection = FeatureCollection.fromFeatures(features);
         GeoJsonSource source = new GeoJsonSource(MARKER_SOURCE, featureCollection);
         mapboxMap.addSource(source);

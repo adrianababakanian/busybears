@@ -2,22 +2,22 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_top_input_element"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white">
+    android:background="@drawable/bottom_gradient">
     <!--android:animateLayoutChanges="true"-->
-
 
     <ImageView
         android:id="@+id/close_top_input_elem"
         android:layout_width="26dp"
         android:layout_height="26dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="14dp"
         android:layout_marginTop="16dp"
         android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_close_24dp" />
+        android:src="@drawable/ic_close_24dp" />
 
     <ImageView
         android:id="@+id/add_top_input_elem"
@@ -44,14 +44,14 @@
         android:src="@drawable/blue_square" />
 
     <ImageView
-        android:layout_width="29dp"
-        android:layout_height="29dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="50dp"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
         android:scaleType="centerCrop"
-        app:layout_constraintEnd_toStartOf="@+id/add_filters_top_input_elem"
         app:layout_constraintTop_toBottomOf="@+id/blue_square_top_input_elem"
-        app:srcCompat="@mipmap/slider_50px" />
+        app:layout_constraintRight_toLeftOf="@+id/applied_filters_top_input_elem"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="34.5dp"
+        android:src="@mipmap/slider_50px" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -87,8 +87,8 @@
         android:hint="Current location"
         android:inputType="text"
         android:paddingLeft="20dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:textColor="@color/textColorLight"
         android:fontFamily="@font/lucia_grande"
         android:textSize="16dp"
@@ -108,8 +108,8 @@
         android:hint="Where to?"
         android:inputType="text"
         android:paddingLeft="20dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:textColor="@color/textColorDark"
         android:fontFamily="@font/lucia_grande"
         android:textSize="16dp"
@@ -123,17 +123,18 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="50dp"
-        android:layout_marginTop="158dp"
+        android:layout_marginTop="144dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:visibility="visible"
+        android:paddingBottom="12dp"
         app:layout_constraintVertical_bias="1.0">
         <include
             android:id="@+id/applied_filter_elems_top_input_elem"
             layout="@layout/filtered_row_top_input_element"
-             />
+            />
     </android.support.constraint.ConstraintLayout>
 
 

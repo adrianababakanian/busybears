@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@color/white"
     android:orientation="horizontal">
 
     <HorizontalScrollView
@@ -13,9 +12,9 @@
         android:layout_marginBottom="10dp"
         android:layout_marginTop="15dp">
         <LinearLayout
+            android:id="@+id/applied_filters_wrapper"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:id="@+id/filters_dynamic_row"
             android:orientation="horizontal">
             <Button
                 android:id="@+id/add_filters_top_input_elem"
@@ -31,41 +30,8 @@
                 android:paddingBottom="0dp"
                 android:fontFamily="@font/lucia_grande"
                 android:textSize="16dp"/>
-            <!--<Button-->
-                <!--android:id="@+id/add_filters_top_input_elem_2"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="40dp"-->
-                <!--android:layout_marginLeft="10dp"-->
-                <!--android:background="@color/colorPrimary"-->
-                <!--android:text="Add filters"-->
-                <!--android:textAllCaps="false"-->
-                <!--android:textColor="@color/white"-->
-                <!--android:paddingLeft="20dp"-->
-                <!--android:paddingRight="20dp"-->
-                <!--android:paddingTop="0dp"-->
-                <!--android:paddingBottom="0dp"-->
-                <!--android:fontFamily="@font/lucia_grande"-->
-                <!--android:textSize="16dp"/>-->
-            <!--<Button-->
-                <!--android:id="@+id/add_filters_top_input_elem_3"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="40dp"-->
-                <!--android:layout_marginLeft="10dp"-->
-                <!--android:background="@color/colorPrimary"-->
-                <!--android:text="Add filters"-->
-                <!--android:textAllCaps="false"-->
-                <!--android:textColor="@color/white"-->
-                <!--android:paddingLeft="20dp"-->
-                <!--android:paddingRight="20dp"-->
-                <!--android:paddingTop="0dp"-->
-                <!--android:paddingBottom="0dp"-->
-                <!--android:fontFamily="@font/lucia_grande"-->
-                <!--android:textSize="16dp"/>-->
         </LinearLayout>
     </HorizontalScrollView>
-
-
-
 
 
 
