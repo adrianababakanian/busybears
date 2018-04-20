@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cs160.dinestination">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -16,13 +18,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <meta-data android:name="com.google.android.gms.version"
+
+        <meta-data
+            android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.AIzaSyDUTQs81slEyP2Q8ZHx3_D1DjxNgAeGqyY"
-            android:value="AIzaSyDUTQs81slEyP2Q8ZHx3_D1DjxNgAeGqyY"/>
-    </application>
+            android:value="AIzaSyDUTQs81slEyP2Q8ZHx3_D1DjxNgAeGqyY" />
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    </application>
 
 </manifest>

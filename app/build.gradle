@@ -29,12 +29,19 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-location:11.0.4'
 
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:5.5.1'
+
 
     implementation "com.mapzen.android:lost:3.0.2"
+
+
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-navigation:0.12.0'
+    implementation ('com.mapbox.mapboxsdk:mapbox-android-navigation-ui:0.12.0') {
+        transitive = true
+    }
 
     implementation 'com.android.support:design:26.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+
 }

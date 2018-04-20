@@ -34,8 +34,12 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.constants.Style;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -44,36 +48,84 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.PropertyValue;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
-import com.mapbox.services.android.telemetry.location.AndroidLocationEngine;
-import com.mapbox.services.android.telemetry.location.LocationEngine;
-import com.mapbox.services.android.telemetry.location.LocationEnginePriority;
-import com.mapbox.services.android.telemetry.location.LostLocationEngine;
+import com.mapbox.mapboxsdk.style.sources.Source;
+import com.mapbox.services.android.location.LostLocationEngine;
+
+
+import com.mapbox.services.android.location.LostLocationEngine;
+import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigation;
 import com.mapbox.services.commons.geojson.Feature;
+
 import com.mapbox.services.commons.geojson.FeatureCollection;
 import com.mapbox.services.commons.geojson.Point;
+
+import com.mapbox.services.commons.models.Position;
+import com.mapbox.mapboxsdk.annotations.Marker;
+
+//import com.mapbox.services.android.
+
+import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
+import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
+
+
+
+import com.mapbox.mapboxsdk.geometry.LatLng;
+
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Filter;
+
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Toast;
+
+
+import com.mapbox.api.directions.v5.models.DirectionsResponse;
+import com.mapbox.api.directions.v5.models.DirectionsRoute;
+
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.annotations.PolylineOptions;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+
+import com.mapbox.mapboxsdk.constants.Style;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+
+
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
 
     /**
      * Code used in requesting runtime permissions.
      */
-    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
+    //private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
     /**
      * Constant used in the location settings dialog.
      */
-    private static final int REQUEST_CHECK_SETTINGS = 0x1;
+    //private static final int REQUEST_CHECK_SETTINGS = 0x1;
 
     /**
      * The desired interval for location updates. Inexact. Updates may be more or less frequent.
      */
-    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+    //private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
 
-   String MY_PERMISSIONS_ACCESS_FINE_LOCATION = "Please enable locationing!";
+    //String MY_PERMISSIONS_ACCESS_FINE_LOCATION = "Please enable locationing!";
 
     // UI elements
     BottomSheetBehavior sheetBehavior;
@@ -99,7 +151,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private MapView mapView;
 
-    private LocationEngine locationEngine;
+    //private LocationEngine locationEngine;
+
+    //route-related
+    private Marker destinationMarker;
+    private LatLng originCoord;
+    private LatLng destinationCoord;
+
+    private com.mapbox.geojson.Point originPosition;
+    private com.mapbox.geojson.Point destinationPosition;
+    private DirectionsRoute currentRoute;
+    private static final String TAG = "DirectionsActivity";
+    private NavigationMapRoute navigationMapRoute;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,19 +176,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_main);
 
         mapView = (MapView) findViewById(R.id.mapView);
+        //mapView.setAccessToken(MAPBOX_ACCESS_TOKEN);
+        mapView.setStyleUrl(Style.MAPBOX_STREETS);
+        //mapView.set(14);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
-//        mapView.getMapAsync(new OnMapReadyCallback() {
-//            @Override
-//            public void onMapReady(MapboxMap mapboxMap) {
-//                // One way to add a marker view
-//                mapboxMap.addMarker(new MarkerOptions()
-//                        .position(new LatLng(41.885,-87.679))
-//                        .title("Chicago")
-//                        .snippet("Illinois")
-//                );
-//            }
-//        });
+
 
         getApplicationContext().setTheme(R.style.AppTheme);
 
@@ -158,51 +214,83 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         setOnClickForFilterTrigger(checkButton);
         setOnClickForFilterTrigger(backButton);
-        // setOnClickForTestMarker();
 
         layoverRectangle.setImageAlpha(0);
+        layoverRectangle.setZ(4);
 
-//        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
-        locationEngine = new LostLocationEngine(MainActivity.this);
-        // locationEngine = new AndroidLocationEngine.getLocationEngine(MainActivity.this);
-        locationEngine.setPriority(LocationEnginePriority.HIGH_ACCURACY);
-        locationEngine.setInterval(5000);
-        locationEngine.activate();
+    }
 
+
+//set the user's viewpoint as specified in the cameraPosition object
+
+
+
+
+    private void getRoute(com.mapbox.geojson.Point origin, com.mapbox.geojson.Point destination) {
+        NavigationRoute.builder()
+                .accessToken(Mapbox.getAccessToken())
+                .origin(origin)
+                .destination(destination)
+                .build()
+                .getRoute(new Callback<DirectionsResponse>() {
+                    @Override
+                    public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+                        // You can get the generic HTTP info about the response
+                        Log.d(TAG, "Response code: " + response.code());
+                        if (response.body() == null) {
+                            Log.e(TAG, "No routes found, make sure you set the right user and access token.");
+                            return;
+
+                        } else if (response.body().routes().size() < 1) {
+                            Log.e(TAG, "No routes found");
+                            return;
+                        }
+
+                        currentRoute = response.body().routes().get(0);
+
+
+                        // Draw the route on the map
+                        if (navigationMapRoute != null) {
+                            navigationMapRoute.removeRoute();
+                        } else {
+                            //MapboxNavigation navigation = new MapboxNavigation(mContext, MapboxConstants.MAP_TOKEN);
+                            //navigationMapRoute = new NavigationMapRoute(navigation, mapView, mapboxMap);
+                            navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
+
+                        }
+
+                        Toast.makeText(getApplicationContext(), Double.toString(currentRoute.distance()), Toast.LENGTH_SHORT).show();
+                        navigationMapRoute.addRoute(currentRoute);
+                    }
+
+                    @Override
+                    public void onFailure(Call<DirectionsResponse> call, Throwable throwable) {
+                        Log.e(TAG, "Error: " + throwable.getMessage());
+                    }
+                });
+    }
+    /*
+    private void requestLocationWithCheck() {
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(MainActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-
             // Permission is not granted
-            // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
             } else {
-
                 // No explanation needed; request the permission
                 ActivityCompat.requestPermissions(MainActivity.this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         REQUEST_PERMISSIONS_REQUEST_CODE);
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
             }
         } else {
             // Permission has already been granted
+            //locationEngine.requestLocationUpdates();
             lastLocation = locationEngine.getLastLocation();
-//            Log.d("Latitude: ", Double.toString(lastLocation.getLatitude()));
-//            Log.d("Longitude: ", Double.toString(lastLocation.getLongitude()));
         }
-
-    }
+    }*/
 
     // on click for button to trigger filters
     private void setOnClickForTestButton() {
@@ -220,20 +308,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
-
-    // on click for market to trigger preview popup
-//    private void setOnClickForTestMarker() {
-//        marker.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
-//                    previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-//                } else {
-//                    previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-//                }
-//            }
-//        });
-//    }
 
     // temporary set on clicks for back and check button triggers
     private void setOnClickForFilterTrigger(ImageView iv) {
@@ -358,6 +432,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     // mapbox overrides
+
     @Override
     public void onMapReady(final MapboxMap mapboxMap) {
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -366,11 +441,16 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         Bitmap icon = BitmapFactory.decodeResource(
                 MainActivity.this.getResources(), R.drawable.pinpoint, options);
         mapboxMap.addImage(MARKER_IMAGE, icon);
-        addMarkers();
 
-        mapboxMap.setOnMapClickListener(new MapboxMap.OnMapClickListener() {
+
+
+
+
+
+
+        mapboxMap.addOnMapLongClickListener(new MapboxMap.OnMapLongClickListener() {
             @Override
-            public void onMapClick(@NonNull LatLng point) {
+            public void onMapLongClick(@NonNull LatLng point) {
                 PointF screenPoint = mapboxMap.getProjection().toScreenLocation(point);
                 List<Feature> features = mapboxMap.queryRenderedFeatures(screenPoint, "my.layer.id");
                 if (!features.isEmpty()) {
@@ -379,39 +459,24 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     Toast.makeText(getApplicationContext(), "You selected " + title, Toast.LENGTH_SHORT).show();
                 }
                 System.out.println(point);
-                if ((point.getLatitude() <= 37.866528+0.0015 && point.getLatitude() >= 37.866528-0.0015) && (point.getLongitude() <= -122.258722+0.0015 && point.getLongitude() >= -122.258722-0.0015)) {
-                    if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
-                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                    } else {
-                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    }
-                }
+                destinationPosition = com.mapbox.geojson.Point.fromLngLat(point.getLongitude(), point.getLatitude());
+                originPosition = com.mapbox.geojson.Point.fromLngLat(-122.258875, 37.865593);
 
+                getRoute(originPosition, destinationPosition);
             }
         });
+
     }
 
-    private void addMarkers() {
-        List<Feature> features = new ArrayList<>();
-        /* Source: A data source specifies the geographic coordinate where the image marker gets placed. */
-        features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.258722,37.866528})));
-        FeatureCollection featureCollection = FeatureCollection.fromFeatures(features);
-        GeoJsonSource source = new GeoJsonSource(MARKER_SOURCE, featureCollection);
-        mapboxMap.addSource(source);
-	    /* Style layer: A style layer ties together the source and image and specifies how they are displayed on the map. */
-        SymbolLayer markerStyleLayer = new SymbolLayer(MARKER_STYLE_LAYER, MARKER_SOURCE)
-                .withProperties(
-                        PropertyFactory.iconAllowOverlap(true),
-                        PropertyFactory.iconImage(MARKER_IMAGE)
-                );
-        mapboxMap.addLayer(markerStyleLayer);
-    }
 
     @Override
-    public void onStart() {
+    protected void onStart() {
         super.onStart();
+
         mapView.onStart();
+
     }
+
 
     @Override
     public void onResume() {
@@ -426,8 +491,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onStop() {
+    protected void onStop() {
         super.onStop();
+
+
         mapView.onStop();
     }
 
@@ -449,110 +516,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         mapView.onSaveInstanceState(outState);
     }
 
-//    /**
-//     * Shows a {@link Snackbar}.
-//     *
-//     * @param mainTextStringId The id for the string resource for the Snackbar text.
-//     * @param actionStringId   The text of the action item.
-//     * @param listener         The listener associated with the Snackbar action.
-//     */
-//    private void showSnackbar(final int mainTextStringId, final int actionStringId,
-//                              View.OnClickListener listener) {
-//        Snackbar.make(
-//                findViewById(android.R.id.content),
-//                getString(mainTextStringId),
-//                Snackbar.LENGTH_INDEFINITE)
-//                .setAction(getString(actionStringId), listener).show();
-//    }
-//
-//    /**
-//     * Return the current state of the permissions needed.
-//     */
-//    private boolean checkPermissions() {
-//        int permissionState = ActivityCompat.checkSelfPermission(this,
-//                Manifest.permission.ACCESS_FINE_LOCATION);
-//        return permissionState == PackageManager.PERMISSION_GRANTED;
-//    }
-//
-//    private void requestPermissions() {
-//        boolean shouldProvideRationale =
-//                ActivityCompat.shouldShowRequestPermissionRationale(this,
-//                        Manifest.permission.ACCESS_FINE_LOCATION);
-//
-//        // Provide an additional rationale to the user. This would happen if the user denied the
-//        // request previously, but didn't check the "Don't ask again" checkbox.
-//        if (shouldProvideRationale) {
-//            Log.i(TAG, "Displaying permission rationale to provide additional context.");
-//            showSnackbar(R.string.permission_rationale,
-//                    android.R.string.ok, new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View view) {
-//                            // Request permission
-//                            ActivityCompat.requestPermissions(MainActivity.this,
-//                                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-//                                    REQUEST_PERMISSIONS_REQUEST_CODE);
-//                        }
-//                    });
-//        } else {
-//            Log.i(TAG, "Requesting permission");
-//            // Request permission. It's possible this can be auto answered if device policy
-//            // sets the permission in a given state or the user denied the permission
-//            // previously and checked "Never ask again".
-//            ActivityCompat.requestPermissions(MainActivity.this,
-//                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-//                    REQUEST_PERMISSIONS_REQUEST_CODE);
-//        }
-//    }
-//
-//    /**
-//     * Callback received when a permissions request has been completed.
-//     */
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-//                                           @NonNull int[] grantResults) {
-//        Log.i(TAG, "onRequestPermissionResult");
-//        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
-//            if (grantResults.length <= 0) {
-//                // If user interaction was interrupted, the permission request is cancelled and you
-//                // receive empty arrays.
-//                Log.i(TAG, "User interaction was cancelled.");
-//            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                if (mRequestingLocationUpdates) {
-//                    Log.i(TAG, "Permission granted, updates requested, starting location updates");
-//                    Location lastLocation = locationEngine.getLastLocation();
-//                    System.out.println(lastLocation.getLatitude());
-//                    System.out.println(lastLocation.getLatitude());
-//                }
-//            } else {
-//                // Permission denied.
-//
-//                // Notify the user via a SnackBar that they have rejected a core permission for the
-//                // app, which makes the Activity useless. In a real app, core permissions would
-//                // typically be best requested during a welcome-screen flow.
-//
-//                // Additionally, it is important to remember that a permission might have been
-//                // rejected without asking the user for permission (device policy or "Never ask
-//                // again" prompts). Therefore, a user interface affordance is typically implemented
-//                // when permissions are denied. Otherwise, your app could appear unresponsive to
-//                // touches or interactions which have required permissions.
-//                showSnackbar(R.string.permission_denied_explanation,
-//                        R.string.settings, new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View view) {
-//                                // Build intent that displays the App settings screen.
-//                                Intent intent = new Intent();
-//                                intent.setAction(
-//                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-//                                Uri uri = Uri.fromParts("package",
-//                                        BuildConfig.APPLICATION_ID, null);
-//                                intent.setData(uri);
-//                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                                startActivity(intent);
-//                            }
-//                        });
-//            }
-//        }
-//    }
+
 
 
 }
