@@ -25,6 +25,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -111,6 +112,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     Intent goToHeatmapActivityIntent;
 
+    String priceRange;
+
     // UI elements
     BottomSheetBehavior previewSheetBehavior;
     LinearLayout layoutPreviewBottomSheet;
@@ -189,7 +192,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         whereToInputViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out));
         appliedFiltersLayout = findViewById(R.id.applied_filters_top_input_elem);
         addFiltersButton = findViewById(R.id.add_filters_top_input_elem);
-        addMoreFiltersButton = findViewById(R.id.filters_row_addmore_top_input);
+        // addMoreFiltersButton = findViewById(R.id.filters_row_addmore_top_input);
         exitInputButton = findViewById(R.id.exit_input_button);
 
         whereToInputViewFlipper.setZ(999);
@@ -246,7 +249,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         addFiltersButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (appliedFiltersLayout.getVisibility() == View.INVISIBLE) {
+                if (appliedFiltersLayout.getVisibility() == View.VISIBLE) {
 //                    appliedFiltersLayout.setVisibility(View.VISIBLE);
 //                    addFiltersButton.setVisibility(View.INVISIBLE);
                     filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -254,13 +257,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        addMoreFiltersButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                appliedFiltersLayout.setVisibility(View.INVISIBLE);
-                addFiltersButton.setVisibility(View.VISIBLE);
-            }
-        });
 
         setOnClickForExitInputButton();
 
@@ -359,6 +355,24 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         });
+    }
+
+    /**
+     * Listen for checkbox changes.
+     */
+    private void setOnCheckedChangeListener() {
+//        tv.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if (isChecked) {
+//                    selectedStrings.add(tv.getText().toString());
+//                }else{
+//                    selectedStrings.remove(tv.getText().toString());
+//                }
+//
+//            }
+//        });
     }
 
     /**
@@ -480,6 +494,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         String upperStr = progUpper.toString();
         String lowerStr = progLower.toString();
         priceRangeFromSeekBar.setText("$".concat(lowerStr).concat("-").concat(upperStr));
+        priceRange = "$".concat(lowerStr).concat("-").concat(upperStr);
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
@@ -503,6 +518,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 String upperStr = progUpper.toString();
                 String lowerStr = progLower.toString();
                 priceRangeFromSeekBar.setText("$".concat(lowerStr).concat("-").concat(upperStr));
+                priceRange = "$".concat(lowerStr).concat("-").concat(upperStr);
+                System.out.println(priceRange);
             }
         });
 

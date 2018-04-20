@@ -120,15 +120,15 @@
     <android.support.constraint.ConstraintLayout
         android:id="@+id/applied_filters_top_input_elem"
         android:layout_width="366dp"
-        android:layout_height="57dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="168dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="158dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintVertical_bias="1.0">
         <include
             android:id="@+id/applied_filter_elems_top_input_elem"
@@ -136,26 +136,8 @@
              />
     </android.support.constraint.ConstraintLayout>
 
-    <Button
-        android:id="@+id/add_filters_top_input_elem"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="15dp"
-        android:background="@color/colorPrimary"
-        android:text="Add filters"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:paddingTop="0dp"
-        android:paddingBottom="0dp"
-        android:fontFamily="@font/lucia_grande"
-        android:textSize="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/destination_top_input_elem"
-        app:layout_constraintTop_toBottomOf="@+id/destination_top_input_elem"
-        app:layout_constraintVertical_bias="0.0" />
+
+
 
 
 </android.support.constraint.ConstraintLayout>
