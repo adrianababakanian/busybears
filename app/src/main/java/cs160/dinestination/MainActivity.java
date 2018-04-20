@@ -257,6 +257,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        layoutPreviewBottomSheet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent goToDetailsIntent = new Intent(MainActivity.this, DetailsActivity.class);
+                startActivity(goToDetailsIntent);
+            }
+        });
+
         addFiltersButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
