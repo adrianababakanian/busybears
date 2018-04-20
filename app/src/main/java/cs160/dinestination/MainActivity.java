@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -71,6 +72,7 @@ import android.widget.Toast;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -123,7 +125,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     String priceRange;
 
-    // UI elements
+    // UI elements.
     BottomSheetBehavior previewSheetBehavior;
     LinearLayout layoutPreviewBottomSheet;
     BottomSheetBehavior filtersSheetBehavior;
@@ -156,7 +158,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     LinearLayout appliedFiltersWrapper;
     ConstraintLayout mainTopInputElement;
 
-    // Mapbox items
+    // Mapbox items.
     private static final String MARKER_SOURCE = "markers-source";
     private static final String MARKER_STYLE_LAYER = "markers-style-layer";
     private static final String MARKER_IMAGE = "custom-marker";
@@ -165,6 +167,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private LocationEngine locationEngine;
     String mapboxAccessToken = "pk.eyJ1IjoiYWRyaWFuYWJhYmFrYW5pYW4iLCJhIjoiY2pnMTgxeDQ4MWdwOTJ4dGxnbzU4OTVyMCJ9.CetiZIb8bdIEolkPM4AHbg";
 
+    // Route-related.
     private com.mapbox.geojson.Point originPosition;
     private com.mapbox.geojson.Point destinationPosition;
     private DirectionsRoute currentRoute;
@@ -333,8 +336,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     private void getRoute(com.mapbox.geojson.Point origin, com.mapbox.geojson.Point destination) {
+        System.out.println("GET ROUTE CALLED");
         NavigationRoute.builder()
-                .accessToken(Mapbox.getAccessToken())
+//                .accessToken(Mapbox.getAccessToken())
+                .accessToken(mapboxAccessToken)
                 .origin(origin)
                 .destination(destination)
                 .build()
@@ -353,7 +358,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         }
 
                         currentRoute = response.body().routes().get(0);
-
 
                         // Draw the route on the map
                         if (navigationMapRoute != null) {
@@ -419,7 +423,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (stringsForButtons.size() != 0) {
             Button plusButton = new Button(this);
-            plusButton.setBackground(getResources().getDrawable(R.drawable.ic_add_box_24dp));
+            plusButton.setBackground(getResources().getDrawable(R.drawable.plus_button));
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    100, 104);
+            params.setMargins(4, 0, 4, 0);
+
+            plusButton.setLayoutParams(params);
             plusButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -437,6 +447,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             buttonToAdd.setText(label);
             buttonToAdd.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
             buttonToAdd.setTextColor(getResources().getColor(R.color.white));
+            buttonToAdd.setAllCaps(Boolean.FALSE);
             appliedFiltersWrapper.addView(buttonToAdd, lp);
         }
 
@@ -714,6 +725,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         mapboxMap.addOnMapLongClickListener(new MapboxMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(@NonNull LatLng point) {
+                System.out.println("Long click registered");
                 PointF screenPoint = mapboxMap.getProjection().toScreenLocation(point);
                 List<Feature> features = mapboxMap.queryRenderedFeatures(screenPoint, "my.layer.id");
                 if (!features.isEmpty()) {
