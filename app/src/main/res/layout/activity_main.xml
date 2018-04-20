@@ -36,34 +36,6 @@
 
     <include layout="@layout/time_spinner_bottom_sheet" />
 
-
-
-    <!-- test filter button  -->
-    <Button
-        android:id="@+id/test_filter_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="80px"
-        android:layout_marginLeft="80px"
-        android:layout_alignParentRight="true"
-        android:background="@color/colorPrimary"
-        android:text="filters"
-        android:textColor="@color/white"
-        android:textSize="18sp" />
-
-    <!-- test bottom sheet button  -->
-    <Button
-        style="@style/MainFont"
-        android:id="@+id/test_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="80px"
-        android:layout_marginLeft="80px"
-        android:layout_alignParentRight="true"
-        android:background="@color/colorPrimary"
-        android:text="close"
-        android:textColor="@color/white" />
-
     <!-- mapbox mapview element -->
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"

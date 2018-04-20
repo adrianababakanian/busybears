@@ -110,8 +110,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
    String MY_PERMISSIONS_ACCESS_FINE_LOCATION = "Please enable locationing!";
 
     // UI elements
-//    BottomSheetBehavior sheetBehavior;
-//    LinearLayout layoutBottomSheet;
     BottomSheetBehavior previewSheetBehavior;
     LinearLayout layoutPreviewBottomSheet;
     Button testButton;
@@ -124,19 +122,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     ImageView marker;
     Location lastLocation;
 
-    // Mapbox-related elements
-    private static final String MARKER_SOURCE = "markers-source";
-    private static final String MARKER_STYLE_LAYER = "markers-style-layer";
-    private static final String MARKER_IMAGE = "custom-marker";
-
-    private MapboxMap mapboxMap;
-
-    private MapView mapView;
-
-    private LocationEngine locationEngine;
-
-    BottomSheetBehavior sheetBehavior;
-    LinearLayout layoutBottomSheet;
+    BottomSheetBehavior timeSpinnerSheetBehavior;
+    LinearLayout timeSpinnerBottomSheet;
     TimePicker timePicker;
     ImageView whereToRectangle;
     ConstraintLayout topInputElement;
@@ -148,11 +135,21 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     Button addFiltersButton;
     EditText whereToEditText;
     ImageButton addMoreFiltersButton;
+    Button exitInputButton;
+
+    // Mapbox items
+    private static final String MARKER_SOURCE = "markers-source";
+    private static final String MARKER_STYLE_LAYER = "markers-style-layer";
+    private static final String MARKER_IMAGE = "custom-marker";
+    private MapboxMap mapboxMap;
+    private MapView mapView;
+    private LocationEngine locationEngine;
+    String mapboxAccessToken = "pk.eyJ1IjoiYWRyaWFuYWJhYmFrYW5pYW4iLCJhIjoiY2pnMTgxeDQ4MWdwOTJ4dGxnbzU4OTVyMCJ9.CetiZIb8bdIEolkPM4AHbg";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Mapbox.getInstance(this, "pk.eyJ1IjoiYWRyaWFuYWJhYmFrYW5pYW4iLCJhIjoiY2pnMTgxeDQ4MWdwOTJ4dGxnbzU4OTVyMCJ9.CetiZIb8bdIEolkPM4AHbg");
+        Mapbox.getInstance(this, mapboxAccessToken);
 
         lastLocation = new Location("");
         lastLocation.setLatitude(37.866528);
@@ -160,40 +157,37 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         setContentView(R.layout.activity_main);
 
-        layoutBottomSheet = findViewById(R.id.time_spinner_bottom_sheet);
-        sheetBehavior = BottomSheetBehavior.from(layoutBottomSheet);
-        timePicker = (TimePicker)findViewById(R.id.time_picker);
-        whereToRectangle = (ImageView)findViewById(R.id.where_to_rectangle);
-        topInputElement = (ConstraintLayout)findViewById(R.id.top_input_element);
-        whereToEditText = (EditText)findViewById(R.id.destination_top_input_elem);
-        closeTopInputElement = (ImageView)findViewById(R.id.close_top_input_elem);
-        addTopInputElement = (ImageView)findViewById(R.id.add_top_input_elem);
-        rootLayout = (CoordinatorLayout)findViewById(R.id.mainRootView);
-        whereToInputViewFlipper = (ViewFlipper)findViewById(R.id.viewFlipper1);
+        // hook up UI elements
+        layoutPreviewBottomSheet = findViewById(R.id.preview_bottom_sheet);
+        previewSheetBehavior = BottomSheetBehavior.from(layoutPreviewBottomSheet);
+        mSeekBar = findViewById(R.id.seekBar);
+        mSwitch = findViewById(R.id.switch1);
+        priceRangeFromSeekBar = findViewById(R.id.price_range_from_seek_bar);
+        layoverRectangle = findViewById(R.id.layover_rectangle);
+        checkButton = findViewById(R.id.check_button);
+        backButton = findViewById(R.id.back_button);
+
+        timeSpinnerBottomSheet = findViewById(R.id.time_spinner_bottom_sheet);
+        timeSpinnerSheetBehavior = BottomSheetBehavior.from(timeSpinnerBottomSheet);
+        timePicker = findViewById(R.id.time_picker);
+        whereToRectangle = findViewById(R.id.where_to_rectangle);
+        topInputElement = findViewById(R.id.top_input_element);
+        whereToEditText = findViewById(R.id.destination_top_input_elem);
+        closeTopInputElement = findViewById(R.id.close_top_input_elem);
+        addTopInputElement = findViewById(R.id.add_top_input_elem);
+        rootLayout = findViewById(R.id.mainRootView);
+        whereToInputViewFlipper = findViewById(R.id.viewFlipper1);
         whereToInputViewFlipper.setInAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in));
         whereToInputViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out));
-        appliedFiltersLayout = (ConstraintLayout)findViewById(R.id.applied_filters_top_input_elem);
-        addFiltersButton = (Button)findViewById(R.id.add_filters_top_input_elem);
-        addMoreFiltersButton = (ImageButton)findViewById(R.id.filters_row_addmore_top_input);
+        appliedFiltersLayout = findViewById(R.id.applied_filters_top_input_elem);
+        addFiltersButton = findViewById(R.id.add_filters_top_input_elem);
+        addMoreFiltersButton = findViewById(R.id.filters_row_addmore_top_input);
+        exitInputButton = findViewById(R.id.exit_input_button);
 
         whereToInputViewFlipper.setZ(999);
-        layoutBottomSheet.setZ(999);
+        timeSpinnerBottomSheet.setZ(999);
 
-//        whereToEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View view, boolean b) {
-//                if (!b) {
-////                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-////                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-//                    hideSoftKeyboard(MainActivity.this);
-//                }
-//            }
-//        });
-
-        final Animation fadeIn = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in);
-        final Animation fadeOut = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out);
-
-        sheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+        timeSpinnerSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 switch (newState) {
@@ -204,7 +198,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     case BottomSheetBehavior.STATE_COLLAPSED: { }
                     break;
                     case BottomSheetBehavior.STATE_DRAGGING:
-//                        sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // prevents dragging
+//                        timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // prevents dragging
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
                         // the movement phase between expanded and collapsed.
@@ -219,11 +213,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         whereToRectangle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (sheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
-                    sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // but only starts anim when fully expanded
+                if (timeSpinnerSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+                    timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // but only starts anim when fully expanded
                     whereToInputViewFlipper.showNext();
                 } else {
-                    sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     int hour = timePicker.getCurrentHour();
                     int min = timePicker.getCurrentMinute();
                 }
@@ -235,7 +229,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0); // force close softkeyboard, else pushes layout up
-                sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 whereToInputViewFlipper.showPrevious();
             }
         });
@@ -258,25 +252,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        setOnClickForExitInputButton();
+
         mapView = (MapView) findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
         getApplicationContext().setTheme(R.style.AppTheme);
-
-        // hook up UI elements
-        //layoutBottomSheet = findViewById(R.id.bottom_sheet);
-        layoutPreviewBottomSheet = findViewById(R.id.preview_bottom_sheet);
-        // sheetBehavior = BottomSheetBehavior.from(layoutBottomSheet);
-        previewSheetBehavior = BottomSheetBehavior.from(layoutPreviewBottomSheet);
-        testButton = findViewById(R.id.test_button);
-        mSeekBar = findViewById(R.id.seekBar);
-        mSwitch = findViewById(R.id.switch1);
-        priceRangeFromSeekBar = findViewById(R.id.price_range_from_seek_bar);
-        layoverRectangle = findViewById(R.id.layover_rectangle);
-        checkButton = findViewById(R.id.check_button);
-        backButton = findViewById(R.id.back_button);
-        // marker = findViewById(R.id.marker);
 
         mSeekBar.setZ(999);
         mSeekBar.setMax(100);
@@ -287,12 +269,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         setPriceRangeListener();
 
         // set up bottom sheet
-        setBottomSheetCallback();
+//        setBottomSheetCallback();
         setPreviewBottomSheetCallback();
-        setOnClickForTestButton();
 
-        setOnClickForFilterTrigger(checkButton);
-        setOnClickForFilterTrigger(backButton);
+//        setOnClickForFilterTrigger(checkButton);
+//        setOnClickForFilterTrigger(backButton);
 
         layoverRectangle.setImageAlpha(0);
         layoverRectangle.setZ(4);
@@ -303,8 +284,22 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         setupUI(findViewById(R.id.mainRootView));
 
+    } // END THE ON CREATE METHOD
+
+    private void setOnClickForExitInputButton() {
+        exitInputButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                whereToInputViewFlipper.showNext();
+
+            }
+        });
     }
 
+    /**
+     * Set up the UI such that the soft keyboard is collapsed.
+     */
     public void setupUI(View view) {
         // Set up touch listener for non-text box views to hide keyboard.
         if (!(view instanceof EditText)) {
@@ -315,7 +310,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
         }
-        //If a layout container, iterate over children and seed recursion.
+        // If a layout container, iterate over children and seed recursion.
         if (view instanceof ViewGroup) {
             for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
                 View innerView = ((ViewGroup) view).getChildAt(i);
@@ -324,9 +319,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
     /**
-     * Hide the soft keyboard
+     * Hide the soft keyboard.
      * @param activity
      */
     public static void hideSoftKeyboard(Activity activity) {
@@ -337,8 +331,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 activity.getCurrentFocus().getWindowToken(), 0);
     }
 
-
-
+    /**
+     * Request the user's location before querying the location engine.
+     */
     private void requestLocationWithCheck() {
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(MainActivity.this,
@@ -360,71 +355,60 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    // on click for button to trigger filters
-    private void setOnClickForTestButton() {
-        testButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (sheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
-                    sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                    layoverRectangle.setImageAlpha(100);
-                } else {
-                    sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    layoverRectangle.setImageAlpha(0);
+    /**
+     * On clicks for closing preference popup.
+     * @param iv
+     */
+//    private void setOnClickForFilterTrigger(ImageView iv) {
+//        iv.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                // REPLACE THE NAME OF THE BEHAVIOR HERE TO MATCH THE FILTER ONE
+//                if (sheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+//                    sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+//                    layoverRectangle.setImageAlpha(100);
+//                } else {
+//                    sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+//                    layoverRectangle.setImageAlpha(0);
+//
+//                }
+//            }
+//        });
+//    }
 
-                }
-            }
-        });
-    }
+    // trigger filter bottom sheet expansion DEPRECATED THIS WAS FOR FILTERS
+//    private void setBottomSheetCallback() {
+//        sheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+//            @Override
+//            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+//                switch (newState) {
+//                    case BottomSheetBehavior.STATE_HIDDEN:
+//                        break;
+//                    case BottomSheetBehavior.STATE_EXPANDED: {
+//                        testButton.setText("Close");
+//                    }
+//                    break;
+//                    case BottomSheetBehavior.STATE_COLLAPSED: {
+//                        testButton.setText("Expand");
+//                    }
+//                    break;
+//                    case BottomSheetBehavior.STATE_DRAGGING:
+//                        break;
+//                    case BottomSheetBehavior.STATE_SETTLING:
+//                        break;
+//                }
+//            }
+//
+//            @Override
+//            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+//
+//            }
+//        });
+//    }
 
-    // temporary set on clicks for back and check button triggers
-    private void setOnClickForFilterTrigger(ImageView iv) {
-        iv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (sheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
-                    sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                    layoverRectangle.setImageAlpha(100);
-                } else {
-                    sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    layoverRectangle.setImageAlpha(0);
-
-                }
-            }
-        });
-    }
-
-    // trigger filter bottom sheet expansion
-    private void setBottomSheetCallback() {
-        sheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                switch (newState) {
-                    case BottomSheetBehavior.STATE_HIDDEN:
-                        break;
-                    case BottomSheetBehavior.STATE_EXPANDED: {
-                        testButton.setText("Close");
-                    }
-                    break;
-                    case BottomSheetBehavior.STATE_COLLAPSED: {
-                        testButton.setText("Expand");
-                    }
-                    break;
-                    case BottomSheetBehavior.STATE_DRAGGING:
-                        break;
-                    case BottomSheetBehavior.STATE_SETTLING:
-                        break;
-                }
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-            }
-        });
-    }
-
-    // trigger preview bottom sheet expansion
+    /**
+     * Trigger preview bottom sheet expansion.
+     */
     private void setPreviewBottomSheetCallback() {
         previewSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -452,9 +436,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    // update price range from seek bar
+    /**
+     * Update price range from seek bar.
+     */
     private void setPriceRangeListener() {
-
         Integer progUpper = 10*Math.round(mSeekBar.getProgress()/10);
         Integer progLower;
         if (progUpper < 10) {
@@ -465,23 +450,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         String upperStr = progUpper.toString();
         String lowerStr = progLower.toString();
         priceRangeFromSeekBar.setText("$".concat(lowerStr).concat("-").concat(upperStr));
-
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 // TODO Auto-generated method stub
             }
-
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
                 // TODO Auto-generated method stub
             }
-
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
                 // TODO Auto-generated method stub
-
                 Integer progUpper = 10*Math.round(mSeekBar.getProgress()/10);
                 Integer progLower;
                 if (progUpper < 10) {
@@ -493,13 +473,15 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 String upperStr = progUpper.toString();
                 String lowerStr = progLower.toString();
                 priceRangeFromSeekBar.setText("$".concat(lowerStr).concat("-").concat(upperStr));
-
             }
         });
 
     }
 
-    // mapbox overrides
+    /**
+     * Mapboc overrides.
+     * @param mapboxMap
+     */
     @Override
     public void onMapReady(final MapboxMap mapboxMap) {
         BitmapFactory.Options options = new BitmapFactory.Options();
