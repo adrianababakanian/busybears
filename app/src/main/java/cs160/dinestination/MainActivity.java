@@ -145,6 +145,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     LinearLayout timeSpinnerBottomSheet;
     TimePicker timePicker;
     ImageView whereToRectangle;
+    TextView whereToPlace;
+    TextView whereToTime;
     ConstraintLayout topInputElement;
     ImageView closeTopInputElement;
     ImageView addTopInputElement;
@@ -156,6 +158,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     ImageButton addMoreFiltersButton;
     Button exitInputButton;
     LinearLayout appliedFiltersWrapper;
+    // LinearLayout appliedFiltersWrapperMainScreen;
     ConstraintLayout mainTopInputElement;
 
     // Mapbox items.
@@ -173,6 +176,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private DirectionsRoute currentRoute;
     private static final String TAG = "DirectionsActivity";
     private NavigationMapRoute navigationMapRoute;
+
+    private Boolean ADDED_MARKERS = Boolean.FALSE;
 
 
     @Override
@@ -205,6 +210,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         timeSpinnerSheetBehavior = BottomSheetBehavior.from(timeSpinnerBottomSheet);
         timePicker = findViewById(R.id.time_picker);
         whereToRectangle = findViewById(R.id.where_to_rectangle);
+        whereToPlace = findViewById(R.id.where_to_place);
+        whereToTime = findViewById(R.id.where_to_time);
         topInputElement = findViewById(R.id.top_input_element);
         whereToEditText = findViewById(R.id.destination_top_input_elem);
         closeTopInputElement = findViewById(R.id.close_top_input_elem);
@@ -218,6 +225,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         // addMoreFiltersButton = findViewById(R.id.filters_row_addmore_top_input);
         exitInputButton = findViewById(R.id.exit_input_button);
         appliedFiltersWrapper = findViewById(R.id.applied_filters_wrapper);
+        // appliedFiltersWrapperMainScreen = findViewById(R.id.main_screen_version);
         mainTopInputElement = findViewById(R.id.main_top_input_element);
         addFiltersButton = findViewById(R.id.add_filters_top_input_elem);
         exitInputButton = findViewById(R.id.exit_input_button);
@@ -272,6 +280,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0); // force close softkeyboard, else pushes layout up
                 timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 whereToInputViewFlipper.showPrevious();
+                // addMarkers();
             }
         });
 
@@ -423,7 +432,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (stringsForButtons.size() != 0) {
             Button plusButton = new Button(this);
+            Button plusButton2 = new Button(this);
             plusButton.setBackground(getResources().getDrawable(R.drawable.plus_button));
+            plusButton2.setBackground(getResources().getDrawable(R.drawable.plus_button));
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     100, 104);
@@ -437,6 +448,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
             appliedFiltersWrapper.addView(plusButton);
+            // appliedFiltersWrapperMainScreen.addView(plusButton2);
             addFiltersButton.setVisibility(View.INVISIBLE);
         } else {
             addFiltersButton.setVisibility(View.VISIBLE); // NOT YET TESTED!!!! Not sure if it shows up again.
@@ -449,12 +461,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             buttonToAdd.setTextColor(getResources().getColor(R.color.white));
             buttonToAdd.setAllCaps(Boolean.FALSE);
             appliedFiltersWrapper.addView(buttonToAdd, lp);
+//            appliedFiltersWrapperMainScreen.addView(buttonToAdd, lp);
         }
 
     }
-
-
-
 
     private void setOnClickForExitInputButton() {
         exitInputButton.setOnClickListener(new View.OnClickListener() {
@@ -462,6 +472,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 whereToInputViewFlipper.showNext();
+                whereToPlace.setText(whereToEditText.getText());
+                String meridian = "am";
+                int hour = timePicker.getCurrentHour();
+                if (hour > 12) {
+                    meridian = "pm";
+                    hour = hour - 12;
+                }
+                String hourStr = Integer.toString(hour);
+                String minuteStr = timePicker.getCurrentMinute().toString();
+                whereToTime.setText(hourStr+":"+minuteStr+meridian);
+                addMarkers();
 
             }
         });
@@ -698,7 +719,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         Bitmap icon = BitmapFactory.decodeResource(
                 MainActivity.this.getResources(), R.drawable.pinpoint, options);
         mapboxMap.addImage(MARKER_IMAGE, icon);
-        addMarkers();
+        //addMarkers();
 
         mapboxMap.setOnMapClickListener(new MapboxMap.OnMapClickListener() {
             @Override
@@ -744,26 +765,29 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void addMarkers() {
-        List<Feature> features = new ArrayList<>();
+        if (!ADDED_MARKERS) {
+            List<Feature> features = new ArrayList<>();
         /* Source: A data source specifies the geographic coordinate where the image marker gets placed. */
-        features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.258875,37.865593})));
-        features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.269122,37.871856})));
-        features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.269532,37.879842})));
+            features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.258875,37.865593})));
+            features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.269122,37.871856})));
+            features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.269532,37.879842})));
 
-        // START: CHANNING BOWDITCH
-        features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.257290,37.867460})));
-        // END: NORTH BERKELEY
-        features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.283399,37.873960})));
-        FeatureCollection featureCollection = FeatureCollection.fromFeatures(features);
-        GeoJsonSource source = new GeoJsonSource(MARKER_SOURCE, featureCollection);
-        mapboxMap.addSource(source);
+            // START: CHANNING BOWDITCH
+            features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.257290,37.867460})));
+            // END: NORTH BERKELEY
+            features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.283399,37.873960})));
+            FeatureCollection featureCollection = FeatureCollection.fromFeatures(features);
+            GeoJsonSource source = new GeoJsonSource(MARKER_SOURCE, featureCollection);
+            mapboxMap.addSource(source);
         /* Style layer: A style layer ties together the source and image and specifies how they are displayed on the map. */
-        SymbolLayer markerStyleLayer = new SymbolLayer(MARKER_STYLE_LAYER, MARKER_SOURCE)
-                .withProperties(
-                        PropertyFactory.iconAllowOverlap(true),
-                        PropertyFactory.iconImage(MARKER_IMAGE)
-                );
-        mapboxMap.addLayer(markerStyleLayer);
+            SymbolLayer markerStyleLayer = new SymbolLayer(MARKER_STYLE_LAYER, MARKER_SOURCE)
+                    .withProperties(
+                            PropertyFactory.iconAllowOverlap(true),
+                            PropertyFactory.iconImage(MARKER_IMAGE)
+                    );
+            mapboxMap.addLayer(markerStyleLayer);
+        }
+        ADDED_MARKERS = Boolean.TRUE;
     }
 
     @Override

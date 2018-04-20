@@ -28,6 +28,7 @@
             android:src="@drawable/blue_square" />
         <TextView
             style="@style/LargeFont"
+            android:id="@+id/where_to_place"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
@@ -48,6 +49,7 @@
                 android:layout_marginTop="8px"
                 android:hint="by"/>
             <TextView
+                android:id="@+id/where_to_time"
                 style="@style/LargeFont"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
