@@ -10,7 +10,7 @@
         android:id="@+id/restaurantName"
         android:layout_width="171dp"
         android:layout_height="25dp"
-        android:layout_marginTop="76dp"
+        android:layout_marginTop="92dp"
         android:text="Burma Superstar"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="#787A7F"
@@ -69,10 +69,9 @@
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="19dp"
         android:layout_height="29dp"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="28dp"
         android:paddingBottom="0dp"
         android:paddingEnd="0dp"
         android:paddingLeft="0dp"
@@ -85,12 +84,10 @@
         android:textColor="#82848A"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/restaurantName"
         app:layout_constraintEnd_toStartOf="@+id/routeMe"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/routeMe"
@@ -98,7 +95,7 @@
         android:layout_width="75dp"
         android:layout_height="35dp"
         android:layout_marginEnd="32dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="28dp"
         android:paddingBottom="0dp"
         android:paddingEnd="0dp"
         android:paddingLeft="0dp"
