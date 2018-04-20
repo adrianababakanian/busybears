@@ -267,8 +267,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     whereToInputViewFlipper.showNext();
                 } else {
                     timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    int hour = timePicker.getCurrentHour();
-                    int min = timePicker.getCurrentMinute();
                 }
             }
         });
@@ -481,6 +479,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 String hourStr = Integer.toString(hour);
                 String minuteStr = timePicker.getCurrentMinute().toString();
+                if (minuteStr.length() == 1) minuteStr = "0" + minuteStr;
                 whereToTime.setText(hourStr+":"+minuteStr+meridian);
                 addMarkers();
 
