@@ -143,6 +143,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     EditText whereToEditText;
     ImageButton addMoreFiltersButton;
     Button exitInputButton;
+    LinearLayout appliedFiltersWrapper;
+    ConstraintLayout mainTopInputElement;
 
     // Mapbox items
     private static final String MARKER_SOURCE = "markers-source";
@@ -194,10 +196,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         addFiltersButton = findViewById(R.id.add_filters_top_input_elem);
         // addMoreFiltersButton = findViewById(R.id.filters_row_addmore_top_input);
         exitInputButton = findViewById(R.id.exit_input_button);
+        appliedFiltersWrapper = findViewById(R.id.applied_filters_wrapper);
+        mainTopInputElement = findViewById(R.id.main_top_input_element);
 
         whereToInputViewFlipper.setZ(999);
         timeSpinnerBottomSheet.setZ(999);
         filtersBottomSheet.setZ(1000);
+        timeSpinnerBottomSheet.setZ(2);
 
         timeSpinnerSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -288,6 +293,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         addLocationEngineListener();
 
         setupUI(findViewById(R.id.mainRootView));
+
+        //appliedFiltersWrapper.addView(backButton);
 
 
         goToHeatmapActivityIntent = new Intent(MainActivity.this, HeatmapActivity.class);
@@ -568,6 +575,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.258875,37.865593})));
         features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.269122,37.871856})));
         features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.269532,37.879842})));
+
+        // START: CHANNING BOWDITCH
+        features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.257290,37.867460})));
+        // END: NORTH BERKELEY
+        features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.283399,37.873960})));
         FeatureCollection featureCollection = FeatureCollection.fromFeatures(features);
         GeoJsonSource source = new GeoJsonSource(MARKER_SOURCE, featureCollection);
         mapboxMap.addSource(source);

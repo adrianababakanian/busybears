@@ -41,8 +41,8 @@
         android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        mapbox:mapbox_cameraTargetLat="37.872574"
-        mapbox:mapbox_cameraTargetLng="-122.260748"
+        mapbox:mapbox_cameraTargetLat="37.879842"
+        mapbox:mapbox_cameraTargetLng="-122.269532"
         mapbox:mapbox_styleUrl="@string/mapbox_style_light"
         mapbox:mapbox_cameraTilt="0"
         mapbox:mapbox_cameraZoom="13"/>

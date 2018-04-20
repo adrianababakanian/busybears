@@ -27,6 +27,7 @@
             android:text="Arrive by:"
             android:gravity="left"
             android:layout_marginLeft="70dp"
+            android:layout_marginTop="20dp"
             />
         <!-- time picker element -->
         <TimePicker
@@ -53,6 +54,6 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:layout_marginLeft="260dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="80dp"
         />
 </LinearLayout>
