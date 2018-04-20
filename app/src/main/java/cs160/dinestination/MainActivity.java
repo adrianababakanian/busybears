@@ -109,9 +109,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
    String MY_PERMISSIONS_ACCESS_FINE_LOCATION = "Please enable locationing!";
 
+    Intent goToHeatmapActivityIntent;
+
     // UI elements
     BottomSheetBehavior previewSheetBehavior;
     LinearLayout layoutPreviewBottomSheet;
+    BottomSheetBehavior filtersSheetBehavior;
+    LinearLayout filtersBottomSheet;
     Button testButton;
     SeekBar mSeekBar;
     Switch mSwitch;
@@ -160,6 +164,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         // hook up UI elements
         layoutPreviewBottomSheet = findViewById(R.id.preview_bottom_sheet);
         previewSheetBehavior = BottomSheetBehavior.from(layoutPreviewBottomSheet);
+
+        filtersBottomSheet = findViewById(R.id.filters_bottom_sheet);
+        filtersSheetBehavior = BottomSheetBehavior.from(filtersBottomSheet);
+
         mSeekBar = findViewById(R.id.seekBar);
         mSwitch = findViewById(R.id.switch1);
         priceRangeFromSeekBar = findViewById(R.id.price_range_from_seek_bar);
@@ -186,6 +194,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         whereToInputViewFlipper.setZ(999);
         timeSpinnerBottomSheet.setZ(999);
+        filtersBottomSheet.setZ(1000);
 
         timeSpinnerSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -238,8 +247,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 if (appliedFiltersLayout.getVisibility() == View.INVISIBLE) {
-                    appliedFiltersLayout.setVisibility(View.VISIBLE);
-                    addFiltersButton.setVisibility(View.INVISIBLE);
+//                    appliedFiltersLayout.setVisibility(View.VISIBLE);
+//                    addFiltersButton.setVisibility(View.INVISIBLE);
+                    filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 }
             }
         });
@@ -269,11 +279,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         setPriceRangeListener();
 
         // set up bottom sheet
-//        setBottomSheetCallback();
         setPreviewBottomSheetCallback();
 
-//        setOnClickForFilterTrigger(checkButton);
-//        setOnClickForFilterTrigger(backButton);
+        setOnClickForFilterTrigger(checkButton);
+        setOnClickForFilterTrigger(backButton);
 
         layoverRectangle.setImageAlpha(0);
         layoverRectangle.setZ(4);
@@ -283,6 +292,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         addLocationEngineListener();
 
         setupUI(findViewById(R.id.mainRootView));
+
+
+        goToHeatmapActivityIntent = new Intent(MainActivity.this, HeatmapActivity.class);
+        //startActivity(goToHeatmapActivityIntent);
 
     } // END THE ON CREATE METHOD
 
@@ -329,6 +342,23 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(
                 activity.getCurrentFocus().getWindowToken(), 0);
+    }
+
+    // temporary set on clicks for back and check button triggers
+    private void setOnClickForFilterTrigger(ImageView iv) {
+        iv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (filtersSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+                    filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    layoverRectangle.setImageAlpha(100);
+                } else {
+                    filtersSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    layoverRectangle.setImageAlpha(0);
+
+                }
+            }
+        });
     }
 
     /**
