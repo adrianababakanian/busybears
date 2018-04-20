@@ -50,6 +50,17 @@
         <item name="android:fontFamily">@font/lucia_grande</item>
         <item name="android:textSize">12dp</item>
         <item name="android:textColor">@color/textColorLight</item>
-    </style>s
+    </style>
+
+    <!-- Mapbox navigation styling. -->
+    <style name="NavigationMapRoute">
+        <!-- Colors -->
+        <item name="routeColor">@color/colorPrimaryDark</item>
+        <item name="routeModerateCongestionColor">@color/colorPrimaryDark</item>
+        <item name="routeSevereCongestionColor">@color/colorPrimaryDark</item>
+        <item name="routeShieldColor">@color/white</item>
+        <!-- Scales -->
+        <item name="routeScale">1.0</item>
+    </style>
 
 </resources>

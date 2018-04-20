@@ -475,14 +475,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 whereToPlace.setText(whereToEditText.getText());
                 String meridian = "am";
                 int hour = timePicker.getCurrentHour();
-                if (hour > 12) {
-                    meridian = "pm";
-                    hour = hour - 12;
-                }
-                String hourStr = Integer.toString(hour);
+                int minute = timePicker.getCurrentMinute();
                 String minuteStr = timePicker.getCurrentMinute().toString();
+                if (hour > 12) { meridian = "pm"; hour = hour - 12;}
+                if (minute < 10) {minuteStr = "0".concat(minuteStr);}
+                String hourStr = Integer.toString(hour);
                 whereToTime.setText(hourStr+":"+minuteStr+meridian);
                 addMarkers();
+                drawHardcodedRoute();
 
             }
         });
@@ -756,12 +756,20 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 System.out.println(point);
                 destinationPosition = com.mapbox.geojson.Point.fromLngLat(point.getLongitude(), point.getLatitude());
-                originPosition = com.mapbox.geojson.Point.fromLngLat(-122.258875, 37.865593);
+                //destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.283399, 37.873960);
+                originPosition = com.mapbox.geojson.Point.fromLngLat(-122.257290, 37.867460);
 
                 getRoute(originPosition, destinationPosition);
             }
         });
 
+    }
+
+    private void drawHardcodedRoute() {
+        destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.283399, 37.873960);
+        originPosition = com.mapbox.geojson.Point.fromLngLat(-122.257290, 37.867460);
+
+        getRoute(originPosition, destinationPosition);
     }
 
     private void addMarkers() {
