@@ -56,4 +56,23 @@
     <!-- include the filters bottom sheet  -->
     <include layout="@layout/preview_bottom_sheet" />
 
+    <Button
+        android:id="@+id/find_restaurants_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="570dp"
+        android:layout_gravity="center_horizontal"
+        android:backgroundTint="@color/colorPrimaryDark"
+        android:fontFamily="@font/lucia_grande"
+        android:paddingBottom="8dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="8dp"
+        android:text="Find restaurants"
+        android:background="@drawable/find_restaurants_button"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="16dp"
+        android:visibility="gone"/>
+
 </android.support.design.widget.CoordinatorLayout>

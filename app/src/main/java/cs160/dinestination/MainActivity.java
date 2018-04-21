@@ -124,8 +124,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     String MY_PERMISSIONS_ACCESS_FINE_LOCATION = "Please enable locationing!";
 
-    Intent goToHeatmapActivityIntent;
-
     String priceRange;
 
     // UI elements.
@@ -163,6 +161,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     Button exitInputButton;
     LinearLayout appliedFiltersWrapper;
     ConstraintLayout mainTopInputElement;
+    Button findRestaurantsButton;
 
     // Mapbox items.
     private static final String MARKER_SOURCE = "markers-source";
@@ -231,8 +230,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         appliedFiltersWrapper = findViewById(R.id.applied_filters_wrapper);
         mainTopInputElement = findViewById(R.id.main_top_input_element);
         addFiltersButton = findViewById(R.id.add_filters_top_input_elem);
-        exitInputButton = findViewById(R.id.exit_input_button);
-
+        findRestaurantsButton = findViewById(R.id.find_restaurants_button);
 
         whereToInputViewFlipper.setZ(999);
         timeSpinnerBottomSheet.setZ(999);
@@ -326,6 +324,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         setOnClickForFilterTrigger(filtersCheckButton);
         setOnClickForFilterBack(filtersBackButton);
+        setOnClickForFindRestaurants(findRestaurantsButton);
 
         layoverRectangle.setImageAlpha(0);
         layoverRectangle.setZ(4);
@@ -373,7 +372,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                             navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
                         }
 
-                        Toast.makeText(getApplicationContext(), Double.toString(currentRoute.distance()), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getApplicationContext(), Double.toString(currentRoute.distance()), Toast.LENGTH_SHORT).show();
                         navigationMapRoute.addRoute(currentRoute);
                     }
 
@@ -387,23 +386,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void filtersRowGenerator() {
         ArrayList<String> stringsForButtons = new ArrayList<>();
-
         int[] cuisine_ids = new int[] {R.id.thai_check, R.id.italian_check, R.id.chinese_check, R.id.mexican_check,
                 R.id.indian_check, R.id.american_check, R.id.japanese_check, R.id.burmese_check};
         int[] attire_ids = new int[] {R.id.casual_check, R.id.relaxed_check, R.id.dressy_check, R.id.formal_check};
 
         for (int i = 0; i < cuisine_ids.length; i++) {
             CheckBox cBox = findViewById(cuisine_ids[i]);
-            if (cBox.isChecked()) {
-                stringsForButtons.add(cBox.getText().toString());
-            }
+            if (cBox.isChecked()) stringsForButtons.add(cBox.getText().toString());
         }
         if (priceSliderUsedFlag) stringsForButtons.add(priceRange);
         for (int i = 0; i < attire_ids.length; i++) {
             CheckBox cBox = findViewById(attire_ids[i]);
-            if (cBox.isChecked()) {
-                stringsForButtons.add(cBox.getText().toString());
-            }
+            if (cBox.isChecked()) stringsForButtons.add(cBox.getText().toString());
         }
 
         if (mSwitch1.isChecked()) stringsForButtons.add("Groups");
@@ -447,8 +441,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             addFiltersButton.setVisibility(View.VISIBLE);
             layoverRectangle.setImageAlpha(100);
         }
-
-
     }
 
     private void setOnClickForExitInputButton() {
@@ -469,6 +461,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 whereToTime.setText(hourStr+":"+minuteStr+meridian);
                 addMarkers();
                 drawHardcodedRoute();
+                findRestaurantsButton.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -698,6 +691,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
+
+    private void setOnClickForFindRestaurants(View v) {
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent goToHeatMapActivity = new Intent(MainActivity.this, HeatmapActivity.class);
+                startActivity(goToHeatMapActivity);
+            }
+        });
+    }
+
 
     /**
      * Mapboc overrides.
