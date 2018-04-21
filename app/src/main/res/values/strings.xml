@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Dinestination</string>
+    <string name="cancel">Cancel</string>
+    <string name="dialog_filters">Filters</string>
+    <string name="fire">Fire</string>
+    <string name="title_activity_login">Choose Username</string>
+    <string name="title_activity_comment_feed">Comment Feed</string>
+    <string name="title_activity_landmark_feed">Landmarks</string>
+    <string name="permission_rationale">Location permission is needed for core functionality</string>
+    <string name="permission_denied_explanation">Permission was denied, but is needed for core
+    functionality.</string>
+    <string name="settings">Settings</string>
 </resources>

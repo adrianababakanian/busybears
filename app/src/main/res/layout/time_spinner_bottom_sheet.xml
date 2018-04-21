@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/time_spinner_bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="430dp"
+    android:background="#fff"
+    android:orientation="vertical"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="0dp"
+    app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+    >
+    <!-- time selector wrapper -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical">
+        <!--android:orientation="horizontal"-->
+        <!-- arrive by text view -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/textColorDark"
+            android:fontFamily="@font/lucia_grande"
+            android:textSize="16dp"
+            android:text="Arrive by:"
+            android:gravity="left"
+            android:layout_marginLeft="70dp"
+            android:layout_marginTop="20dp"
+            />
+        <!-- time picker element -->
+        <TimePicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:timePickerMode="spinner"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/time_picker"
+            style="@style/LargeFont"
+            />
+    </LinearLayout>
+    <Button
+        android:id="@+id/exit_input_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorPrimary"
+        android:text="Search"
+        android:fontFamily="@font/lucia_grande"
+        android:textSize="16dp"
+        android:textColor="@color/white"
+        android:textAllCaps="false"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:layout_marginLeft="260dp"
+        android:layout_marginTop="80dp"
+        />
+</LinearLayout>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <HorizontalScrollView
+        android:layout_width="900px"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="15dp">
+        <LinearLayout
+            android:id="@+id/applied_filters_wrapper"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/add_filters_top_input_elem"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@color/colorPrimary"
+                android:text="Add filters"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp"
+                android:fontFamily="@font/lucia_grande"
+                android:textSize="16dp"/>
+        </LinearLayout>
+    </HorizontalScrollView>
+
+
+
+</LinearLayout>
