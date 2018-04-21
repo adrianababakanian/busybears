@@ -25,7 +25,7 @@
             android:orientation="horizontal"
             android:gravity="left">
             <ImageView
-                android:id="@+id/back_button"
+                android:id="@+id/filters_back_button"
                 android:layout_width="30px"
                 android:layout_height="match_parent"
                 android:src="@drawable/back"
@@ -60,7 +60,7 @@
             android:orientation="horizontal"
             android:gravity="right">
             <ImageView
-                android:id="@+id/check_button"
+                android:id="@+id/filters_check_button"
                 android:layout_width="50px"
                 android:layout_height="match_parent"
                 android:src="@drawable/check"

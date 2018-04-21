@@ -139,8 +139,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     Switch mSwitch2;
     TextView priceRangeFromSeekBar;
     ImageView layoverRectangle;
-    ImageView checkButton;
-    ImageView backButton;
+    ImageView filtersCheckButton;
+    ImageView filtersBackButton;
     ImageView marker;
     Location lastLocation;
 
@@ -206,8 +206,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         mSwitch2 = findViewById(R.id.switch2);
         priceRangeFromSeekBar = findViewById(R.id.price_range_from_seek_bar);
         layoverRectangle = findViewById(R.id.layover_rectangle);
-        checkButton = findViewById(R.id.check_button);
-        backButton = findViewById(R.id.back_button);
+        filtersCheckButton = findViewById(R.id.filters_check_button);
+        filtersBackButton = findViewById(R.id.filters_back_button);
 
         timeSpinnerBottomSheet = findViewById(R.id.time_spinner_bottom_sheet);
         timeSpinnerSheetBehavior = BottomSheetBehavior.from(timeSpinnerBottomSheet);
@@ -324,8 +324,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         // set up bottom sheet
         setPreviewBottomSheetCallback();
 
-        setOnClickForFilterTrigger(checkButton);
-        setOnClickForFilterTrigger(backButton);
+        setOnClickForFilterTrigger(filtersCheckButton);
+        setOnClickForFilterBack(filtersBackButton);
 
         layoverRectangle.setImageAlpha(0);
         layoverRectangle.setZ(4);
@@ -512,7 +512,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         iv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (filtersSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+                if (filtersSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
                     filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                     layoverRectangle.setImageAlpha(100);
                 } else {
@@ -520,6 +520,16 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     layoverRectangle.setImageAlpha(0);
                     filtersRowGenerator();
                 }
+            }
+        });
+    }
+
+    private void setOnClickForFilterBack(ImageView iv) {
+        iv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                filtersSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                layoverRectangle.setImageAlpha(0);
             }
         });
     }
@@ -665,18 +675,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                // TODO Auto-generated method stub
+                // Auto-generated method stub
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                // TODO Auto-generated method stub
+                // Auto-generated method stub
             }
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
-                // TODO Auto-generated method stub
                 Integer progUpper = 10*Math.round(mSeekBar.getProgress()/10);
                 Integer progLower;
-                if (progUpper < 10) {
+                if (progUpper <= 10) {
                     progUpper = 10;
                     progLower = 1;
                 } else {
@@ -689,7 +698,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 System.out.println(priceRange);
             }
         });
-
     }
 
     /**
