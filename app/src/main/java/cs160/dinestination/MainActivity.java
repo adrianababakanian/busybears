@@ -135,6 +135,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     LinearLayout filtersBottomSheet;
     Button testButton;
     SeekBar mSeekBar;
+    boolean priceSliderUsedFlag;
     Switch mSwitch1;
     Switch mSwitch2;
     TextView priceRangeFromSeekBar;
@@ -161,7 +162,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     ImageButton addMoreFiltersButton;
     Button exitInputButton;
     LinearLayout appliedFiltersWrapper;
-    // LinearLayout appliedFiltersWrapperMainScreen;
     ConstraintLayout mainTopInputElement;
 
     // Mapbox items.
@@ -205,6 +205,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         mSwitch1 = findViewById(R.id.switch1);
         mSwitch2 = findViewById(R.id.switch2);
         priceRangeFromSeekBar = findViewById(R.id.price_range_from_seek_bar);
+        priceSliderUsedFlag = false;
         layoverRectangle = findViewById(R.id.layover_rectangle);
         filtersCheckButton = findViewById(R.id.filters_check_button);
         filtersBackButton = findViewById(R.id.filters_back_button);
@@ -228,7 +229,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         // addMoreFiltersButton = findViewById(R.id.filters_row_addmore_top_input);
         exitInputButton = findViewById(R.id.exit_input_button);
         appliedFiltersWrapper = findViewById(R.id.applied_filters_wrapper);
-        // appliedFiltersWrapperMainScreen = findViewById(R.id.main_screen_version);
         mainTopInputElement = findViewById(R.id.main_top_input_element);
         addFiltersButton = findViewById(R.id.add_filters_top_input_elem);
         exitInputButton = findViewById(R.id.exit_input_button);
@@ -398,7 +398,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 stringsForButtons.add(cBox.getText().toString());
             }
         }
-        stringsForButtons.add(priceRange);
+        if (priceSliderUsedFlag) stringsForButtons.add(priceRange);
         for (int i = 0; i < attire_ids.length; i++) {
             CheckBox cBox = findViewById(attire_ids[i]);
             if (cBox.isChecked()) {
@@ -409,16 +409,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         if (mSwitch1.isChecked()) stringsForButtons.add("Groups");
         if (mSwitch2.isChecked()) stringsForButtons.add("Kids");
 
-        appliedFiltersWrapper.removeAllViewsInLayout();
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        lp.setMargins(4,0,4,0);
-        lp.height = 105;
-
         if (stringsForButtons.size() != 0) { // if filters have been applied
+            appliedFiltersWrapper.removeViewsInLayout(1, appliedFiltersWrapper.getChildCount()-1);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            lp.setMargins(4,0,4,0);
+            lp.height = 105;
+
             Button plusButton = new Button(this);
-            Button plusButton2 = new Button(this);
             plusButton.setBackground(getResources().getDrawable(R.drawable.plus_button));
-            plusButton2.setBackground(getResources().getDrawable(R.drawable.plus_button));
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     100, 104);
@@ -432,21 +430,24 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
             appliedFiltersWrapper.addView(plusButton);
-            // appliedFiltersWrapperMainScreen.addView(plusButton2);
-            addFiltersButton.setVisibility(View.INVISIBLE);
-        } else {
-            addFiltersButton.setVisibility(View.VISIBLE); // NOT YET TESTED!!!! Not sure if it shows up again.
+            addFiltersButton.setVisibility(View.GONE);
+            layoverRectangle.setImageAlpha(0);
+            for (String label : stringsForButtons) { // PROBLEM RIGHT NOW - WILL NOT REMOVE THINGS THAT WERE UNCHECKED.
+                // COULD EITHER NEVER DELETE IT (VIEW.GONE) (BUT REMOVEaLLVIEws..), OR JUST GEN A NEW ONE..?
+                Button buttonToAdd = new Button(this);
+                buttonToAdd.setText(label);
+                buttonToAdd.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                buttonToAdd.setTextColor(getResources().getColor(R.color.white));
+                buttonToAdd.setAllCaps(Boolean.FALSE);
+                appliedFiltersWrapper.addView(buttonToAdd, lp);
+            }
+
+        } else { // if no filters applied
+            appliedFiltersWrapper.removeViewsInLayout(1, appliedFiltersWrapper.getChildCount()-1);
+            addFiltersButton.setVisibility(View.VISIBLE);
+            layoverRectangle.setImageAlpha(100);
         }
 
-        for (String label : stringsForButtons) {
-            Button buttonToAdd = new Button(this);
-            buttonToAdd.setText(label);
-            buttonToAdd.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-            buttonToAdd.setTextColor(getResources().getColor(R.color.white));
-            buttonToAdd.setAllCaps(Boolean.FALSE);
-            appliedFiltersWrapper.addView(buttonToAdd, lp);
-//            appliedFiltersWrapperMainScreen.addView(buttonToAdd, lp);
-        }
 
     }
 
@@ -468,7 +469,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 whereToTime.setText(hourStr+":"+minuteStr+meridian);
                 addMarkers();
                 drawHardcodedRoute();
-
             }
         });
     }
@@ -512,13 +512,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         iv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (filtersSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-                    filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                    layoverRectangle.setImageAlpha(100);
-                } else {
+                if (filtersSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
                     filtersSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    layoverRectangle.setImageAlpha(0);
                     filtersRowGenerator();
+                } else { // else case will never occur. Cannot click checkmark while collapsed.
+                    filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 }
             }
         });
@@ -683,6 +681,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
+                priceSliderUsedFlag = true;
                 Integer progUpper = 10*Math.round(mSeekBar.getProgress()/10);
                 Integer progLower;
                 if (progUpper <= 10) {
