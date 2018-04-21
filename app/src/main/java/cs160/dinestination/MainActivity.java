@@ -69,6 +69,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mapbox.api.directions.v5.DirectionsCriteria;
+import com.mapbox.api.directions.v5.MapboxDirections;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -93,6 +95,7 @@ import com.mapbox.services.android.telemetry.location.LostLocationEngine;
 import com.mapbox.services.commons.geojson.Feature;
 import com.mapbox.services.commons.geojson.FeatureCollection;
 import com.mapbox.services.commons.geojson.Point;
+import com.mapbox.services.commons.models.Position;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -335,11 +338,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         setupUI(findViewById(R.id.mainRootView));
 
-        //appliedFiltersWrapper.addView(backButton);
-
-
-        goToHeatmapActivityIntent = new Intent(MainActivity.this, HeatmapActivity.class);
-        //startActivity(goToHeatmapActivityIntent);
 
     } // END THE ON CREATE METHOD
 
