@@ -69,6 +69,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mapbox.api.directions.v5.DirectionsCriteria;
+import com.mapbox.api.directions.v5.MapboxDirections;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -93,6 +95,7 @@ import com.mapbox.services.android.telemetry.location.LostLocationEngine;
 import com.mapbox.services.commons.geojson.Feature;
 import com.mapbox.services.commons.geojson.FeatureCollection;
 import com.mapbox.services.commons.geojson.Point;
+import com.mapbox.services.commons.models.Position;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -333,11 +336,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         setupUI(findViewById(R.id.mainRootView));
 
-        //appliedFiltersWrapper.addView(backButton);
-
-
-        goToHeatmapActivityIntent = new Intent(MainActivity.this, HeatmapActivity.class);
-        //startActivity(goToHeatmapActivityIntent);
 
     } // END THE ON CREATE METHOD
 
@@ -473,15 +471,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 whereToPlace.setText(whereToEditText.getText());
                 String meridian = "am";
                 int hour = timePicker.getCurrentHour();
-                if (hour > 12) {
-                    meridian = "pm";
-                    hour = hour - 12;
-                }
-                String hourStr = Integer.toString(hour);
+                int minute = timePicker.getCurrentMinute();
                 String minuteStr = timePicker.getCurrentMinute().toString();
-                if (minuteStr.length() == 1) minuteStr = "0" + minuteStr;
+                if (hour > 12) {meridian = "pm"; hour = hour - 12;}
+                if (minute < 10) {minuteStr = "0".concat(minuteStr);}
+                String hourStr = Integer.toString(hour);
                 whereToTime.setText(hourStr+":"+minuteStr+meridian);
                 addMarkers();
+                drawHardcodedRoute();
 
             }
         });
@@ -755,12 +752,20 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 System.out.println(point);
                 destinationPosition = com.mapbox.geojson.Point.fromLngLat(point.getLongitude(), point.getLatitude());
-                originPosition = com.mapbox.geojson.Point.fromLngLat(-122.258875, 37.865593);
+                //destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.283399, 37.873960);
+                originPosition = com.mapbox.geojson.Point.fromLngLat(-122.257290, 37.867460);
 
                 getRoute(originPosition, destinationPosition);
             }
         });
 
+    }
+
+    private void drawHardcodedRoute() {
+        destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.283399, 37.873960);
+        originPosition = com.mapbox.geojson.Point.fromLngLat(-122.257290, 37.867460);
+
+        getRoute(originPosition, destinationPosition);
     }
 
     private void addMarkers() {

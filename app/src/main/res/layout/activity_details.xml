@@ -57,7 +57,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="24dp"
-        android:text="Very likely to get to The Filmore by 10 PM"
+        android:text="Very likely to get to Berkeley BART by 6:10 PM"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.231"
