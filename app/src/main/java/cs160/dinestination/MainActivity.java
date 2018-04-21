@@ -371,7 +371,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                             //MapboxNavigation navigation = new MapboxNavigation(mContext, MapboxConstants.MAP_TOKEN);
                             //navigationMapRoute = new NavigationMapRoute(navigation, mapView, mapboxMap);
                             navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
-
                         }
 
                         Toast.makeText(getApplicationContext(), Double.toString(currentRoute.distance()), Toast.LENGTH_SHORT).show();
@@ -393,9 +392,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 R.id.indian_check, R.id.american_check, R.id.japanese_check, R.id.burmese_check};
         int[] attire_ids = new int[] {R.id.casual_check, R.id.relaxed_check, R.id.dressy_check, R.id.formal_check};
 
-        mSwitch1.isChecked(); // groups
-        mSwitch2.isChecked(); // kids
-
         for (int i = 0; i < cuisine_ids.length; i++) {
             CheckBox cBox = findViewById(cuisine_ids[i]);
             if (cBox.isChecked()) {
@@ -410,23 +406,15 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
 
-        if (mSwitch1.isChecked()) {
-            stringsForButtons.add("Groups");
-        }
-        if (mSwitch2.isChecked()) {
-            stringsForButtons.add("Kids");
-        }
-
-        if (stringsForButtons.size() == 0) {
-//            stringsForButtons.add();
-        }
+        if (mSwitch1.isChecked()) stringsForButtons.add("Groups");
+        if (mSwitch2.isChecked()) stringsForButtons.add("Kids");
 
         appliedFiltersWrapper.removeAllViewsInLayout();
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         lp.setMargins(4,0,4,0);
         lp.height = 105;
 
-        if (stringsForButtons.size() != 0) {
+        if (stringsForButtons.size() != 0) { // if filters have been applied
             Button plusButton = new Button(this);
             Button plusButton2 = new Button(this);
             plusButton.setBackground(getResources().getDrawable(R.drawable.plus_button));
@@ -468,7 +456,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 whereToInputViewFlipper.showNext();
-                whereToPlace.setText(whereToEditText.getText());
+                String whereToText = whereToEditText.getText().toString();
+                whereToPlace.setText(whereToText);
                 String meridian = "am";
                 int hour = timePicker.getCurrentHour();
                 int minute = timePicker.getCurrentMinute();
