@@ -406,10 +406,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             appliedFiltersWrapper.removeViewsInLayout(1, appliedFiltersWrapper.getChildCount()-1);
             filtersRowTopBar.removeAllViewsInLayout(); // since never want AddFilters button showing up.
 
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            lp.setMargins(4,0,4,0);
-            lp.height = 105;
-
             Button plusButton = filtersRowGeneratePlusButton();
             Button plusButton2 = filtersRowGeneratePlusButton();
 
@@ -418,6 +414,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
             addFiltersButton.setVisibility(View.GONE);
             layoverRectangle.setImageAlpha(0);
+
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            lp.setMargins(4,0,4,0);
+            lp.height = 105;
             for (String label : stringsForButtons) {
                 Button buttonToAdd = filtersRowGenerateButton(label);
                 Button buttonToAdd2 = filtersRowGenerateButton(label);
