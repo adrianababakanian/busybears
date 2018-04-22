@@ -13,7 +13,7 @@
     <ViewFlipper
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/viewFlipper1">
+        android:id="@+id/viewFlipper1" >
 
         <include
             android:id="@+id/where_to_element"
@@ -22,7 +22,6 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="100dp"
             layout="@layout/where_to_preview_element" />
-
 
         <include
             android:id="@+id/top_input_element"
@@ -76,10 +75,17 @@
         android:textSize="16dp"
         android:visibility="gone"/>
 
-    <include
-        android:visibility="gone"
-        android:id="@+id/filter_row_top_bar"
-        layout="@layout/filtered_row_top_input_element" />
-    <!--must put this below the filters bottom sheet, else the addFilters button fails-->
+
+        <include
+            android:visibility="gone"
+            android:id="@+id/filter_row_top_bar"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center_horizontal"
+            layout="@layout/filtered_row_top_input_element" />
+        <!--must put this below the filters bottom sheet, else the addFilters button fails-->
 
 </android.support.design.widget.CoordinatorLayout>
