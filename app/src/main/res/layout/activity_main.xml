@@ -20,8 +20,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="300px"
             layout="@layout/where_to_preview_element" />
+        <!--100dp = 300px at xxhdpi (nexus 5x)-->
 
         <include
             android:id="@+id/top_input_element"
@@ -83,7 +84,6 @@
             android:layout_marginEnd="20dp"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:layout_gravity="center_horizontal"
             layout="@layout/filtered_row_top_input_element" />
         <!--must put this below the filters bottom sheet, else the addFilters button fails-->
 

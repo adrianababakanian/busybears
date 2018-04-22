@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.ViewFlipper;
@@ -114,6 +115,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     LinearLayout filtersRowTopBar;
 
     // Map-related.
+    RelativeLayout navigationRowWrapper;
+    ImageButton navigationWalkButton;
+    ImageButton navigationCarButton;
+    ImageButton navigationTransitButton;
+    ImageButton navigationTaxiButton;
+    RelativeLayout whereToElement;
+
+    // Mapbox items.
     private static final String MARKER_SOURCE = "markers-source";
     private static final String MARKER_STYLE_LAYER = "markers-style-layer";
     private static final String MARKER_IMAGE = "custom-marker";
@@ -167,6 +176,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         timeSpinnerSheetBehavior = BottomSheetBehavior.from(timeSpinnerBottomSheet);
         timePicker = findViewById(R.id.time_picker);
         whereToRectangle = findViewById(R.id.where_to_rectangle);
+        whereToElement = findViewById(R.id.where_to_element);
         whereToPlace = findViewById(R.id.where_to_place);
         whereToTime = findViewById(R.id.where_to_time);
         topInputElement = findViewById(R.id.top_input_element);
@@ -185,6 +195,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         mainTopInputElement = findViewById(R.id.main_top_input_element);
         findRestaurantsButton = findViewById(R.id.find_restaurants_button);
         filtersRowTopBar = findViewById(R.id.filter_row_top_bar);
+
+        navigationRowWrapper = findViewById(R.id.navigation_row_wrapper);
+        navigationWalkButton = findViewById(R.id.navigation_walk_button);
+        navigationCarButton = findViewById(R.id.navigation_car_button);
+        navigationTransitButton = findViewById(R.id.navigation_transit_button);
+        navigationTaxiButton = findViewById(R.id.navigation_taxi_button);
 
         whereToInputViewFlipper.setZ(999);
         timeSpinnerBottomSheet.setZ(999);
@@ -221,6 +237,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 if (timeSpinnerSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
                     timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                     findRestaurantsButton.setVisibility(View.GONE);
+                    navigationRowWrapper.setVisibility(View.GONE);
+                    whereToElementReposition(false);
                     whereToInputViewFlipper.showNext();
                 } else {
                     timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -238,7 +256,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 // addMarkers();
             }
         });
-
         layoutPreviewBottomSheet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -254,8 +271,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-
-        setOnClickForExitInputButton();
 
         mapView = (MapView) findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
@@ -283,9 +298,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         // set up bottom sheet
         setPreviewBottomSheetCallback();
 
+        setOnClickForExitInputButton();
         setOnClickForFilterTrigger(filtersCheckButton);
         setOnClickForFilterBack(filtersBackButton);
         setOnClickForFindRestaurants(findRestaurantsButton);
+        setOnClickForNavigationButtons(navigationWalkButton, navigationCarButton, navigationTransitButton, navigationTaxiButton);
+        navigationWalkButton.callOnClick(); // to set walk as the default routing option.
 
         layoverRectangle.setImageAlpha(0);
         layoverRectangle.setZ(4);
@@ -345,6 +363,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+    /**
+     * Generates buttons to be displayed in the filters scroll row.
+     */
     private void filtersRowGenerator() {
         ArrayList<String> stringsForButtons = new ArrayList<>();
         int[] cuisine_ids = new int[] {R.id.thai_check, R.id.italian_check, R.id.chinese_check, R.id.mexican_check,
@@ -398,6 +419,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Auxiliary functions for filtersRowGenerator().
+     */
     private Button filtersRowGenerateButton(String label) {
         Button newButton = new Button(this);
         newButton.setText(label);
@@ -422,6 +446,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         return newPlusButton;
     }
 
+    /**
+     * onClick for the 'Search' button - sets whereTo, time, draws route, etc.
+     */
     private void setOnClickForExitInputButton() {
         exitInputButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -443,6 +470,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 addMarkers();
                 drawHardcodedRoute();
                 findRestaurantsButton.setVisibility(View.VISIBLE);
+                whereToElementReposition(true);
+                navigationRowWrapper.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -471,7 +500,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * Hide the soft keyboard.
-     * @param activity
      */
     public static void hideSoftKeyboard(Activity activity) {
         InputMethodManager inputMethodManager =
@@ -481,7 +509,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 activity.getCurrentFocus().getWindowToken(), 0);
     }
 
-    // temporary set on clicks for back and check button triggers
+    /**
+     * onClick for filter preferences sheet check mark - applies selected filters.
+     */
     private void setOnClickForFilterTrigger(ImageView iv) {
         iv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -496,6 +526,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    /**
+     * onClick for filter preference sheet cross mark - ignores filter changes.
+     */
     private void setOnClickForFilterBack(ImageView iv) {
         iv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -504,24 +537,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 layoverRectangle.setImageAlpha(0);
             }
         });
-    }
-
-    /**
-     * Listen for checkbox changes.
-     */
-    private void setOnCheckedChangeListener() {
-//        tv.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                if (isChecked) {
-//                    selectedStrings.add(tv.getText().toString());
-//                }else{
-//                    selectedStrings.remove(tv.getText().toString());
-//                }
-//
-//            }
-//        });
     }
 
     /**
@@ -547,57 +562,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             //lastLocation = locationEngine.getLastLocation();
         }
     }
-
-    /**
-     * On clicks for closing preference popup.
-     * @param iv
-     */
-//    private void setOnClickForFilterTrigger(ImageView iv) {
-//        iv.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                // REPLACE THE NAME OF THE BEHAVIOR HERE TO MATCH THE FILTER ONE
-//                if (sheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
-//                    sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-//                    layoverRectangle.setImageAlpha(100);
-//                } else {
-//                    sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-//                    layoverRectangle.setImageAlpha(0);
-//
-//                }
-//            }
-//        });
-//    }
-
-    // trigger filter bottom sheet expansion DEPRECATED THIS WAS FOR FILTERS
-//    private void setBottomSheetCallback() {
-//        sheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-//            @Override
-//            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-//                switch (newState) {
-//                    case BottomSheetBehavior.STATE_HIDDEN:
-//                        break;
-//                    case BottomSheetBehavior.STATE_EXPANDED: {
-//                        testButton.setText("Close");
-//                    }
-//                    break;
-//                    case BottomSheetBehavior.STATE_COLLAPSED: {
-//                        testButton.setText("Expand");
-//                    }
-//                    break;
-//                    case BottomSheetBehavior.STATE_DRAGGING:
-//                        break;
-//                    case BottomSheetBehavior.STATE_SETTLING:
-//                        break;
-//                }
-//            }
-//
-//            @Override
-//            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-//
-//            }
-//        });
-//    }
 
     /**
      * Trigger preview bottom sheet expansion.
@@ -673,20 +637,105 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    /**
+     * onClick for 'Find restaurants' button - executes goToHeatmapActivity intent.
+     */
     private void setOnClickForFindRestaurants(View v) {
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent goToHeatMapActivity = new Intent(MainActivity.this, HeatmapActivity.class);
+                goToHeatMapActivity.putExtra("whereToLocation", whereToEditText.getText().toString());
+                goToHeatMapActivity.putExtra("whereToTime", whereToTime.getText().toString());
+                // TODO: Pass required values across
+//                goToHeatMapActivity.putExtra(); // need to pass all applied filters lol
+//                      //- can do hacky implementation with standardised var names and loop through, or serializable/parcelable class.
+//                goToHeatMapActivity.putExtra() // pass routing latitude & longitude over. or some way to do using mapbox?
+
                 startActivity(goToHeatMapActivity);
+            }
+        });
+    }
+
+    /**
+     * onClick listeners for nav option buttons - sets visuals for which is selected.
+     * TODO: hook these clicks up to Mapbox routing!
+     */
+    private void setOnClickForNavigationButtons(final ImageButton vWalk, final ImageButton vCar,
+                                                final ImageButton vTransit, final ImageButton vTaxi) {
+        vWalk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                vWalk.setBackground(getResources().getDrawable(R.drawable.nav_button_pressed_backg)); // for rounded buttons
+                vWalk.setBackground(getResources().getDrawable(R.color.colorPrimary));
+                vWalk.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_walk_24dp_pressed));
+                vCar.setBackground(getResources().getDrawable(R.color.white));
+                vCar.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_car_24dp));
+                vTransit.setBackground(getResources().getDrawable(R.color.white));
+                vTransit.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_transit_24dp));
+                vTaxi.setBackground(getResources().getDrawable(R.color.white));
+                vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
+            }
+        });
+        vCar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                vWalk.setBackground(getResources().getDrawable(R.color.white));
+                vWalk.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_walk_24dp));
+                vCar.setBackground(getResources().getDrawable(R.color.colorPrimary));
+                vCar.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_car_24dp_pressed));
+                vTransit.setBackground(getResources().getDrawable(R.color.white));
+                vTransit.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_transit_24dp));
+                vTaxi.setBackground(getResources().getDrawable(R.color.white));
+                vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
+            }
+        });
+        vTransit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                vWalk.setBackground(getResources().getDrawable(R.color.white));
+                vWalk.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_walk_24dp));
+                vCar.setBackground(getResources().getDrawable(R.color.white));
+                vCar.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_car_24dp));
+                vTransit.setBackground(getResources().getDrawable(R.color.colorPrimary));
+                vTransit.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_transit_24dp_pressed));
+                vTaxi.setBackground(getResources().getDrawable(R.color.white));
+                vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
+            }
+        });
+        vTaxi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                vWalk.setBackground(getResources().getDrawable(R.color.white));
+                vWalk.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_walk_24dp));
+                vCar.setBackground(getResources().getDrawable(R.color.white));
+                vCar.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_car_24dp));
+                vTransit.setBackground(getResources().getDrawable(R.color.white));
+                vTransit.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_transit_24dp));
+                vTaxi.setBackground(getResources().getDrawable(R.color.colorPrimary));
+                vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi_pressed));
             }
         });
     }
 
 
     /**
+     * Repositions whereToElement up or down. Moves in tandem with 'Find restaurants' button visibility.
+     */
+    private void whereToElementReposition(Boolean shouldShiftUp) {
+        ViewGroup.MarginLayoutParams whereToElementParams = (ViewGroup.MarginLayoutParams) whereToElement.getLayoutParams();
+        if (shouldShiftUp) {
+            whereToElementParams.setMargins(whereToElementParams.leftMargin, 133, whereToElementParams.rightMargin, whereToElementParams.bottomMargin);
+        } else {
+            whereToElementParams.setMargins(whereToElementParams.leftMargin, 300, whereToElementParams.rightMargin, whereToElementParams.bottomMargin);
+        }
+        whereToElement.requestLayout();
+    }
+
+
+    //////// MAPBOX THINGS ////////
+    /**
      * Mapboc overrides.
-     * @param mapboxMap
      */
     @Override
     public void onMapReady(final MapboxMap mapboxMap) {
