@@ -75,7 +75,6 @@
         android:textSize="16dp"
         android:visibility="gone"/>
 
-
         <include
             android:visibility="gone"
             android:id="@+id/filter_row_top_bar"
@@ -87,5 +86,6 @@
             android:layout_gravity="center_horizontal"
             layout="@layout/filtered_row_top_input_element" />
         <!--must put this below the filters bottom sheet, else the addFilters button fails-->
+
 
 </android.support.design.widget.CoordinatorLayout>

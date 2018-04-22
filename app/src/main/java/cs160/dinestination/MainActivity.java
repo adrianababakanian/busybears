@@ -297,14 +297,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         addFiltersButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("*******", "got a click"); // nope, not receiving the click at all..
-                // is something on top getting the clcikc?????
-                if (appliedFiltersLayout.getVisibility() == View.VISIBLE) {
-//                    appliedFiltersLayout.setVisibility(View.VISIBLE);
-                    Log.d("********", "hello");
-//                    addFiltersButton.setVisibility(View.INVISIBLE);
-                    filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                }
+                filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             }
         });
 
@@ -417,46 +410,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             lp.setMargins(4,0,4,0);
             lp.height = 105;
 
-            Button plusButton = new Button(this);
-            Button plusButton2 = new Button(this);
-            plusButton.setBackground(getResources().getDrawable(R.drawable.plus_button));
-            plusButton2.setBackground(getResources().getDrawable(R.drawable.plus_button));
+            Button plusButton = filtersRowGeneratePlusButton();
+            Button plusButton2 = filtersRowGeneratePlusButton();
 
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    100, 104);
-            params.setMargins(4, 0, 4, 0);
-
-            plusButton.setLayoutParams(params);
-            plusButton2.setLayoutParams(params);
-            plusButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                }
-            });
-            plusButton2.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                }
-            });
             appliedFiltersWrapper.addView(plusButton);
             filtersRowTopBar.addView(plusButton2);
 
             addFiltersButton.setVisibility(View.GONE);
             layoverRectangle.setImageAlpha(0);
             for (String label : stringsForButtons) {
-                Button buttonToAdd = new Button(this);
-                Button buttonToAdd2 = new Button(this);
-                buttonToAdd.setText(label);
-                buttonToAdd2.setText(label);
-                buttonToAdd.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                buttonToAdd2.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                buttonToAdd.setTextColor(getResources().getColor(R.color.white));
-                buttonToAdd2.setTextColor(getResources().getColor(R.color.white));
-                buttonToAdd.setAllCaps(Boolean.FALSE);
-                buttonToAdd2.setAllCaps(Boolean.FALSE);
-
+                Button buttonToAdd = filtersRowGenerateButton(label);
+                Button buttonToAdd2 = filtersRowGenerateButton(label);
                 appliedFiltersWrapper.addView(buttonToAdd, lp);
                 filtersRowTopBar.addView(buttonToAdd2, lp);
             }
@@ -470,6 +434,30 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             filtersRowTopBar.removeAllViewsInLayout();
             filtersRowTopBar.setVisibility(View.GONE);
         }
+    }
+
+    private Button filtersRowGenerateButton(String label) {
+        Button newButton = new Button(this);
+        newButton.setText(label);
+        newButton.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        newButton.setTextColor(getResources().getColor(R.color.white));
+        newButton.setAllCaps(Boolean.FALSE);
+        return newButton;
+    }
+    private Button filtersRowGeneratePlusButton() {
+        Button newPlusButton = new Button(this);
+        newPlusButton.setBackground(getResources().getDrawable(R.drawable.plus_button));
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                100, 104);
+        params.setMargins(4, 0, 4, 0);
+        newPlusButton.setLayoutParams(params);
+        newPlusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            }
+        });
+        return newPlusButton;
     }
 
     private void setOnClickForExitInputButton() {
