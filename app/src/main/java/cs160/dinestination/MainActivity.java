@@ -340,6 +340,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         setOnClickForFilterBack(filtersBackButton);
         setOnClickForFindRestaurants(findRestaurantsButton);
         setOnClickForNavigationButtons(navigationWalkButton, navigationCarButton, navigationTransitButton, navigationTaxiButton);
+        navigationWalkButton.callOnClick(); // to set walk as the default routing option. 
 
         layoverRectangle.setImageAlpha(0);
         layoverRectangle.setZ(4);
