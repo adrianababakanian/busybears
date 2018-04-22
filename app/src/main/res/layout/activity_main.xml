@@ -9,6 +9,7 @@
     app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
     android:id="@+id/mainRootView">
 
+
     <ViewFlipper
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -74,5 +75,11 @@
         android:textColor="@color/white"
         android:textSize="16dp"
         android:visibility="gone"/>
+
+    <include
+        android:visibility="gone"
+        android:id="@+id/filter_row_top_bar"
+        layout="@layout/filtered_row_top_input_element" />
+    <!--must put this below the filters bottom sheet, else the addFilters button fails-->
 
 </android.support.design.widget.CoordinatorLayout>
