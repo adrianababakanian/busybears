@@ -744,7 +744,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void drawHardcodedRoute() {
         destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.283399, 37.873960);
-        originPosition = com.mapbox.geojson.Point.fromLngLat(-122.257290, 37.867460);
+        originPosition = com.mapbox.geojson.Point.fromLngLat(originLocation.getLongitude(), originLocation.getLatitude());
 
         getRoute(originPosition, destinationPosition);
     }
@@ -752,19 +752,19 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private void addMarkers() {
         if (!ADDED_MARKERS) {
             List<Feature> features = new ArrayList<>();
-        /* Source: A data source specifies the geographic coordinate where the image marker gets placed. */
+            /* Source: A data source specifies the geographic coordinate where the image marker gets placed. */
             features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.258875,37.865593})));
             features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.269122,37.871856})));
             features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.269532,37.879842})));
 
-            // START: CHANNING BOWDITCH
-            features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.257290,37.867460})));
-            // END: NORTH BERKELEY
+            // START
+            features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {originLocation.getLongitude(),originLocation.getLatitude()})));
+            // END
             features.add(Feature.fromGeometry(Point.fromCoordinates(new double[] {-122.283399,37.873960})));
             FeatureCollection featureCollection = FeatureCollection.fromFeatures(features);
             GeoJsonSource source = new GeoJsonSource(MARKER_SOURCE, featureCollection);
             mapboxMap.addSource(source);
-        /* Style layer: A style layer ties together the source and image and specifies how they are displayed on the map. */
+            /* Style layer: A style layer ties together the source and image and specifies how they are displayed on the map. */
             SymbolLayer markerStyleLayer = new SymbolLayer(MARKER_STYLE_LAYER, MARKER_SOURCE)
                     .withProperties(
                             PropertyFactory.iconAllowOverlap(true),
@@ -851,6 +851,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
+    @SuppressWarnings( {"MissingPermission"})
     protected void onStart() {
         super.onStart();
         if (locationEngine != null) {
