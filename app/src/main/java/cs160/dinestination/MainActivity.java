@@ -1,92 +1,58 @@
 package cs160.dinestination;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
-import android.graphics.Typeface;
-import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.widget.NestedScrollView;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
-import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.ViewFlipper;
 import android.Manifest;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.location.Location;
-import android.net.Uri;
-import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.BottomSheetDialog;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mapbox.api.directions.v5.DirectionsCriteria;
-import com.mapbox.api.directions.v5.MapboxDirections;
+import com.mapbox.android.core.permissions.PermissionsListener;
+import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.mapboxsdk.Mapbox;
-import com.mapbox.mapboxsdk.annotations.Marker;
-import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerMode;
+import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
-import com.mapbox.mapboxsdk.style.layers.PropertyValue;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
-import com.mapbox.services.android.telemetry.location.AndroidLocationEngine;
 import com.mapbox.services.android.telemetry.location.LocationEngine;
 import com.mapbox.services.android.telemetry.location.LocationEngineListener;
 import com.mapbox.services.android.telemetry.location.LocationEnginePriority;
@@ -95,34 +61,20 @@ import com.mapbox.services.android.telemetry.location.LostLocationEngine;
 import com.mapbox.services.commons.geojson.Feature;
 import com.mapbox.services.commons.geojson.FeatureCollection;
 import com.mapbox.services.commons.geojson.Point;
-import com.mapbox.services.commons.models.Position;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Filter;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MainActivity extends FragmentActivity implements OnMapReadyCallback, LocationEngineListener, PermissionsListener {
 
     /**
      * Code used in requesting runtime permissions.
      */
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
-
-    /**
-     * Constant used in the location settings dialog.
-     */
-    private static final int REQUEST_CHECK_SETTINGS = 0x1;
-
-    /**
-     * The desired interval for location updates. Inexact. Updates may be more or less frequent.
-     */
-    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
-
-    String MY_PERMISSIONS_ACCESS_FINE_LOCATION = "Please enable locationing!";
 
     String priceRange;
 
@@ -131,7 +83,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     LinearLayout layoutPreviewBottomSheet;
     BottomSheetBehavior filtersSheetBehavior;
     LinearLayout filtersBottomSheet;
-    Button testButton;
     SeekBar mSeekBar;
     boolean priceSliderUsedFlag;
     Switch mSwitch1;
@@ -140,8 +91,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     ImageView layoverRectangle;
     ImageView filtersCheckButton;
     ImageView filtersBackButton;
-    ImageView marker;
-    Location lastLocation;
+    //Location lastLocation;
 
     BottomSheetBehavior timeSpinnerSheetBehavior;
     LinearLayout timeSpinnerBottomSheet;
@@ -157,20 +107,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     ConstraintLayout appliedFiltersLayout;
     Button addFiltersButton;
     EditText whereToEditText;
-    ImageButton addMoreFiltersButton;
     Button exitInputButton;
     LinearLayout appliedFiltersWrapper;
     ConstraintLayout mainTopInputElement;
     Button findRestaurantsButton;
     LinearLayout filtersRowTopBar;
 
-    // Mapbox items.
+    // Map-related.
     private static final String MARKER_SOURCE = "markers-source";
     private static final String MARKER_STYLE_LAYER = "markers-style-layer";
     private static final String MARKER_IMAGE = "custom-marker";
     private MapboxMap mapboxMap;
     private MapView mapView;
-    private LocationEngine locationEngine;
     String mapboxAccessToken = "pk.eyJ1IjoiYWRyaWFuYWJhYmFrYW5pYW4iLCJhIjoiY2pnMTgxeDQ4MWdwOTJ4dGxnbzU4OTVyMCJ9.CetiZIb8bdIEolkPM4AHbg";
 
     // Route-related.
@@ -179,8 +127,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private DirectionsRoute currentRoute;
     private static final String TAG = "DirectionsActivity";
     private NavigationMapRoute navigationMapRoute;
-
     private Boolean ADDED_MARKERS = Boolean.FALSE;
+
+    // Location layer-related.
+    private PermissionsManager permissionsManager;
+    private LocationLayerPlugin locationPlugin;
+    private LocationEngine locationEngine;
+    private Location originLocation;
 
 
     @Override
@@ -188,9 +141,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         Mapbox.getInstance(this, mapboxAccessToken);
 
-        lastLocation = new Location("");
-        lastLocation.setLatitude(37.866528);
-        lastLocation.setLongitude(-122.258722);
+//        lastLocation = new Location("");
+//        lastLocation.setLatitude(37.866528);
+//        lastLocation.setLongitude(-122.258722);
 
         setContentView(R.layout.activity_main);
 
@@ -306,7 +259,16 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         mapView = (MapView) findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(this);
+
+        mapView.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(final MapboxMap map) {
+                mapboxMap = map;
+                enableLocationPlugin();
+            }
+
+            ;
+        });
 
         getApplicationContext().setTheme(R.style.AppTheme);
 
@@ -475,7 +437,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 if (hour > 12) {meridian = "pm"; hour = hour - 12;}
                 if (minute < 10) {minuteStr = "0".concat(minuteStr);}
                 String hourStr = Integer.toString(hour);
-                whereToTime.setText(hourStr+":"+minuteStr+meridian);
+                whereToTime.setText(" "+hourStr+":"+minuteStr+meridian);
+                whereToPlace.setTextColor(getResources().getColor(R.color.textColorDark));
+                whereToTime.setTextColor(getResources().getColor(R.color.textColorDark));
                 addMarkers();
                 drawHardcodedRoute();
                 findRestaurantsButton.setVisibility(View.VISIBLE);
@@ -580,7 +544,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         } else {
             // Permission has already been granted
             locationEngine.requestLocationUpdates();
-            lastLocation = locationEngine.getLastLocation();
+            //lastLocation = locationEngine.getLastLocation();
         }
     }
 
@@ -811,15 +775,91 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         ADDED_MARKERS = Boolean.TRUE;
     }
 
+    /**
+     * Mapbox overrides.
+     */
+
+    @SuppressWarnings( {"MissingPermission"})
+    private void enableLocationPlugin() {
+        // Check if permissions are enabled and if not request
+        if (PermissionsManager.areLocationPermissionsGranted(this)) {
+            // Create an instance of LOST location engine
+            initializeLocationEngine();
+
+            locationPlugin = new LocationLayerPlugin(mapView, mapboxMap, locationEngine);
+            locationPlugin.setLocationLayerEnabled(LocationLayerMode.TRACKING);
+        } else {
+            permissionsManager = new PermissionsManager(this);
+            permissionsManager.requestLocationPermissions(this);
+        }
+    }
+
+    @SuppressWarnings( {"MissingPermission"})
+    private void initializeLocationEngine() {
+        locationEngine = new LostLocationEngine(MainActivity.this);
+        locationEngine.setPriority(LocationEnginePriority.HIGH_ACCURACY);
+        locationEngine.activate();
+
+        Location lastLocation = locationEngine.getLastLocation();
+        if (lastLocation != null) {
+            originLocation = lastLocation;
+            setCameraPosition(lastLocation);
+            Log.d("lastLocation", lastLocation.toString());
+        } else {
+            locationEngine.addLocationEngineListener(this);
+            Log.d("null location", "sad reacts");
+        }
+    }
+
+    private void setCameraPosition(Location location) {
+        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(location.getLatitude(), location.getLongitude()), 13));
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    public void onExplanationNeeded(List<String> permissionsToExplain) {
+
+    }
+
+    @Override
+    public void onPermissionResult(boolean granted) {
+        if (granted) {
+            enableLocationPlugin();
+        } else {
+            finish();
+        }
+    }
+
+    @Override
+    @SuppressWarnings( {"MissingPermission"})
+    public void onConnected() {
+        locationEngine.requestLocationUpdates();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        if (location != null) {
+            originLocation = location;
+            setCameraPosition(location);
+            locationEngine.removeLocationEngineListener(this);
+        }
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
-
-        mapView.onStart();
-
         if (locationEngine != null) {
-            requestLocationWithCheck();
+            locationEngine.requestLocationUpdates();
         }
+        if (locationPlugin != null) {
+            locationPlugin.onStart();
+        }
+        mapView.onStart();
     }
 
     @Override
@@ -837,11 +877,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onStop() {
         super.onStop();
-
         if (locationEngine != null) {
             locationEngine.removeLocationUpdates();
         }
-
+        if (locationPlugin != null) {
+            locationPlugin.onStop();
+        }
         mapView.onStop();
     }
 
@@ -855,6 +896,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
+        if (locationEngine != null) {
+            locationEngine.deactivate();
+        }
     }
 
     @Override
@@ -875,11 +919,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
             @Override
             public void onLocationChanged(Location location) {
-                Log.d("Latitude: ", Double.toString(location.getLatitude()));
-                Log.d("Longitude: ", Double.toString(location.getLongitude()));
-                Log.d("Latitude: ", Double.toString(lastLocation.getLatitude()));
-                Log.d("Longitude: ", Double.toString(lastLocation.getLongitude()));
-                Log.e("Location: ", lastLocation.toString());
+//                Log.d("Latitude: ", Double.toString(location.getLatitude()));
+//                Log.d("Longitude: ", Double.toString(location.getLongitude()));
+//                Log.d("Latitude: ", Double.toString(lastLocation.getLatitude()));
+//                Log.d("Longitude: ", Double.toString(lastLocation.getLongitude()));
+//                Log.e("Location: ", lastLocation.toString());
             }
         });
     }
