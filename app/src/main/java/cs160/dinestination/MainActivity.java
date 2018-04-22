@@ -164,6 +164,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     Button findRestaurantsButton;
     LinearLayout filtersRowTopBar;
 
+    RelativeLayout navigationRowWrapper;
+    ImageButton navigationWalkButton;
+    ImageButton navigationCarButton;
+    ImageButton navigationTransitButton;
+    ImageButton navigationTaxiButton;
+
     // Mapbox items.
     private static final String MARKER_SOURCE = "markers-source";
     private static final String MARKER_STYLE_LAYER = "markers-style-layer";
@@ -233,6 +239,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         findRestaurantsButton = findViewById(R.id.find_restaurants_button);
         filtersRowTopBar = findViewById(R.id.filter_row_top_bar);
 
+        navigationRowWrapper = findViewById(R.id.navigation_row_wrapper);
+        navigationWalkButton = findViewById(R.id.navigation_walk_button);
+        navigationCarButton = findViewById(R.id.navigation_car_button);
+        navigationTransitButton = findViewById(R.id.navigation_transit_button);
+        navigationTaxiButton = findViewById(R.id.navigation_taxi_button);
+
         whereToInputViewFlipper.setZ(999);
         timeSpinnerBottomSheet.setZ(999);
         filtersBottomSheet.setZ(1000);
@@ -268,6 +280,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 if (timeSpinnerSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
                     timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                     findRestaurantsButton.setVisibility(View.GONE);
+                    navigationRowWrapper.setVisibility(View.GONE);
                     whereToInputViewFlipper.showNext();
                 } else {
                     timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -302,8 +315,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
 
-        setOnClickForExitInputButton();
-
         mapView = (MapView) findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
@@ -321,9 +332,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         // set up bottom sheet
         setPreviewBottomSheetCallback();
 
+        setOnClickForExitInputButton();
         setOnClickForFilterTrigger(filtersCheckButton);
         setOnClickForFilterBack(filtersBackButton);
         setOnClickForFindRestaurants(findRestaurantsButton);
+        setOnClickForNavigationButtons(navigationWalkButton, navigationCarButton, navigationTransitButton, navigationTaxiButton);
 
         layoverRectangle.setImageAlpha(0);
         layoverRectangle.setZ(4);
@@ -479,6 +492,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 addMarkers();
                 drawHardcodedRoute();
                 findRestaurantsButton.setVisibility(View.VISIBLE);
+                navigationRowWrapper.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -543,24 +557,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     /**
-     * Listen for checkbox changes.
-     */
-    private void setOnCheckedChangeListener() {
-//        tv.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                if (isChecked) {
-//                    selectedStrings.add(tv.getText().toString());
-//                }else{
-//                    selectedStrings.remove(tv.getText().toString());
-//                }
-//
-//            }
-//        });
-    }
-
-    /**
      * Request the user's location before querying the location engine.
      */
     private void requestLocationWithCheck() {
@@ -583,57 +579,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             lastLocation = locationEngine.getLastLocation();
         }
     }
-
-    /**
-     * On clicks for closing preference popup.
-     * @param iv
-     */
-//    private void setOnClickForFilterTrigger(ImageView iv) {
-//        iv.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                // REPLACE THE NAME OF THE BEHAVIOR HERE TO MATCH THE FILTER ONE
-//                if (sheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
-//                    sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-//                    layoverRectangle.setImageAlpha(100);
-//                } else {
-//                    sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-//                    layoverRectangle.setImageAlpha(0);
-//
-//                }
-//            }
-//        });
-//    }
-
-    // trigger filter bottom sheet expansion DEPRECATED THIS WAS FOR FILTERS
-//    private void setBottomSheetCallback() {
-//        sheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-//            @Override
-//            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-//                switch (newState) {
-//                    case BottomSheetBehavior.STATE_HIDDEN:
-//                        break;
-//                    case BottomSheetBehavior.STATE_EXPANDED: {
-//                        testButton.setText("Close");
-//                    }
-//                    break;
-//                    case BottomSheetBehavior.STATE_COLLAPSED: {
-//                        testButton.setText("Expand");
-//                    }
-//                    break;
-//                    case BottomSheetBehavior.STATE_DRAGGING:
-//                        break;
-//                    case BottomSheetBehavior.STATE_SETTLING:
-//                        break;
-//                }
-//            }
-//
-//            @Override
-//            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-//
-//            }
-//        });
-//    }
 
     /**
      * Trigger preview bottom sheet expansion.
@@ -719,7 +664,65 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    private void setOnClickForNavigationButtons(final ImageButton vWalk, final ImageButton vCar,
+                                                final ImageButton vTransit, final ImageButton vTaxi) {
+        // TODO: hook these clicks up to Mapbox routing!
+        vWalk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                vWalk.setBackground(getResources().getDrawable(R.color.colorPrimary));
+                vWalk.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_walk_24dp_pressed));
+                vCar.setBackground(getResources().getDrawable(R.color.white));
+                vCar.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_car_24dp));
+                vTransit.setBackground(getResources().getDrawable(R.color.white));
+                vTransit.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_transit_24dp));
+                vTaxi.setBackground(getResources().getDrawable(R.color.white));
+                vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
+            }
+        });
+        vCar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                vWalk.setBackground(getResources().getDrawable(R.color.white));
+                vWalk.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_walk_24dp));
+                vCar.setBackground(getResources().getDrawable(R.color.colorPrimary));
+                vCar.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_car_24dp_pressed));
+                vTransit.setBackground(getResources().getDrawable(R.color.white));
+                vTransit.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_transit_24dp));
+                vTaxi.setBackground(getResources().getDrawable(R.color.white));
+                vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
+            }
+        });
+        vTransit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                vWalk.setBackground(getResources().getDrawable(R.color.white));
+                vWalk.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_walk_24dp));
+                vCar.setBackground(getResources().getDrawable(R.color.white));
+                vCar.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_car_24dp));
+                vTransit.setBackground(getResources().getDrawable(R.color.colorPrimary));
+                vTransit.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_transit_24dp_pressed));
+                vTaxi.setBackground(getResources().getDrawable(R.color.white));
+                vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
+            }
+        });
+        vTaxi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                vWalk.setBackground(getResources().getDrawable(R.color.white));
+                vWalk.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_walk_24dp));
+                vCar.setBackground(getResources().getDrawable(R.color.white));
+                vCar.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_car_24dp));
+                vTransit.setBackground(getResources().getDrawable(R.color.white));
+                vTransit.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_transit_24dp));
+                vTaxi.setBackground(getResources().getDrawable(R.color.colorPrimary));
+                vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi_pressed));
+            }
+        });
+    }
 
+
+    //////// MAPBOX THINGS ////////
     /**
      * Mapboc overrides.
      * @param mapboxMap

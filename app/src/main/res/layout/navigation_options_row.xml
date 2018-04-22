@@ -8,48 +8,52 @@
 
 
     <ImageButton
+        android:id="@+id/navigation_walk_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_directions_walk_24dp"
-        android:paddingLeft="17dp"
-        android:paddingRight="17dp"
+        android:src="@drawable/ic_navigation_walk_24dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         />
 
     <ImageButton
+        android:id="@+id/navigation_car_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_directions_car_24dp"
-        android:paddingLeft="17dp"
-        android:paddingRight="17dp"
+        android:src="@drawable/ic_navigation_car_24dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         />
 
     <ImageButton
+        android:id="@+id/navigation_transit_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_directions_transit_24dp"
-        android:paddingLeft="17dp"
-        android:paddingRight="17dp"
+        android:src="@drawable/ic_navigation_transit_24dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         />
 
     <ImageButton
+        android:id="@+id/navigation_taxi_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:src="@drawable/ic_directions_call_taxi"
-        android:paddingLeft="17dp"
-        android:paddingRight="17dp"
+        android:src="@drawable/ic_navigation_call_taxi"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         />
