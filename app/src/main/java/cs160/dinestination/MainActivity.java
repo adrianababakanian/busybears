@@ -679,6 +679,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 Intent goToHeatMapActivity = new Intent(MainActivity.this, HeatmapActivity.class);
+                goToHeatMapActivity.putExtra("whereToLocation", whereToEditText.getText().toString());
+                goToHeatMapActivity.putExtra("whereToTime", whereToTime.getText().toString());
+                // TODO: Pass required values across
+//                goToHeatMapActivity.putExtra(); // need to pass all applied filters lol
+//                      //- can do hacky implementation with standardised var names and loop through, or serializable/parcelable class.
+//                goToHeatMapActivity.putExtra() // pass routing latitude & longitude over. or some way to do using mapbox?
+
                 startActivity(goToHeatMapActivity);
             }
         });
