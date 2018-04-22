@@ -301,7 +301,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 // addMarkers();
             }
         });
-
         layoutPreviewBottomSheet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -340,7 +339,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         setOnClickForFilterBack(filtersBackButton);
         setOnClickForFindRestaurants(findRestaurantsButton);
         setOnClickForNavigationButtons(navigationWalkButton, navigationCarButton, navigationTransitButton, navigationTaxiButton);
-        navigationWalkButton.callOnClick(); // to set walk as the default routing option. 
+        navigationWalkButton.callOnClick(); // to set walk as the default routing option.
 
         layoverRectangle.setImageAlpha(0);
         layoverRectangle.setZ(4);
@@ -400,6 +399,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+    /**
+     * Generates buttons to be displayed in the filters scroll row.
+     */
     private void filtersRowGenerator() {
         ArrayList<String> stringsForButtons = new ArrayList<>();
         int[] cuisine_ids = new int[] {R.id.thai_check, R.id.italian_check, R.id.chinese_check, R.id.mexican_check,
@@ -453,6 +455,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Auxiliary functions for filtersRowGenerator().
+     */
     private Button filtersRowGenerateButton(String label) {
         Button newButton = new Button(this);
         newButton.setText(label);
@@ -477,6 +482,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         return newPlusButton;
     }
 
+    /**
+     * onClick for the 'Search' button - sets whereTo, time, draws route, etc.
+     */
     private void setOnClickForExitInputButton() {
         exitInputButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -526,7 +534,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * Hide the soft keyboard.
-     * @param activity
      */
     public static void hideSoftKeyboard(Activity activity) {
         InputMethodManager inputMethodManager =
@@ -536,7 +543,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 activity.getCurrentFocus().getWindowToken(), 0);
     }
 
-    // temporary set on clicks for back and check button triggers
+    /**
+     * onClick for filter preferences sheet check mark - applies selected filters.
+     */
     private void setOnClickForFilterTrigger(ImageView iv) {
         iv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -551,6 +560,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    /**
+     * onClick for filter preference sheet cross mark - ignores filter changes.
+     */
     private void setOnClickForFilterBack(ImageView iv) {
         iv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -659,6 +671,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    /**
+     * onClick for 'Find restaurants' button - executes goToHeatmapActivity intent.
+     */
     private void setOnClickForFindRestaurants(View v) {
         v.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -669,9 +684,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    /**
+     * onClick listeners for nav option buttons - sets visuals for which is selected.
+     * TODO: hook these clicks up to Mapbox routing!
+     */
     private void setOnClickForNavigationButtons(final ImageButton vWalk, final ImageButton vCar,
                                                 final ImageButton vTransit, final ImageButton vTaxi) {
-        // TODO: hook these clicks up to Mapbox routing!
         vWalk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -728,6 +746,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+    /**
+     * Repositions whereToElement up or down. Moves in tandem with 'Find restaurants' button visibility.
+     */
     private void whereToElementReposition(Boolean shouldShiftUp) {
         ViewGroup.MarginLayoutParams whereToElementParams = (ViewGroup.MarginLayoutParams) whereToElement.getLayoutParams();
         if (shouldShiftUp) {
@@ -742,7 +763,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     //////// MAPBOX THINGS ////////
     /**
      * Mapboc overrides.
-     * @param mapboxMap
      */
     @Override
     public void onMapReady(final MapboxMap mapboxMap) {
