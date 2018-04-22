@@ -169,6 +169,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     ImageButton navigationCarButton;
     ImageButton navigationTransitButton;
     ImageButton navigationTaxiButton;
+    RelativeLayout whereToElement;
 
     // Mapbox items.
     private static final String MARKER_SOURCE = "markers-source";
@@ -220,6 +221,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         timeSpinnerSheetBehavior = BottomSheetBehavior.from(timeSpinnerBottomSheet);
         timePicker = findViewById(R.id.time_picker);
         whereToRectangle = findViewById(R.id.where_to_rectangle);
+        whereToElement = findViewById(R.id.where_to_element);
         whereToPlace = findViewById(R.id.where_to_place);
         whereToTime = findViewById(R.id.where_to_time);
         topInputElement = findViewById(R.id.top_input_element);
@@ -281,6 +283,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                     findRestaurantsButton.setVisibility(View.GONE);
                     navigationRowWrapper.setVisibility(View.GONE);
+                    whereToElementReposition(false);
                     whereToInputViewFlipper.showNext();
                 } else {
                     timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -492,6 +495,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 addMarkers();
                 drawHardcodedRoute();
                 findRestaurantsButton.setVisibility(View.VISIBLE);
+                whereToElementReposition(true);
                 navigationRowWrapper.setVisibility(View.VISIBLE);
             }
         });
@@ -670,6 +674,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         vWalk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+//                vWalk.setBackground(getResources().getDrawable(R.drawable.nav_button_pressed_backg)); // for rounded buttons
                 vWalk.setBackground(getResources().getDrawable(R.color.colorPrimary));
                 vWalk.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_walk_24dp_pressed));
                 vCar.setBackground(getResources().getDrawable(R.color.white));
@@ -719,6 +724,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi_pressed));
             }
         });
+    }
+
+
+    private void whereToElementReposition(Boolean shouldShiftUp) {
+        ViewGroup.MarginLayoutParams whereToElementParams = (ViewGroup.MarginLayoutParams) whereToElement.getLayoutParams();
+        if (shouldShiftUp) {
+            whereToElementParams.setMargins(whereToElementParams.leftMargin, 133, whereToElementParams.rightMargin, whereToElementParams.bottomMargin);
+        } else {
+            whereToElementParams.setMargins(whereToElementParams.leftMargin, 300, whereToElementParams.rightMargin, whereToElementParams.bottomMargin);
+        }
+        whereToElement.requestLayout();
     }
 
 
