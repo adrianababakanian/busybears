@@ -23,6 +23,10 @@
             android:windowSoftInputMode="adjustNothing"
             >
         </activity>
+        <activity android:name=".HeatmapActivity"
+            android:windowSoftInputMode="adjustNothing"
+            >
+        </activity>
 
 
         <meta-data android:name="com.google.android.gms.version"
