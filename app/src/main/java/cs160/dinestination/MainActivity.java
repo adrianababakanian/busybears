@@ -642,6 +642,30 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     /**
+     * Converts price range values to string for Yelp API queries. 
+     */
+    private String getYelpifiedPriceRange() {
+        // eg. https://api.yelp.com/v3/businesses/search?term=restaurant&location=boulder&price=1,2,3
+        // will return anything that matches $, $$ and $$$. Max 4. (with Bearer = API key)
+        String priceRangeQueryStr = "";
+        Integer upperVal = Integer.parseInt(mSeekBar.getRightPinValue());
+        Integer lowerVal = Integer.parseInt(mSeekBar.getLeftPinValue());
+=        if (lowerVal <= 25 || upperVal <= 25) {
+            priceRangeQueryStr += "1,";
+        }
+        if ((lowerVal > 25 && lowerVal <= 50) || (upperVal > 25 && lowerVal <= 50)) {
+            priceRangeQueryStr += "2,";
+        }
+        if ((lowerVal > 50 && lowerVal <= 75) || (upperVal > 50 && lowerVal <= 75)) {
+            priceRangeQueryStr += "3,";
+        }
+        if ((lowerVal > 75) || (upperVal > 75)) {
+            priceRangeQueryStr += "4,";
+        }
+        return priceRangeQueryStr.substring(0, priceRangeQueryStr.length() - 1);
+    }
+
+    /**
      * onClick for 'Find restaurants' button - executes goToHeatmapActivity intent.
      */
     private void setOnClickForFindRestaurants(View v) {
