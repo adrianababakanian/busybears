@@ -16,6 +16,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -41,6 +42,7 @@ import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
+import com.mapbox.geocoder.MapboxGeocoder;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -49,6 +51,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerMode;
 import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin;
+import com.mapbox.mapboxsdk.style.layers.Property;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
@@ -92,7 +95,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     ImageView layoverRectangle;
     ImageView filtersCheckButton;
     ImageView filtersBackButton;
-    //Location lastLocation;
 
     BottomSheetBehavior timeSpinnerSheetBehavior;
     LinearLayout timeSpinnerBottomSheet;
@@ -121,6 +123,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     ImageButton navigationTransitButton;
     ImageButton navigationTaxiButton;
     RelativeLayout whereToElement;
+    RelativeLayout destinationInformation;
 
     // Mapbox items.
     private static final String MARKER_SOURCE = "markers-source";
@@ -150,10 +153,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         Mapbox.getInstance(this, mapboxAccessToken);
 
-//        lastLocation = new Location("");
-//        lastLocation.setLatitude(37.866528);
-//        lastLocation.setLongitude(-122.258722);
-
         setContentView(R.layout.activity_main);
 
         // hook up UI elements
@@ -177,8 +176,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         timePicker = findViewById(R.id.time_picker);
         whereToRectangle = findViewById(R.id.where_to_rectangle);
         whereToElement = findViewById(R.id.where_to_element);
-        whereToPlace = findViewById(R.id.where_to_place);
-        whereToTime = findViewById(R.id.where_to_time);
+        destinationInformation = findViewById(R.id.destination_information);
+        whereToPlace = findViewById(R.id.where_to_place_sub);
+        whereToTime = findViewById(R.id.where_to_time_sub);
         topInputElement = findViewById(R.id.top_input_element);
         whereToEditText = findViewById(R.id.destination_top_input_elem);
         closeTopInputElement = findViewById(R.id.close_top_input_elem);
@@ -189,7 +189,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         whereToInputViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out));
         appliedFiltersLayout = findViewById(R.id.applied_filters_top_input_elem);
         addFiltersButton = findViewById(R.id.add_filters_top_input_elem);
-        // addMoreFiltersButton = findViewById(R.id.filters_row_addmore_top_input);
         exitInputButton = findViewById(R.id.exit_input_button);
         appliedFiltersWrapper = findViewById(R.id.applied_filters_wrapper);
         mainTopInputElement = findViewById(R.id.main_top_input_element);
@@ -284,6 +283,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
             ;
         });
+
+        MapboxGeocoder client = new MapboxGeocoder.Builder()
+                .setAccessToken(mapboxAccessToken)
+                .setLocation("The White House")
+                .build();
+        System.out.println(client);
 
         getApplicationContext().setTheme(R.style.AppTheme);
 
@@ -453,6 +458,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         exitInputButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                whereToElement.setVisibility(View.GONE);
+                destinationInformation.setVisibility(View.VISIBLE);
                 timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 whereToInputViewFlipper.showNext();
                 String whereToText = whereToEditText.getText().toString();
@@ -721,12 +728,25 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * Repositions whereToElement up or down. Moves in tandem with 'Find restaurants' button visibility.
+     * Also expands to include navigation options and increases in width.
      */
     private void whereToElementReposition(Boolean shouldShiftUp) {
         ViewGroup.MarginLayoutParams whereToElementParams = (ViewGroup.MarginLayoutParams) whereToElement.getLayoutParams();
+
         if (shouldShiftUp) {
-            whereToElementParams.setMargins(whereToElementParams.leftMargin, 133, whereToElementParams.rightMargin, whereToElementParams.bottomMargin);
+//            // FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(1100, whereToElementParams.height);
+////            params.setMarginStart(50);
+////            params.setMarginEnd(50);
+//            whereToElementParams.width = 1400;
+//
+////            whereToElementParams.setMargins(50, 140, 50, whereToElementParams.bottomMargin);
+////            whereToElementParams.setMarginEnd(20);
+////            whereToElementParams.setMarginStart(20);
+//            whereToElement.setLayoutParams(whereToElementParams);
+            whereToElement.setVisibility(View.GONE);
+            destinationInformation.setVisibility(View.VISIBLE);
         } else {
+            whereToElement.setVisibility(View.VISIBLE);
             whereToElementParams.setMargins(whereToElementParams.leftMargin, 300, whereToElementParams.rightMargin, whereToElementParams.bottomMargin);
         }
         whereToElement.requestLayout();
