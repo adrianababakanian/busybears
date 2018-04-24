@@ -99,7 +99,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/destination_top_input_elem"
         android:layout_width="310dp"
         android:layout_height="wrap_content"
@@ -116,7 +116,8 @@
         android:textSize="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
+
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/applied_filters_top_input_elem"
