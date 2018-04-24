@@ -63,9 +63,15 @@ import com.mapbox.services.android.telemetry.location.LostLocationEngine;
 import com.mapbox.services.commons.geojson.Feature;
 import com.mapbox.services.commons.geojson.FeatureCollection;
 import com.mapbox.services.commons.geojson.Point;
+import com.yelp.fusion.client.connection.YelpFusionApi;
+import com.yelp.fusion.client.connection.YelpFusionApiFactory;
+import com.yelp.fusion.client.models.SearchResponse;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -316,6 +322,41 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         addLocationEngineListener();
 
         setupUI(findViewById(R.id.mainRootView));
+
+
+        //-----------------------Yelp-----------------------------------------------
+        YelpFusionApiFactory apiFactory = new YelpFusionApiFactory();
+        YelpFusionApi yelpFusionApi = null;
+        try {
+            yelpFusionApi = apiFactory.createAPI("dczs4nuyUTOJWGPaXth8Zqt0IwzGoD0Wr-8OZgDmdu4G0oa3M3K-GzlPVYFAh4indjgmImwbDSSaWnh2d7KQgSFly0AresZM9PGy6p4IRUgJcE3ElHJyWyXIb7jeWnYx");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Map<String, String> params = new HashMap<>();
+
+        params.put("term", "indian food");
+        params.put("latitude", "40.581140");
+        params.put("longitude", "-111.914184");
+
+        Call<SearchResponse> call = yelpFusionApi.getBusinessSearch(params);
+
+        Callback<SearchResponse> callback = new Callback<SearchResponse>() {
+            @Override
+            public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
+                SearchResponse searchResponse = response.body();
+                Log.d("HEREHEREHERE", String.valueOf(searchResponse.getBusinesses()));
+                // Update UI text with the searchResponse.
+            }
+            @Override
+            public void onFailure(Call<SearchResponse> call, Throwable t) {
+                // HTTP error happened, do something to handle it.
+            }
+        };
+
+        call.enqueue(callback);
+        //--------------------------------------------------------------------------
+
 
 
     } // END THE ON CREATE METHOD
