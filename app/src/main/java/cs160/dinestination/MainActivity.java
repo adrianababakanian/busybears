@@ -223,6 +223,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         navigationBikeButton = findViewById(R.id.navigation_bike_button);
         navigationTaxiButton = findViewById(R.id.navigation_taxi_button);
 
+        navigationBikeButton.setZ(999);
+
         whereToInputViewFlipper.setZ(999);
         timeSpinnerBottomSheet.setZ(999);
         filtersBottomSheet.setZ(1000);
@@ -259,7 +261,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                     findRestaurantsButton.setVisibility(View.GONE);
                     navigationRowWrapper.setVisibility(View.GONE);
-                    whereToElementReposition(false);
+                    // whereToElementReposition(false);
                     whereToInputViewFlipper.showNext();
                 } else {
                     timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -274,7 +276,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                     findRestaurantsButton.setVisibility(View.GONE);
                     navigationRowWrapper.setVisibility(View.GONE);
-                    whereToElementReposition(false);
+                    whereToElement.setVisibility(View.GONE);
+                    // whereToElementReposition(false);
                     whereToInputViewFlipper.showNext();
                 } else {
                     timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -289,6 +292,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0); // force close softkeyboard, else pushes layout up
                 timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 whereToInputViewFlipper.showPrevious();
+                whereToElement.setVisibility(View.GONE);
                 // addMarkers();
             }
         });
@@ -378,7 +382,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 //                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
 //                            .build(this);
 //            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-//            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+//            overridePendingbikeion(android.R.anim.fade_in, android.R.anim.fade_out);
 //        } catch (GooglePlayServicesRepairableException e) {
 //            GoogleApiAvailability.getInstance().getErrorDialog(this, e.getConnectionStatusCode(),
 //                    0 /* requestCode */).show();
@@ -561,10 +565,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         exitInputButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                whereToElement.setVisibility(View.GONE);
                 destinationInformation.setVisibility(View.VISIBLE);
                 timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 whereToInputViewFlipper.showNext();
+                whereToElement.setVisibility(View.GONE);
                 String whereToText = whereToEditText.getText().toString();
                 whereToPlace.setText(whereToText);
                 String meridian = "am";
@@ -581,7 +585,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 // addMarkers();
                 drawRoute();
                 findRestaurantsButton.setVisibility(View.VISIBLE);
-                whereToElementReposition(true);
                 navigationRowWrapper.setVisibility(View.VISIBLE);
                 toleranceSlider.setVisibility(View.GONE);
             }
@@ -825,7 +828,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
      * TODO: hook these clicks up to Mapbox routing!
      */
     private void setOnClickForNavigationButtons(final ImageButton vWalk, final ImageButton vCar,
-                                                final ImageButton vTransit, final ImageButton vTaxi) {
+                                                final ImageButton vBike, final ImageButton vTaxi) {
+        System.out.println("iojoijoiomim");
         vWalk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -834,8 +838,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vWalk.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_walk_24dp_pressed));
                 vCar.setBackground(getResources().getDrawable(R.color.white));
                 vCar.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_car_24dp));
-                vTransit.setBackground(getResources().getDrawable(R.color.white));
-                vTransit.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_transit_24dp));
+                vBike.setBackground(getResources().getDrawable(R.color.white));
+                vBike.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_bike_24dp));
                 vTaxi.setBackground(getResources().getDrawable(R.color.white));
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
                 PROFILE_TYPE = DirectionsCriteria.PROFILE_WALKING;
@@ -850,27 +854,29 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vWalk.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_walk_24dp));
                 vCar.setBackground(getResources().getDrawable(R.color.colorPrimary));
                 vCar.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_car_24dp_pressed));
-                vTransit.setBackground(getResources().getDrawable(R.color.white));
-                vTransit.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_transit_24dp));
+                vBike.setBackground(getResources().getDrawable(R.color.white));
+                vBike.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_bike_24dp));
                 vTaxi.setBackground(getResources().getDrawable(R.color.white));
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
                 PROFILE_TYPE = DirectionsCriteria.PROFILE_DRIVING_TRAFFIC;
                 // drawHardcodedRoute();
+                System.out.println("pls call me");
                 // getRoute(originPosition, destinationPosition);
             }
         });
-        vTransit.setOnClickListener(new View.OnClickListener() {
+        vBike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 vWalk.setBackground(getResources().getDrawable(R.color.white));
                 vWalk.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_walk_24dp));
                 vCar.setBackground(getResources().getDrawable(R.color.white));
                 vCar.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_car_24dp));
-                vTransit.setBackground(getResources().getDrawable(R.color.colorPrimary));
-                vTransit.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_transit_24dp_pressed));
+                vBike.setBackground(getResources().getDrawable(R.color.colorPrimary));
+                vBike.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_bike_24dp_pressed));
                 vTaxi.setBackground(getResources().getDrawable(R.color.white));
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
                 PROFILE_TYPE = DirectionsCriteria.PROFILE_CYCLING;
+                System.out.println("wow bicycle click");
                 // drawHardcodedRoute();
                 // getRoute(originPosition, destinationPosition);
             }
@@ -882,8 +888,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vWalk.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_walk_24dp));
                 vCar.setBackground(getResources().getDrawable(R.color.white));
                 vCar.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_car_24dp));
-                vTransit.setBackground(getResources().getDrawable(R.color.white));
-                vTransit.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_transit_24dp));
+                vBike.setBackground(getResources().getDrawable(R.color.white));
+                vBike.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_bike_24dp));
                 vTaxi.setBackground(getResources().getDrawable(R.color.colorPrimary));
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi_pressed));
                 PROFILE_TYPE = DirectionsCriteria.PROFILE_DRIVING_TRAFFIC;
@@ -898,27 +904,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
      * Repositions whereToElement up or down. Moves in tandem with 'Find restaurants' button visibility.
      * Also expands to include navigation options and increases in width.
      */
-    private void whereToElementReposition(Boolean shouldShiftUp) {
-        ViewGroup.MarginLayoutParams whereToElementParams = (ViewGroup.MarginLayoutParams) whereToElement.getLayoutParams();
-
-        if (shouldShiftUp) {
-//            // FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(1100, whereToElementParams.height);
-////            params.setMarginStart(50);
-////            params.setMarginEnd(50);
-//            whereToElementParams.width = 1400;
+//    private void whereToElementReposition(Boolean shouldShiftUp) {
+//        ViewGroup.MarginLayoutParams whereToElementParams = (ViewGroup.MarginLayoutParams) whereToElement.getLayoutParams();
 //
-////            whereToElementParams.setMargins(50, 140, 50, whereToElementParams.bottomMargin);
-////            whereToElementParams.setMarginEnd(20);
-////            whereToElementParams.setMarginStart(20);
-//            whereToElement.setLayoutParams(whereToElementParams);
-            whereToElement.setVisibility(View.GONE);
-            destinationInformation.setVisibility(View.VISIBLE);
-        } else {
-            whereToElement.setVisibility(View.VISIBLE);
-            whereToElementParams.setMargins(whereToElementParams.leftMargin, 300, whereToElementParams.rightMargin, whereToElementParams.bottomMargin);
-        }
-        whereToElement.requestLayout();
-    }
+//        if (shouldShiftUp) {
+//            whereToElement.setVisibility(View.GONE);
+//            destinationInformation.setVisibility(View.VISIBLE);
+//        } else {
+//            whereToElement.setVisibility(View.VISIBLE);
+//            whereToElementParams.setMargins(whereToElementParams.leftMargin, 300, whereToElementParams.rightMargin, whereToElementParams.bottomMargin);
+//        }
+//        whereToElement.requestLayout();
+//    }
 
 
     //////// MAPBOX THINGS ////////

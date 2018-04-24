@@ -91,13 +91,6 @@
             android:layout_alignParentTop="true"
             android:src="@drawable/box_gradient" />
 
-        <include
-            layout="@layout/navigation_options_row"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_gravity="center_horizontal" />
-
     </RelativeLayout>
 
 
