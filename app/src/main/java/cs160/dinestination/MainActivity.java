@@ -128,7 +128,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     RelativeLayout navigationRowWrapper;
     ImageButton navigationWalkButton;
     ImageButton navigationCarButton;
-    ImageButton navigationTransitButton;
+    ImageButton navigationBikeButton;
     ImageButton navigationTaxiButton;
     RelativeLayout whereToElement;
 
@@ -216,7 +216,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         navigationRowWrapper = findViewById(R.id.navigation_row_wrapper);
         navigationWalkButton = findViewById(R.id.navigation_walk_button);
         navigationCarButton = findViewById(R.id.navigation_car_button);
-        navigationTransitButton = findViewById(R.id.navigation_transit_button);
+        navigationBikeButton = findViewById(R.id.navigation_bike_button);
         navigationTaxiButton = findViewById(R.id.navigation_taxi_button);
 
         whereToInputViewFlipper.setZ(999);
@@ -318,7 +318,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         setOnClickForFilterTrigger(filtersCheckButton);
         setOnClickForFilterBack(filtersBackButton);
         setOnClickForFindRestaurants(findRestaurantsButton);
-        setOnClickForNavigationButtons(navigationWalkButton, navigationCarButton, navigationTransitButton, navigationTaxiButton);
+        setOnClickForNavigationButtons(navigationWalkButton, navigationCarButton, navigationBikeButton, navigationTaxiButton);
         navigationWalkButton.callOnClick(); // to set walk as the default routing option.
 
         layoverRectangle.setImageAlpha(0);

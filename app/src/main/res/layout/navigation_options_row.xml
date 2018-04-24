@@ -34,12 +34,12 @@
         />
 
     <ImageButton
-        android:id="@+id/navigation_transit_button"
+        android:id="@+id/navigation_bike_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_navigation_transit_24dp"
+        android:src="@drawable/ic_navigation_bike_24dp"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
         android:paddingTop="10dp"
