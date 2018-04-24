@@ -40,6 +40,7 @@ import android.widget.Toast;
 
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.api.directions.v5.DirectionsCriteria;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.geocoder.MapboxGeocoder;
@@ -245,6 +246,21 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        destinationInformation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (timeSpinnerSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+                    timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    findRestaurantsButton.setVisibility(View.GONE);
+                    navigationRowWrapper.setVisibility(View.GONE);
+                    whereToElementReposition(false);
+                    whereToInputViewFlipper.showNext();
+                } else {
+                    timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+            }
+        });
+
         closeTopInputElement.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -326,7 +342,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private void getRoute(com.mapbox.geojson.Point origin, com.mapbox.geojson.Point destination) {
         System.out.println("GET ROUTE CALLED");
         NavigationRoute.builder()
-//                .accessToken(Mapbox.getAccessToken())
                 .accessToken(mapboxAccessToken)
                 .origin(origin)
                 .destination(destination)
