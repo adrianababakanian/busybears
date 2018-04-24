@@ -53,7 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginTop="8px"
-                android:hint="by  "/>
+                android:hint="by "/>
             <TextView
                 android:id="@+id/where_to_time"
                 style="@style/LargeFont"

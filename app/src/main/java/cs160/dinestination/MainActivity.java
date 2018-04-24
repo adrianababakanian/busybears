@@ -1,7 +1,9 @@
 package cs160.dinestination;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetBehavior;
@@ -23,7 +25,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.ViewFlipper;
-import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -33,16 +34,21 @@ import android.location.Location;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.widget.AutoCompleteTextView;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.appyvet.materialrangebar.RangeBar;
-import com.mapbox.android.core.permissions.PermissionsListener;
-import com.mapbox.android.core.permissions.PermissionsManager;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.appyvet.materialrangebar.RangeBar;
+import com.mapbox.android.core.permissions.PermissionsListener;
+import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -71,8 +77,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends FragmentActivity implements OnMapReadyCallback, LocationEngineListener, PermissionsListener {
 
+public class MainActivity extends FragmentActivity implements OnMapReadyCallback, LocationEngineListener, PermissionsListener, GoogleApiClient.OnConnectionFailedListener {
     /**
      * Code used in requesting runtime permissions.
      */
@@ -108,7 +114,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     ViewFlipper whereToInputViewFlipper;
     ConstraintLayout appliedFiltersLayout;
     Button addFiltersButton;
-    EditText whereToEditText;
+    AutoCompleteTextView whereToEditText;
+    ImageButton addMoreFiltersButton;
     Button exitInputButton;
     LinearLayout appliedFiltersWrapper;
     ConstraintLayout mainTopInputElement;
@@ -141,12 +148,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private NavigationMapRoute navigationMapRoute;
     private Boolean ADDED_MARKERS = Boolean.FALSE;
 
+    private GoogleApiClient mGoogleApiClient;
+    int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
+    private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
+
+    PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
+    private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
+            new com.google.android.gms.maps.model.LatLng(-34.041458, 150.790100), new com.google.android.gms.maps.model.LatLng(-33.682247, 151.383362));
     // Location layer-related.
     private PermissionsManager permissionsManager;
     private LocationLayerPlugin locationPlugin;
     private LocationEngine locationEngine;
     private Location originLocation;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,7 +196,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         whereToPlace = findViewById(R.id.where_to_place);
         whereToTime = findViewById(R.id.where_to_time);
         topInputElement = findViewById(R.id.top_input_element);
-        whereToEditText = findViewById(R.id.destination_top_input_elem);
+        whereToEditText = (AutoCompleteTextView) findViewById(R.id.destination_top_input_elem);
         closeTopInputElement = findViewById(R.id.close_top_input_elem);
         addTopInputElement = findViewById(R.id.add_top_input_elem);
         rootLayout = findViewById(R.id.mainRootView);
@@ -317,8 +330,76 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         setupUI(findViewById(R.id.mainRootView));
 
+        mGoogleApiClient = new GoogleApiClient
+                .Builder(this)
+                .addApi(Places.GEO_DATA_API)
+                .addApi(Places.PLACE_DETECTION_API)
+                .enableAutoManage(this, this)
+                .build();
+        mPlaceAutocompleteAdapter = new PlaceAutocompleteAdapter(this, mGoogleApiClient, BOUNDS_GREATER_SYDNEY,null);
 
+        whereToEditText.setAdapter(mPlaceAutocompleteAdapter);
+
+//        whereToEditText.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                openAutocompleteActivity();
+//            }
+//        });
     } // END THE ON CREATE METHOD
+
+//    private void openAutocompleteActivity() {
+//        try {
+//            Intent intent =
+//                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+//                            .build(this);
+//            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+//            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+//        } catch (GooglePlayServicesRepairableException e) {
+//            GoogleApiAvailability.getInstance().getErrorDialog(this, e.getConnectionStatusCode(),
+//                    0 /* requestCode */).show();
+//        } catch (GooglePlayServicesNotAvailableException e) {
+//            String message = "Google Play Services is not available: " +
+//                    GoogleApiAvailability.getInstance().getErrorString(e.errorCode);
+//
+//            Log.e(TAG, message);
+//            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+//        }
+//    }
+
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//
+//        // Check that the result was from the autocomplete widget.
+//        if (requestCode == REQUEST_CODE_AUTOCOMPLETE) {
+//            if (resultCode == RESULT_OK) {
+//                // Get the user's selected place from the Intent.
+//                Place place = PlaceAutocomplete.getPlace(this, data);
+//                Log.i(TAG, "Place Selected: " + place.getName());
+//
+//                // Format the place's details and display them in the TextView.
+//                whereToEditText.setText(place.getName());
+//
+//                /*getLatLng() to get a latlng object and  .latitude
+//                and .longitude to get respective coordinates */
+//
+//                // Display attributions if required.
+////                CharSequence attributions = place.getAttributions();
+////                if (!TextUtils.isEmpty(attributions)) {
+////                    mPlaceAttribution.setText(Html.fromHtml(attributions.toString()));
+////                } else {
+////                    mPlaceAttribution.setText("");
+////                }
+//            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+//                Status status = PlaceAutocomplete.getStatus(this, data);
+//                Log.e(TAG, "Error: Status = " + status.toString());
+//            } else if (resultCode == RESULT_CANCELED) {
+//                // Indicates that the activity closed before a selection was made. For example if
+//                // the user pressed the back button.
+//            }
+//        }
+//    }
 
 
     private void getRoute(com.mapbox.geojson.Point origin, com.mapbox.geojson.Point destination) {
@@ -1035,4 +1116,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+
+    // google places method needed for Places
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
 }
