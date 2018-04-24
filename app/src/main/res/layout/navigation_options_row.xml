@@ -3,8 +3,9 @@
     android:orientation="horizontal"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_gravity="center_horizontal"
-    >
+    android:layout_alignParentTop="true"
+    android:layout_alignParentStart="true"
+    android:src="@drawable/box_gradient">
 
 
     <ImageButton
@@ -14,8 +15,8 @@
         android:background="@color/white"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_navigation_walk_24dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
+        android:paddingLeft="31dp"
+        android:paddingRight="31dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         />
@@ -27,8 +28,8 @@
         android:background="@color/white"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_navigation_car_24dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
+        android:paddingLeft="31dp"
+        android:paddingRight="31dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         />
@@ -40,8 +41,8 @@
         android:background="@color/white"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_navigation_bike_24dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
+        android:paddingLeft="31dp"
+        android:paddingRight="31dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         />
@@ -52,8 +53,8 @@
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:src="@drawable/ic_navigation_call_taxi"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
+        android:paddingLeft="31dp"
+        android:paddingRight="31dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         />

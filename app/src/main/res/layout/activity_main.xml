@@ -59,19 +59,19 @@
 
     <Button
         android:id="@+id/find_restaurants_button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="570dp"
         android:layout_gravity="center_horizontal"
         android:backgroundTint="@color/colorPrimaryDark"
         android:fontFamily="@font/lucia_grande"
-        android:paddingBottom="8dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:paddingTop="8dp"
+        android:layout_marginStart="23dp"
+        android:layout_marginEnd="23dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
         android:text="Find restaurants"
-        android:background="@drawable/find_restaurants_button"
         android:textAllCaps="false"
+        android:background="@color/colorPrimary"
         android:textColor="@color/white"
         android:textSize="16dp"
         android:visibility="gone"/>
@@ -80,12 +80,22 @@
             android:visibility="gone"
             android:id="@+id/filter_row_top_bar"
             android:layout_marginTop="15dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginStart="23dp"
+            android:layout_marginEnd="23dp"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             layout="@layout/filtered_row_top_input_element" />
         <!--must put this below the filters bottom sheet, else the addFilters button fails-->
+
+    <include
+        android:visibility="gone"
+        android:id="@+id/destination_information"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        layout="@layout/destination_information"/>
 
 
 
