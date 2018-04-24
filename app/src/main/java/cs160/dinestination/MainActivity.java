@@ -37,6 +37,7 @@ import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.appyvet.materialrangebar.RangeBar;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
@@ -84,7 +85,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     LinearLayout layoutPreviewBottomSheet;
     BottomSheetBehavior filtersSheetBehavior;
     LinearLayout filtersBottomSheet;
-    SeekBar mSeekBar;
+//    SeekBar mSeekBar;
+    RangeBar mSeekBar;
     boolean priceSliderUsedFlag;
     Switch mSwitch1;
     Switch mSwitch2;
@@ -113,6 +115,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     ConstraintLayout mainTopInputElement;
     Button findRestaurantsButton;
     LinearLayout filtersRowTopBar;
+
+    SeekBar toleranceSlider;
 
     // Map-related.
     RelativeLayout navigationRowWrapper;
@@ -195,6 +199,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         mainTopInputElement = findViewById(R.id.main_top_input_element);
         findRestaurantsButton = findViewById(R.id.find_restaurants_button);
         filtersRowTopBar = findViewById(R.id.filter_row_top_bar);
+        toleranceSlider = findViewById(R.id.tolerance_slider);
 
         navigationRowWrapper = findViewById(R.id.navigation_row_wrapper);
         navigationWalkButton = findViewById(R.id.navigation_walk_button);
@@ -288,8 +293,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         getApplicationContext().setTheme(R.style.AppTheme);
 
         mSeekBar.setZ(999);
-        mSeekBar.setMax(100);
-        mSeekBar.setProgress(30);
+//        mSeekBar.setMax(100);
+//        mSeekBar.setProgress(30);
+        mSeekBar.setRangePinsByValue(10, 50);
         mSwitch1.setZ(999);
 
         // set price range listener and update price range from seek bar
@@ -467,11 +473,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 whereToTime.setText(" "+hourStr+":"+minuteStr+meridian);
                 whereToPlace.setTextColor(getResources().getColor(R.color.textColorDark));
                 whereToTime.setTextColor(getResources().getColor(R.color.textColorDark));
-                addMarkers();
-                drawHardcodedRoute();
+
                 findRestaurantsButton.setVisibility(View.VISIBLE);
                 whereToElementReposition(true);
                 navigationRowWrapper.setVisibility(View.VISIBLE);
+                toleranceSlider.setVisibility(View.GONE);
+
+                addMarkers();
+                drawHardcodedRoute();
             }
         });
     }
@@ -545,7 +554,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     cBox.setChecked(false);
                 }
                 priceSliderUsedFlag = false;
-                mSeekBar.setProgress(30);
+//                mSeekBar.setProgress(30);
+//                mSeekBar.setTickStart(5);
+                mSeekBar.setRangePinsByValue(10, 50);
 
                 for (int i = 0; i < attire_ids.length; i++) {
                     CheckBox cBox = findViewById(attire_ids[i]);
@@ -616,42 +627,21 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
      * Update price range from seek bar.
      */
     private void setPriceRangeListener() {
-        Integer progUpper = 10*Math.round(mSeekBar.getProgress()/10);
-        Integer progLower;
-        if (progUpper < 10) {
-            progLower = 1;
-        } else {
-            progLower = progUpper - 10;
-        }
-        String upperStr = progUpper.toString();
-        String lowerStr = progLower.toString();
+        String upperStr = mSeekBar.getRightPinValue();
+        String lowerStr = mSeekBar.getLeftPinValue();
+        if (upperStr.equals("100")) upperStr = "100+";
         priceRangeFromSeekBar.setText("$".concat(lowerStr).concat("-").concat(upperStr));
         priceRange = "$".concat(lowerStr).concat("-").concat(upperStr);
-        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+        mSeekBar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                // Auto-generated method stub
-            }
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                // Auto-generated method stub
-            }
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
+            public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex, int rightPinIndex, String leftPinValue, String rightPinValue) {
                 priceSliderUsedFlag = true;
-                Integer progUpper = 10*Math.round(mSeekBar.getProgress()/10);
-                Integer progLower;
-                if (progUpper <= 10) {
-                    progUpper = 10;
-                    progLower = 1;
-                } else {
-                    progLower = progUpper - 10;
-                }
-                String upperStr = progUpper.toString();
-                String lowerStr = progLower.toString();
+                String upperStr = rightPinValue;
+                String lowerStr = leftPinValue;
+                if (upperStr.equals("100")) upperStr = "100+";
                 priceRangeFromSeekBar.setText("$".concat(lowerStr).concat("-").concat(upperStr));
                 priceRange = "$".concat(lowerStr).concat("-").concat(upperStr);
-                System.out.println(priceRange);
             }
         });
     }
@@ -663,15 +653,20 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent goToHeatMapActivity = new Intent(MainActivity.this, HeatmapActivity.class);
-                goToHeatMapActivity.putExtra("whereToLocation", whereToEditText.getText().toString());
-                goToHeatMapActivity.putExtra("whereToTime", whereToTime.getText().toString());
-                // TODO: Pass required values across
-//                goToHeatMapActivity.putExtra(); // need to pass all applied filters lol
-//                      //- can do hacky implementation with standardised var names and loop through, or serializable/parcelable class.
-//                goToHeatMapActivity.putExtra() // pass routing latitude & longitude over. or some way to do using mapbox?
+//                Intent goToHeatMapActivity = new Intent(MainActivity.this, HeatmapActivity.class);
+//                goToHeatMapActivity.putExtra("whereToLocation", whereToEditText.getText().toString());
+//                goToHeatMapActivity.putExtra("whereToTime", whereToTime.getText().toString());
+//                // T ODO: Pass required values across
+////                goToHeatMapActivity.putExtra(); // need to pass all applied filters lol
+////                      //- can do hacky implementation with standardised var names and loop through, or serializable/parcelable class.
+////                goToHeatMapActivity.putExtra() // pass routing latitude & longitude over. or some way to do using mapbox?
+//                startActivity(goToHeatMapActivity);
 
-                startActivity(goToHeatMapActivity);
+                // TODO: make markers show up on map now
+                toleranceSlider.setVisibility(View.VISIBLE);
+                navigationRowWrapper.setVisibility(View.GONE);
+
+
             }
         });
     }
