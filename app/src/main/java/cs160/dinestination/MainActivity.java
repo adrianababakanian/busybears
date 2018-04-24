@@ -38,14 +38,8 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
-import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
@@ -332,58 +326,58 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 //        });
     } // END THE ON CREATE METHOD
 
-    private void openAutocompleteActivity() {
-        try {
-            Intent intent =
-                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
-                            .build(this);
-            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-        } catch (GooglePlayServicesRepairableException e) {
-            GoogleApiAvailability.getInstance().getErrorDialog(this, e.getConnectionStatusCode(),
-                    0 /* requestCode */).show();
-        } catch (GooglePlayServicesNotAvailableException e) {
-            String message = "Google Play Services is not available: " +
-                    GoogleApiAvailability.getInstance().getErrorString(e.errorCode);
+//    private void openAutocompleteActivity() {
+//        try {
+//            Intent intent =
+//                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+//                            .build(this);
+//            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+//            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+//        } catch (GooglePlayServicesRepairableException e) {
+//            GoogleApiAvailability.getInstance().getErrorDialog(this, e.getConnectionStatusCode(),
+//                    0 /* requestCode */).show();
+//        } catch (GooglePlayServicesNotAvailableException e) {
+//            String message = "Google Play Services is not available: " +
+//                    GoogleApiAvailability.getInstance().getErrorString(e.errorCode);
+//
+//            Log.e(TAG, message);
+//            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+//        }
+//    }
 
-            Log.e(TAG, message);
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Check that the result was from the autocomplete widget.
-        if (requestCode == REQUEST_CODE_AUTOCOMPLETE) {
-            if (resultCode == RESULT_OK) {
-                // Get the user's selected place from the Intent.
-                Place place = PlaceAutocomplete.getPlace(this, data);
-                Log.i(TAG, "Place Selected: " + place.getName());
-
-                // Format the place's details and display them in the TextView.
-                whereToEditText.setText(place.getName());
-
-                /*getLatLng() to get a latlng object and  .latitude
-                and .longitude to get respective coordinates */
-
-                // Display attributions if required.
-//                CharSequence attributions = place.getAttributions();
-//                if (!TextUtils.isEmpty(attributions)) {
-//                    mPlaceAttribution.setText(Html.fromHtml(attributions.toString()));
-//                } else {
-//                    mPlaceAttribution.setText("");
-//                }
-            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                Status status = PlaceAutocomplete.getStatus(this, data);
-                Log.e(TAG, "Error: Status = " + status.toString());
-            } else if (resultCode == RESULT_CANCELED) {
-                // Indicates that the activity closed before a selection was made. For example if
-                // the user pressed the back button.
-            }
-        }
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//
+//        // Check that the result was from the autocomplete widget.
+//        if (requestCode == REQUEST_CODE_AUTOCOMPLETE) {
+//            if (resultCode == RESULT_OK) {
+//                // Get the user's selected place from the Intent.
+//                Place place = PlaceAutocomplete.getPlace(this, data);
+//                Log.i(TAG, "Place Selected: " + place.getName());
+//
+//                // Format the place's details and display them in the TextView.
+//                whereToEditText.setText(place.getName());
+//
+//                /*getLatLng() to get a latlng object and  .latitude
+//                and .longitude to get respective coordinates */
+//
+//                // Display attributions if required.
+////                CharSequence attributions = place.getAttributions();
+////                if (!TextUtils.isEmpty(attributions)) {
+////                    mPlaceAttribution.setText(Html.fromHtml(attributions.toString()));
+////                } else {
+////                    mPlaceAttribution.setText("");
+////                }
+//            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+//                Status status = PlaceAutocomplete.getStatus(this, data);
+//                Log.e(TAG, "Error: Status = " + status.toString());
+//            } else if (resultCode == RESULT_CANCELED) {
+//                // Indicates that the activity closed before a selection was made. For example if
+//                // the user pressed the back button.
+//            }
+//        }
+//    }
 
 
     private void getRoute(com.mapbox.geojson.Point origin, com.mapbox.geojson.Point destination) {
