@@ -403,25 +403,25 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
      * Generates buttons to be displayed in the filters scroll row.
      */
     private void filtersRowGenerator() {
-        ArrayList<String> stringsForButtons = new ArrayList<>();
+        ArrayList<String> stringsForFilterButtons = new ArrayList<>();
         int[] cuisine_ids = new int[] {R.id.thai_check, R.id.italian_check, R.id.chinese_check, R.id.mexican_check,
                 R.id.indian_check, R.id.american_check, R.id.japanese_check, R.id.burmese_check};
         int[] attire_ids = new int[] {R.id.casual_check, R.id.relaxed_check, R.id.dressy_check, R.id.formal_check};
 
         for (int i = 0; i < cuisine_ids.length; i++) {
             CheckBox cBox = findViewById(cuisine_ids[i]);
-            if (cBox.isChecked()) stringsForButtons.add(cBox.getText().toString());
+            if (cBox.isChecked()) stringsForFilterButtons.add(cBox.getText().toString());
         }
-        if (priceSliderUsedFlag) stringsForButtons.add(priceRange);
+        if (priceSliderUsedFlag) stringsForFilterButtons.add(priceRange);
         for (int i = 0; i < attire_ids.length; i++) {
             CheckBox cBox = findViewById(attire_ids[i]);
-            if (cBox.isChecked()) stringsForButtons.add(cBox.getText().toString());
+            if (cBox.isChecked()) stringsForFilterButtons.add(cBox.getText().toString());
         }
 
-        if (mSwitch1.isChecked()) stringsForButtons.add("Groups");
-        if (mSwitch2.isChecked()) stringsForButtons.add("Kids");
+        if (mSwitch1.isChecked()) stringsForFilterButtons.add("Groups");
+        if (mSwitch2.isChecked()) stringsForFilterButtons.add("Kids");
 
-        if (stringsForButtons.size() != 0) { // if filters have been applied
+        if (stringsForFilterButtons.size() != 0) { // if filters have been applied
             appliedFiltersWrapper.removeViewsInLayout(1, appliedFiltersWrapper.getChildCount()-1);
             filtersRowTopBar.removeAllViewsInLayout(); // since never want AddFilters button showing up.
 
@@ -437,7 +437,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             lp.setMargins(4,0,4,0);
             lp.height = 105;
-            for (String label : stringsForButtons) {
+            for (String label : stringsForFilterButtons) {
                 Button buttonToAdd = filtersRowGenerateButton(label);
                 Button buttonToAdd2 = filtersRowGenerateButton(label);
                 appliedFiltersWrapper.addView(buttonToAdd, lp);
@@ -561,7 +561,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     /**
-     * onClick for filter preference sheet cross mark - ignores filter changes.
+     * onClick for filter preference sheet cross mark - clears all filters.
      */
     private void setOnClickForFilterBack(ImageView iv) {
         iv.setOnClickListener(new View.OnClickListener() {
@@ -569,6 +569,25 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 filtersSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 layoverRectangle.setImageAlpha(0);
+
+                int[] cuisine_ids = new int[] {R.id.thai_check, R.id.italian_check, R.id.chinese_check, R.id.mexican_check,
+                        R.id.indian_check, R.id.american_check, R.id.japanese_check, R.id.burmese_check};
+                int[] attire_ids = new int[] {R.id.casual_check, R.id.relaxed_check, R.id.dressy_check, R.id.formal_check};
+
+                for (int i = 0; i < cuisine_ids.length; i++) {
+                    CheckBox cBox = findViewById(cuisine_ids[i]);
+                    cBox.setChecked(false);
+                }
+                priceSliderUsedFlag = false;
+                mSeekBar.setProgress(30);
+
+                for (int i = 0; i < attire_ids.length; i++) {
+                    CheckBox cBox = findViewById(attire_ids[i]);
+                    cBox.setChecked(false);
+                }
+                mSwitch1.setChecked(false);
+                mSwitch2.setChecked(false);
+                filtersRowGenerator();
             }
         });
     }
