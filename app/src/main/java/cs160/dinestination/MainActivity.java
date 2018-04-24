@@ -85,7 +85,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     LinearLayout layoutPreviewBottomSheet;
     BottomSheetBehavior filtersSheetBehavior;
     LinearLayout filtersBottomSheet;
-//    SeekBar mSeekBar;
     RangeBar mSeekBar;
     boolean priceSliderUsedFlag;
     Switch mSwitch1;
@@ -293,8 +292,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         getApplicationContext().setTheme(R.style.AppTheme);
 
         mSeekBar.setZ(999);
-//        mSeekBar.setMax(100);
-//        mSeekBar.setProgress(30);
         mSeekBar.setRangePinsByValue(10, 50);
         mSwitch1.setZ(999);
 
@@ -554,8 +551,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     cBox.setChecked(false);
                 }
                 priceSliderUsedFlag = false;
-//                mSeekBar.setProgress(30);
-//                mSeekBar.setTickStart(5);
                 mSeekBar.setRangePinsByValue(10, 50);
 
                 for (int i = 0; i < attire_ids.length; i++) {
