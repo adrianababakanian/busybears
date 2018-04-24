@@ -65,6 +65,7 @@ import com.mapbox.services.commons.geojson.FeatureCollection;
 import com.mapbox.services.commons.geojson.Point;
 import com.yelp.fusion.client.connection.YelpFusionApi;
 import com.yelp.fusion.client.connection.YelpFusionApiFactory;
+import com.yelp.fusion.client.models.Business;
 import com.yelp.fusion.client.models.SearchResponse;
 
 import java.io.IOException;
@@ -345,7 +346,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
                 SearchResponse searchResponse = response.body();
-                Log.d("HEREHEREHERE", String.valueOf(searchResponse.getBusinesses()));
+                Log.d("HEREHEREHERE", String.valueOf(searchResponse.getBusinesses().get(0).getName()));
+                Log.d("HEREHEREHERE", String.valueOf(searchResponse.getBusinesses().get(0).getCoordinates().getLatitude()));
+                Log.d("HEREHEREHERE", String.valueOf(searchResponse.getBusinesses().get(0).getCoordinates().getLongitude()));
                 // Update UI text with the searchResponse.
             }
             @Override
