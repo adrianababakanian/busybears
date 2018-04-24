@@ -79,13 +79,16 @@
         <include
             android:visibility="gone"
             android:id="@+id/filter_row_top_bar"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="15dp"
-            android:layout_marginEnd="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             layout="@layout/filtered_row_top_input_element" />
         <!--must put this below the filters bottom sheet, else the addFilters button fails-->
+
+
+
 
 
 </android.support.design.widget.CoordinatorLayout>
