@@ -19,18 +19,19 @@
         <!-- back button content -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="61dp"
             android:layout_marginTop="0px"
-            android:paddingTop="40px"
+            android:gravity="left"
             android:orientation="horizontal"
-            android:gravity="left">
+            android:paddingTop="50px">
+
             <ImageView
                 android:id="@+id/filters_back_button"
-                android:layout_width="30px"
+                android:layout_width="18dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/back"
                 android:layout_gravity="left"
-                android:layout_marginLeft="60px"/>
+                android:layout_marginLeft="65px"
+                android:src="@drawable/close_01" />
         </LinearLayout>
         <!-- preferences title content -->
         <LinearLayout
@@ -159,15 +160,42 @@
                 android:orientation="horizontal"
                 android:background="@drawable/textlines">
                 <!-- price seek bar -->
-                <SeekBar
+                <!--<SeekBar-->
+                    <!--android:id="@+id/seekBar"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="16dp"-->
+                    <!--android:orientation="horizontal"-->
+                    <!--android:layout_marginTop="140px"-->
+                    <!--android:layout_marginLeft="40px"-->
+                    <!--android:layout_marginRight="40px"-->
+                    <!--android:useLevel="true"/>-->
+
+                <com.appyvet.materialrangebar.RangeBar
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/seekBar"
                     android:layout_width="match_parent"
-                    android:layout_height="16dp"
+                    android:layout_marginLeft="50px"
+                    android:layout_marginRight="50px"
+                    android:layout_marginTop="8px"
+                    app:mrb_barWeight="1dp"
+                    app:mrb_connectingLineWeight="2.5dp"
+                    android:useLevel="true"
                     android:orientation="horizontal"
-                    android:layout_marginTop="140px"
-                    android:layout_marginLeft="40px"
-                    android:layout_marginRight="40px"
-                    android:useLevel="true"/>
+                    android:layout_height="wrap_content"
+                    app:mrb_pinRadius="0dp"
+                    app:mrb_rangeBarColor="@color/colorPrimary"
+                    app:mrb_connectingLineColor="@color/colorPrimary"
+                    app:mrb_rangeBarPaddingBottom="9dp"
+                    app:mrb_selectorColor="@color/colorPrimary"
+                    app:mrb_selectorBoundaryColor="@color/colorPrimary"
+                    app:mrb_selectorBoundarySize="2dp"
+                    app:mrb_selectorSize="8dp"
+                    app:mrb_tickColor="@color/colorPrimary"
+                    app:mrb_tickHeight="0dp"
+                    app:mrb_tickEnd="100"
+                    app:mrb_tickInterval="5"
+                    app:mrb_tickStart="0"/>
+
                 <!-- price slider header text -->
                 <RelativeLayout
                     android:layout_width="match_parent"
