@@ -2,6 +2,7 @@ package cs160.dinestination;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Path;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetBehavior;
@@ -135,12 +136,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     String mapboxAccessToken = "pk.eyJ1IjoiYWRyaWFuYWJhYmFrYW5pYW4iLCJhIjoiY2pnMTgxeDQ4MWdwOTJ4dGxnbzU4OTVyMCJ9.CetiZIb8bdIEolkPM4AHbg";
 
     // Route-related.
-    private com.mapbox.geojson.Point originPosition;
-    private com.mapbox.geojson.Point destinationPosition;
+    private com.mapbox.geojson.Point originPosition = com.mapbox.geojson.Point.fromLngLat(-122.257290, 37.867460);
+    private com.mapbox.geojson.Point destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.257290, 37.867460);
     private DirectionsRoute currentRoute;
     private static final String TAG = "DirectionsActivity";
     private NavigationMapRoute navigationMapRoute;
     private Boolean ADDED_MARKERS = Boolean.FALSE;
+    private String PROFILE_TYPE;
 
     // Location layer-related.
     private PermissionsManager permissionsManager;
@@ -323,8 +325,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         setOnClickForFilterTrigger(filtersCheckButton);
         setOnClickForFilterBack(filtersBackButton);
         setOnClickForFindRestaurants(findRestaurantsButton);
-        setOnClickForNavigationButtons(navigationWalkButton, navigationCarButton, navigationTransitButton, navigationTaxiButton);
-        navigationWalkButton.callOnClick(); // to set walk as the default routing option.
 
         layoverRectangle.setImageAlpha(0);
         layoverRectangle.setZ(4);
@@ -334,6 +334,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         addLocationEngineListener();
 
         setupUI(findViewById(R.id.mainRootView));
+
+        setOnClickForNavigationButtons(navigationWalkButton, navigationCarButton, navigationTransitButton, navigationTaxiButton);
+        navigationCarButton.callOnClick(); // to set walk as the default routing option.
 
 
     } // END THE ON CREATE METHOD
@@ -345,6 +348,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 .accessToken(mapboxAccessToken)
                 .origin(origin)
                 .destination(destination)
+                .profile(PROFILE_TYPE)
                 .build()
                 .getRoute(new Callback<DirectionsResponse>() {
                     @Override
@@ -489,8 +493,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 whereToTime.setText(" "+hourStr+":"+minuteStr+meridian);
                 whereToPlace.setTextColor(getResources().getColor(R.color.textColorDark));
                 whereToTime.setTextColor(getResources().getColor(R.color.textColorDark));
-                addMarkers();
-                drawHardcodedRoute();
+                // addMarkers();
+                drawRoute();
                 findRestaurantsButton.setVisibility(View.VISIBLE);
                 whereToElementReposition(true);
                 navigationRowWrapper.setVisibility(View.VISIBLE);
@@ -697,6 +701,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vTransit.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_transit_24dp));
                 vTaxi.setBackground(getResources().getDrawable(R.color.white));
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
+                PROFILE_TYPE = DirectionsCriteria.PROFILE_WALKING;
+                // drawHardcodedRoute();
+                // getRoute(originPosition, destinationPosition);
             }
         });
         vCar.setOnClickListener(new View.OnClickListener() {
@@ -710,6 +717,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vTransit.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_transit_24dp));
                 vTaxi.setBackground(getResources().getDrawable(R.color.white));
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
+                PROFILE_TYPE = DirectionsCriteria.PROFILE_DRIVING_TRAFFIC;
+                // drawHardcodedRoute();
+                // getRoute(originPosition, destinationPosition);
             }
         });
         vTransit.setOnClickListener(new View.OnClickListener() {
@@ -723,6 +733,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vTransit.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_transit_24dp_pressed));
                 vTaxi.setBackground(getResources().getDrawable(R.color.white));
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
+                PROFILE_TYPE = DirectionsCriteria.PROFILE_CYCLING;
+                // drawHardcodedRoute();
+                // getRoute(originPosition, destinationPosition);
             }
         });
         vTaxi.setOnClickListener(new View.OnClickListener() {
@@ -736,6 +749,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vTransit.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_transit_24dp));
                 vTaxi.setBackground(getResources().getDrawable(R.color.colorPrimary));
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi_pressed));
+                PROFILE_TYPE = DirectionsCriteria.PROFILE_DRIVING_TRAFFIC;
+                // drawHardcodedRoute();
+                // getRoute(originPosition, destinationPosition);
             }
         });
     }
@@ -826,7 +842,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private void drawHardcodedRoute() {
+    private void drawRoute() {
         destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.283399, 37.873960);
         originPosition = com.mapbox.geojson.Point.fromLngLat(originLocation.getLongitude(), originLocation.getLatitude());
 
