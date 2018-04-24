@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_navigation_transit_24dp"
+        android:src="@drawable/ic_navigation_bike_24dp"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
         android:paddingTop="10dp"
