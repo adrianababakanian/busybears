@@ -642,7 +642,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     /**
-     * Converts price range values to string for Yelp API queries. 
+     * Converts price range values to string for Yelp API queries.
      */
     private String getYelpifiedPriceRange() {
         // eg. https://api.yelp.com/v3/businesses/search?term=restaurant&location=boulder&price=1,2,3
@@ -650,19 +650,43 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         String priceRangeQueryStr = "";
         Integer upperVal = Integer.parseInt(mSeekBar.getRightPinValue());
         Integer lowerVal = Integer.parseInt(mSeekBar.getLeftPinValue());
-=        if (lowerVal <= 25 || upperVal <= 25) {
-            priceRangeQueryStr += "1,";
+        if (priceSliderUsedFlag) {
+            if ((lowerVal <= 25) || (upperVal <= 25)) {
+                priceRangeQueryStr += "1,";
+            }
+            if ((lowerVal > 25 && lowerVal <= 50) || (upperVal > 25 && lowerVal <= 50)) {
+                priceRangeQueryStr += "2,";
+            }
+            if ((lowerVal > 50 && lowerVal <= 75) || (upperVal > 50 && lowerVal <= 75)) {
+                priceRangeQueryStr += "3,";
+            }
+            if ((lowerVal > 75) || (upperVal > 75)) {
+                priceRangeQueryStr += "4,";
+            }
         }
-        if ((lowerVal > 25 && lowerVal <= 50) || (upperVal > 25 && lowerVal <= 50)) {
-            priceRangeQueryStr += "2,";
+        if (!priceRangeQueryStr.equals("")) {
+            priceRangeQueryStr = priceRangeQueryStr.substring(0, priceRangeQueryStr.length() - 1);
         }
-        if ((lowerVal > 50 && lowerVal <= 75) || (upperVal > 50 && lowerVal <= 75)) {
-            priceRangeQueryStr += "3,";
-        }
-        if ((lowerVal > 75) || (upperVal > 75)) {
-            priceRangeQueryStr += "4,";
-        }
-        return priceRangeQueryStr.substring(0, priceRangeQueryStr.length() - 1);
+        return priceRangeQueryStr;
+    }
+
+    private void yelpQueryMaker(String latitude, String longitude) {
+        // docs: https://www.yelp.com/developers/documentation/v3/business_search
+        // GET https://api.yelp.com/v3/businesses/search
+        String APIKey = "dczs4nuyUTOJWGPaXth8Zqt0IwzGoD0Wr-8OZgDmdu4G0oa3M3K-GzlPVYFAh4indjgmImwbDSSaWnh2d7KQgSFly0AresZM9PGy6p4IRUgJcE3ElHJyWyXIb7jeWnYx";
+        String baseURL = "https://api.yelp.com/v3/businesses/search?"; // will return error if rest are null.
+        String bearerAuth = "&Bearer=";
+//        longitude = "&longitude=" + <longitude>; // & at the start still works fine
+//        latitude = "&latitude=" + <latitude>;
+        String price = "&price=" + getYelpifiedPriceRange();
+        String radius = "&radius=" + toleranceSlider.getProgress(); // value in metres.
+        String categories = "&categories="; // need to generate these, make aux func.
+        String open_now = "&open_now=true";
+        String limit = "&limit=";
+        String sort_by = "&sort_by=";
+
+        String queryString = baseURL + latitude + longitude + price + radius + categories + open_now + limit + sort_by;
+        // returns something
     }
 
     /**
