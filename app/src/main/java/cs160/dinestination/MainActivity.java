@@ -5,16 +5,20 @@ import android.app.Activity;
 import android.content.Context;
 
 import android.graphics.Path;
+import android.location.Address;
+import android.location.Geocoder;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -77,6 +81,7 @@ import com.mapbox.services.commons.geojson.Feature;
 import com.mapbox.services.commons.geojson.FeatureCollection;
 import com.mapbox.services.commons.geojson.Point;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -161,8 +166,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
 
     PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
-    private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
-            new com.google.android.gms.maps.model.LatLng(-34.041458, 150.790100), new com.google.android.gms.maps.model.LatLng(-33.682247, 151.383362));
+    private static final LatLngBounds BOUNDS_GREATER_BAY_AREA = new LatLngBounds(
+            new com.google.android.gms.maps.model.LatLng(37.7749, -122.4194), new com.google.android.gms.maps.model.LatLng(37.9101, -122.0652));
     // Location layer-related.
     private PermissionsManager permissionsManager;
     private LocationLayerPlugin locationPlugin;
@@ -359,77 +364,72 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         setupUI(findViewById(R.id.mainRootView));
 
 
+        // Google autocomplete API client.
         mGoogleApiClient = new GoogleApiClient
                 .Builder(this)
                 .addApi(Places.GEO_DATA_API)
                 .addApi(Places.PLACE_DETECTION_API)
                 .enableAutoManage(this, this)
                 .build();
-        mPlaceAutocompleteAdapter = new PlaceAutocompleteAdapter(this, mGoogleApiClient, BOUNDS_GREATER_SYDNEY,null);
+        mPlaceAutocompleteAdapter = new PlaceAutocompleteAdapter(this, mGoogleApiClient, BOUNDS_GREATER_BAY_AREA,null);
 
         whereToEditText.setAdapter(mPlaceAutocompleteAdapter);
 
+        whereToEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if(actionId == EditorInfo.IME_ACTION_SEARCH
+                        || actionId == EditorInfo.IME_ACTION_DONE
+                        || keyEvent.getAction() == KeyEvent.ACTION_DOWN
+                        || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER){
 
+                    //execute our method for searching
+                    geoLocate();
+                }
+
+                return false;
+            }
+        });
+
+        // Set up navigation buttons.
         setOnClickForNavigationButtons(navigationWalkButton, navigationCarButton, navigationBikeButton, navigationTaxiButton);
         navigationCarButton.callOnClick(); // to set walk as the default routing option.
 
 
     } // END THE ON CREATE METHOD
 
-//    private void openAutocompleteActivity() {
-//        try {
-//            Intent intent =
-//                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
-//                            .build(this);
-//            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-//            overridePendingbikeion(android.R.anim.fade_in, android.R.anim.fade_out);
-//        } catch (GooglePlayServicesRepairableException e) {
-//            GoogleApiAvailability.getInstance().getErrorDialog(this, e.getConnectionStatusCode(),
-//                    0 /* requestCode */).show();
-//        } catch (GooglePlayServicesNotAvailableException e) {
-//            String message = "Google Play Services is not available: " +
-//                    GoogleApiAvailability.getInstance().getErrorString(e.errorCode);
-//
-//            Log.e(TAG, message);
-//            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-//        }
-//    }
 
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        // Check that the result was from the autocomplete widget.
-//        if (requestCode == REQUEST_CODE_AUTOCOMPLETE) {
-//            if (resultCode == RESULT_OK) {
-//                // Get the user's selected place from the Intent.
-//                Place place = PlaceAutocomplete.getPlace(this, data);
-//                Log.i(TAG, "Place Selected: " + place.getName());
-//
-//                // Format the place's details and display them in the TextView.
-//                whereToEditText.setText(place.getName());
-//
-//                /*getLatLng() to get a latlng object and  .latitude
-//                and .longitude to get respective coordinates */
-//
-//                // Display attributions if required.
-////                CharSequence attributions = place.getAttributions();
-////                if (!TextUtils.isEmpty(attributions)) {
-////                    mPlaceAttribution.setText(Html.fromHtml(attributions.toString()));
-////                } else {
-////                    mPlaceAttribution.setText("");
-////                }
-//            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-//                Status status = PlaceAutocomplete.getStatus(this, data);
-//                Log.e(TAG, "Error: Status = " + status.toString());
-//            } else if (resultCode == RESULT_CANCELED) {
-//                // Indicates that the activity closed before a selection was made. For example if
-//                // the user pressed the back button.
-//            }
-//        }
-//    }
+    // Gecode and address from the places API.
+    private void geoLocate() {
+        Log.d(TAG, "geoLocate: geolocating");
+
+        String searchString = whereToEditText.getText().toString();
+
+        Geocoder geocoder = new Geocoder(MainActivity.this);
+        List<android.location.Address> list = new ArrayList<>();
+        try {
+            list = geocoder.getFromLocationName(searchString, 1);
+        } catch (IOException e) {
+            Log.e(TAG, "geoLocate: IOException: " + e.getMessage());
+        }
+
+        if (list.size() > 0) {
+            Address address = list.get(0);
+            address.getLatitude();
+            address.getLongitude();
+
+            Log.d(TAG, "geoLocate: found a location: " + address.toString());
+            Toast.makeText(this, "" + String.valueOf(address.getLatitude()) + " " + String.valueOf(address.getLongitude()), Toast.LENGTH_LONG).show();
+
+            destinationPosition = com.mapbox.geojson.Point.fromLngLat(address.getLongitude(), address.getLatitude());
+            System.out.println(destinationPosition);
+
+        }
+
+    }
 
 
+    // Get and draw the route given an origin, destination position, and a profile.
     private void getRoute(com.mapbox.geojson.Point origin, com.mapbox.geojson.Point destination) {
         System.out.println("GET ROUTE CALLED");
         NavigationRoute.builder()
@@ -565,6 +565,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         exitInputButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                geoLocate();
+
                 destinationInformation.setVisibility(View.VISIBLE);
                 timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 whereToInputViewFlipper.showNext();
@@ -954,8 +957,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void drawRoute() {
-        destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.283399, 37.873960);
+//        if (originPosition == null) {
+//            originPosition = com.mapbox.geojson.Point.fromLngLat(originLocation.getLongitude(), originLocation.getLatitude());
+//
+//        }
+//        if (destinationPosition == null) {
+//            destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.283399, 37.873960);
+//
+//        }
         originPosition = com.mapbox.geojson.Point.fromLngLat(originLocation.getLongitude(), originLocation.getLatitude());
+        destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.283399, 37.873960);
+
 
         getRoute(originPosition, destinationPosition);
     }
