@@ -966,7 +966,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 //
 //        }
         originPosition = com.mapbox.geojson.Point.fromLngLat(originLocation.getLongitude(), originLocation.getLatitude());
-        destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.283399, 37.873960);
+//        destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.283399, 37.873960);
 
 
         getRoute(originPosition, destinationPosition);
