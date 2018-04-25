@@ -167,7 +167,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private PermissionsManager permissionsManager;
     private LocationLayerPlugin locationPlugin;
     private LocationEngine locationEngine;
-    private Location originLocation;
+    private Location originLocation = new Location("");
+    // private Location originLocation = new Location(-122.257290, 37.867460);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -277,7 +278,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     findRestaurantsButton.setVisibility(View.GONE);
                     navigationRowWrapper.setVisibility(View.GONE);
                     whereToElement.setVisibility(View.GONE);
-                    // whereToElementReposition(false);
                     whereToInputViewFlipper.showNext();
                 } else {
                     timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -578,7 +578,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 if (hour > 12) {meridian = "pm"; hour = hour - 12;}
                 if (minute < 10) {minuteStr = "0".concat(minuteStr);}
                 String hourStr = Integer.toString(hour);
-                whereToTime.setText(" "+hourStr+":"+minuteStr+meridian);
+                whereToTime.setText("by "+hourStr+":"+minuteStr+meridian);
                 whereToPlace.setTextColor(getResources().getColor(R.color.textColorDark));
                 whereToTime.setTextColor(getResources().getColor(R.color.textColorDark));
 
@@ -805,14 +805,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent goToHeatMapActivity = new Intent(MainActivity.this, HeatmapActivity.class);
-//                goToHeatMapActivity.putExtra("whereToLocation", whereToEditText.getText().toString());
-//                goToHeatMapActivity.putExtra("whereToTime", whereToTime.getText().toString());
-//                // T ODO: Pass required values across
-////                goToHeatMapActivity.putExtra(); // need to pass all applied filters lol
-////                      //- can do hacky implementation with standardised var names and loop through, or serializable/parcelable class.
-////                goToHeatMapActivity.putExtra() // pass routing latitude & longitude over. or some way to do using mapbox?
-//                startActivity(goToHeatMapActivity);
 
                 // TODO: make markers show up on map now
                 toleranceSlider.setVisibility(View.VISIBLE);
@@ -843,6 +835,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vTaxi.setBackground(getResources().getDrawable(R.color.white));
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
                 PROFILE_TYPE = DirectionsCriteria.PROFILE_WALKING;
+                drawRoute();
                 // drawHardcodedRoute();
                 // getRoute(originPosition, destinationPosition);
             }
@@ -859,7 +852,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vTaxi.setBackground(getResources().getDrawable(R.color.white));
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
                 PROFILE_TYPE = DirectionsCriteria.PROFILE_DRIVING_TRAFFIC;
-                // drawHardcodedRoute();
+                drawRoute();
                 System.out.println("pls call me");
                 // getRoute(originPosition, destinationPosition);
             }
@@ -877,6 +870,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
                 PROFILE_TYPE = DirectionsCriteria.PROFILE_CYCLING;
                 System.out.println("wow bicycle click");
+                drawRoute();
                 // drawHardcodedRoute();
                 // getRoute(originPosition, destinationPosition);
             }
@@ -893,29 +887,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vTaxi.setBackground(getResources().getDrawable(R.color.colorPrimary));
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi_pressed));
                 PROFILE_TYPE = DirectionsCriteria.PROFILE_DRIVING_TRAFFIC;
+                drawRoute();
                 // drawHardcodedRoute();
                 // getRoute(originPosition, destinationPosition);
             }
         });
     }
-
-
-    /**
-     * Repositions whereToElement up or down. Moves in tandem with 'Find restaurants' button visibility.
-     * Also expands to include navigation options and increases in width.
-     */
-//    private void whereToElementReposition(Boolean shouldShiftUp) {
-//        ViewGroup.MarginLayoutParams whereToElementParams = (ViewGroup.MarginLayoutParams) whereToElement.getLayoutParams();
-//
-//        if (shouldShiftUp) {
-//            whereToElement.setVisibility(View.GONE);
-//            destinationInformation.setVisibility(View.VISIBLE);
-//        } else {
-//            whereToElement.setVisibility(View.VISIBLE);
-//            whereToElementParams.setMargins(whereToElementParams.leftMargin, 300, whereToElementParams.rightMargin, whereToElementParams.bottomMargin);
-//        }
-//        whereToElement.requestLayout();
-//    }
 
 
     //////// MAPBOX THINGS ////////
