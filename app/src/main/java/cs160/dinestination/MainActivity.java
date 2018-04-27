@@ -844,10 +844,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         params.put("latitude", String.valueOf(latitude));
         params.put("longitude", String.valueOf(longitude));
         params.put("price", getYelpifiedPriceRange());
-        params.put("radius", String.valueOf(toleranceSlider.getProgress() + 1700)); // wait lol this only shows up after query has been made.
+        params.put("radius", String.valueOf(toleranceSlider.getProgress() + 200)); // wait lol this only shows up after query has been made.
         // ^ Needs some conversion factor, not a static addition. should also account for wait time, in theory...
         params.put("open_now", "true");
         params.put("term", "restaurants"); // could just chuck everything in term?? 'restaurants, burgers' seems to work.
+        params.put("limit", "50"); // 20 by default
 
         String cuisineQueryString = "";
         for (String str : currentCuisineFilters) {
@@ -860,10 +861,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
                 SearchResponse searchResponse = response.body();
                 for (Business restaurant : searchResponse.getBusinesses()) {
-                    Log.d("HEREHEREYelpQueryMaker", restaurant.getName());
-//                    for (Category cat : restaurant.getCategories()) {
-//                        Log.d("^HEREHEREYelpQueryMaker", cat.getAlias()); // use these as the category search values, eg. Fast Food => hotdogs
-//                    }
+//                    Log.d("HEREHEREYelpQueryMaker", restaurant.getName() + "," + restaurant.getCoordinates().getLatitude());
+                    IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
+                    Icon icon = iconFactory.fromResource(R.drawable.pinpoint);
+                    LatLng ll = new LatLng(restaurant.getCoordinates().getLatitude(), restaurant.getCoordinates().getLongitude());
+                    mapboxMap.addMarker(new MarkerViewOptions()
+                            .position(ll)
+                            .icon(icon));
                 }
             }
             @Override
@@ -876,6 +880,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         call.enqueue(callback);
 
         // returns something? or just renders directly?
+
+
     }
 
     /**
@@ -892,27 +898,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 yelpQueryMaker(destinationPosition.latitude(), destinationPosition.longitude());
                 // TODO: This and the one in setOnClickForFiltersTrigger just use destination position!!
                 // Todo: need to get all the route segments. getRoute doesn't do that, need to get a Directions obj I think.
+                ArrayList<StepIntersection> intersections = new ArrayList<>();
                 for (RouteLeg leg : currentRoute.legs()) { // this is only giving the first step right now.
-                    Log.d("findrestronclick routeleg", leg.summary().toString());
                     for (LegStep s : leg.steps()) {
-//                        Log.d("route lolcats", s.destinations().toString());
-                        Log.d("route lolcats", s.intersections().toString());
                         for (StepIntersection l : s.intersections()) {
-                            Log.d("irene", String.valueOf(l.location().latitude() + "," + String.valueOf(l.location().longitude())));
-
-                            IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
-                            Icon icon = iconFactory.fromResource(R.drawable.pinpoint);
-                            LatLng ll = new LatLng(l.location().latitude(), l.location().longitude());
-                            mapboxMap.addMarker(new MarkerViewOptions()
-                                    .position(ll)
-                                    .icon(icon));
+                            if (!intersections.contains(l)) intersections.add(l);
+//                                yelpQueryMaker(l.location().latitude(), l.location().longitude());
                         }
                     }
                 }
-//                navigationMapRoute.
-//                for (com.mapbox.geojson.Point p : currentRoute.routeOptions().coordinates()) {
-//                    Log.d("hello route", String.valueOf(p.latitude()));
-//                }
+                for (StepIntersection s : intersections) {
+                    yelpQueryMaker(s.location().latitude(), s.location().longitude());
+                }
 
             }
         });
