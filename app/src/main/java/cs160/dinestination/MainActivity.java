@@ -83,6 +83,7 @@ import com.mapbox.services.commons.geojson.Point;
 import com.yelp.fusion.client.connection.YelpFusionApi;
 import com.yelp.fusion.client.connection.YelpFusionApiFactory;
 import com.yelp.fusion.client.models.Business;
+import com.yelp.fusion.client.models.Category;
 import com.yelp.fusion.client.models.SearchResponse;
 
 import java.io.IOException;
@@ -180,6 +181,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private LocationEngine locationEngine;
     private Location originLocation = new Location("");
     // private Location originLocation = new Location(-122.257290, 37.867460);
+
+    // Yelp API v3
+    YelpFusionApiFactory yelpApiFactory;
+    YelpFusionApi yelpFusionApi;
+    ArrayList<String> currentCuisineFilters;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -403,38 +410,15 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         //-----------------------Yelp-----------------------------------------------
-        YelpFusionApiFactory apiFactory = new YelpFusionApiFactory();
-        YelpFusionApi yelpFusionApi = null;
+        yelpApiFactory = new YelpFusionApiFactory();
+        yelpFusionApi = null;
         try {
-            yelpFusionApi = apiFactory.createAPI("dczs4nuyUTOJWGPaXth8Zqt0IwzGoD0Wr-8OZgDmdu4G0oa3M3K-GzlPVYFAh4indjgmImwbDSSaWnh2d7KQgSFly0AresZM9PGy6p4IRUgJcE3ElHJyWyXIb7jeWnYx");
+            yelpFusionApi = yelpApiFactory.createAPI("dczs4nuyUTOJWGPaXth8Zqt0IwzGoD0Wr-8OZgDmdu4G0oa3M3K-GzlPVYFAh4indjgmImwbDSSaWnh2d7KQgSFly0AresZM9PGy6p4IRUgJcE3ElHJyWyXIb7jeWnYx");
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        Map<String, String> params = new HashMap<>();
-
-        params.put("term", "indian food");
-        params.put("latitude", "40.581140");
-        params.put("longitude", "-111.914184");
-
-        Call<SearchResponse> call = yelpFusionApi.getBusinessSearch(params);
-
-        Callback<SearchResponse> callback = new Callback<SearchResponse>() {
-            @Override
-            public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
-                SearchResponse searchResponse = response.body();
-                Log.d("HEREHEREHERE", String.valueOf(searchResponse.getBusinesses().get(0).getName()));
-                Log.d("HEREHEREHERE", String.valueOf(searchResponse.getBusinesses().get(0).getCoordinates().getLatitude()));
-                Log.d("HEREHEREHERE", String.valueOf(searchResponse.getBusinesses().get(0).getCoordinates().getLongitude()));
-                // Update UI text with the searchResponse.
-            }
-            @Override
-            public void onFailure(Call<SearchResponse> call, Throwable t) {
-                // HTTP error happened, do something to handle it.
-            }
-        };
-
-        call.enqueue(callback);
+        currentCuisineFilters = new ArrayList<>();
+//        yelpQueryMaker(destinationPosition.latitude(), destinationPosition.longitude());
         //--------------------------------------------------------------------------
 
 
@@ -527,9 +511,23 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 R.id.indian_check, R.id.american_check, R.id.japanese_check, R.id.burmese_check};
         int[] attire_ids = new int[] {R.id.casual_check, R.id.relaxed_check, R.id.dressy_check, R.id.formal_check};
 
+        currentCuisineFilters.clear();
         for (int i = 0; i < cuisine_ids.length; i++) {
             CheckBox cBox = findViewById(cuisine_ids[i]);
-            if (cBox.isChecked()) stringsForFilterButtons.add(cBox.getText().toString());
+            if (cBox.isChecked()) {
+                stringsForFilterButtons.add(cBox.getText().toString());
+                switch (cuisine_ids[i]) {
+                    case R.id.indian_check:
+                        currentCuisineFilters.add("indpak");
+                        break;
+                    case R.id.american_check:
+                        currentCuisineFilters.add("newamerican,tradamerican");
+                        break;
+                    default:
+                        currentCuisineFilters.add(cBox.getText().toString().toLowerCase());
+                        break;
+                }
+            }
         }
         if (priceSliderUsedFlag) stringsForFilterButtons.add(priceRange);
         for (int i = 0; i < attire_ids.length; i++) {
@@ -825,23 +823,46 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         return priceRangeQueryStr;
     }
 
-    private void yelpQueryMaker(String latitude, String longitude) {
+    private void yelpQueryMaker(Double latitude, Double longitude) {
         // docs: https://www.yelp.com/developers/documentation/v3/business_search
-        // GET https://api.yelp.com/v3/businesses/search
-        String APIKey = "dczs4nuyUTOJWGPaXth8Zqt0IwzGoD0Wr-8OZgDmdu4G0oa3M3K-GzlPVYFAh4indjgmImwbDSSaWnh2d7KQgSFly0AresZM9PGy6p4IRUgJcE3ElHJyWyXIb7jeWnYx";
-        String baseURL = "https://api.yelp.com/v3/businesses/search?"; // will return error if rest are null.
-        String bearerAuth = "&Bearer=";
-//        longitude = "&longitude=" + <longitude>; // & at the start still works fine
-//        latitude = "&latitude=" + <latitude>;
-        String price = "&price=" + getYelpifiedPriceRange();
-        String radius = "&radius=" + toleranceSlider.getProgress(); // value in metres.
-        String categories = "&categories="; // need to generate these, make aux func.
-        String open_now = "&open_now=true";
-        String limit = "&limit=";
-        String sort_by = "&sort_by=";
+        // GOOD FOR KIDS, GOOD FOR GROUPS - NOT POSSIBLE USING API.
+        // also no options for attire. - could match to price range instead..
+        Map<String, String> params = new HashMap<>();
+        params.put("latitude", String.valueOf(latitude));
+        params.put("longitude", String.valueOf(longitude));
+        params.put("price", getYelpifiedPriceRange());
+        params.put("radius", String.valueOf(toleranceSlider.getProgress() + 1700)); // wait lol this only shows up after query has been made.
+        // ^ Needs some conversion factor, not a static addition.
+        params.put("open_now", "true");
+        params.put("term", "restaurants"); // could just chuck everything in term?? 'restaurants, burgers' seems to work.
 
-        String queryString = baseURL + latitude + longitude + price + radius + categories + open_now + limit + sort_by;
-        // returns something
+        String cuisineQueryString = "";
+        for (String str : currentCuisineFilters) {
+            cuisineQueryString += str + ",";
+        }
+        params.put("categories", cuisineQueryString); // no space. only comma. // burgers,brunch
+
+        Callback<SearchResponse> callback = new Callback<SearchResponse>() {
+            @Override
+            public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
+                SearchResponse searchResponse = response.body();
+                for (Business restaurant : searchResponse.getBusinesses()) {
+                    Log.d("HEREHEREYelpQueryMaker", restaurant.getName());
+//                    for (Category cat : restaurant.getCategories()) {
+//                        Log.d("^HEREHEREYelpQueryMaker", cat.getAlias()); // use these as the category search values, eg. Fast Food => hotdogs
+//                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<SearchResponse> call, Throwable t) {
+                // HTTP error happened, do something to handle it.
+                Log.d("HEREHEREYelpQueryMaker", "oh no, something went wrong");
+            }
+        };
+        Call<SearchResponse> call = yelpFusionApi.getBusinessSearch(params);
+        call.enqueue(callback);
+
+        // returns something? or just renders directly?
     }
 
     /**
@@ -855,8 +876,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 // TODO: make markers show up on map now
                 toleranceSlider.setVisibility(View.VISIBLE);
                 navigationRowWrapper.setVisibility(View.GONE);
-
-
+                yelpQueryMaker(destinationPosition.latitude(), destinationPosition.longitude());
+                // TODO: THIS DOES NOT GET CALLED IF THEY UPDATE THE FILTERS TOP ROW.
             }
         });
     }
