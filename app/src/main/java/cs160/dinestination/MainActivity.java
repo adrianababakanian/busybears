@@ -311,6 +311,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0); // force close softkeyboard, else pushes layout up
                 timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 whereToInputViewFlipper.showPrevious();
+                if (!whereToPlace.getText().equals(""))
                 whereToElement.setVisibility(View.GONE);
                 // addMarkers();
             }
@@ -711,8 +712,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     CheckBox cBox = findViewById(cuisine_ids[i]);
                     cBox.setChecked(false);
                 }
-                priceSliderUsedFlag = false;
                 mSeekBar.setRangePinsByValue(10, 50);
+                priceSliderUsedFlag = false;
 
                 for (int i = 0; i < attire_ids.length; i++) {
                     CheckBox cBox = findViewById(attire_ids[i]);
@@ -891,6 +892,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.d("findrestronclick routeleg", leg.summary().toString());
                 }
 //                navigationMapRoute.
+                for (com.mapbox.geojson.Point p : currentRoute.routeOptions().coordinates()) {
+                    Log.d("hello route", String.valueOf(p.latitude()));
+                }
             }
         });
     }
