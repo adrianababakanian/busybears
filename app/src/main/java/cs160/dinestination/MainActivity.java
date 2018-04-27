@@ -3,14 +3,21 @@ package cs160.dinestination;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
+import android.graphics.PointF;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
-import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -19,6 +26,7 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -26,28 +34,17 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.TimePicker;
-import android.widget.ViewFlipper;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.PointF;
-import android.location.Location;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
-import android.widget.AutoCompleteTextView;
 import android.widget.SeekBar;
 import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
+import com.appyvet.materialrangebar.RangeBar;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Places;
-import com.mapbox.mapboxsdk.geometry.LatLng;
-// import com.google.android.gms.maps.model.LatLngBounds;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.api.directions.v5.DirectionsCriteria;
@@ -58,16 +55,11 @@ import com.mapbox.api.directions.v5.models.RouteLeg;
 import com.mapbox.api.directions.v5.models.StepIntersection;
 import com.mapbox.geocoder.MapboxGeocoder;
 import com.mapbox.mapboxsdk.Mapbox;
-import com.appyvet.materialrangebar.RangeBar;
-import com.mapbox.android.core.permissions.PermissionsListener;
-import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
-import com.mapbox.mapboxsdk.annotations.MarkerView;
-import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
-// import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -90,7 +82,6 @@ import com.mapbox.services.commons.geojson.Point;
 import com.yelp.fusion.client.connection.YelpFusionApi;
 import com.yelp.fusion.client.connection.YelpFusionApiFactory;
 import com.yelp.fusion.client.models.Business;
-import com.yelp.fusion.client.models.Category;
 import com.yelp.fusion.client.models.SearchResponse;
 
 import java.io.IOException;
@@ -102,6 +93,9 @@ import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+// import com.google.android.gms.maps.model.LatLngBounds;
+// import com.mapbox.mapboxsdk.geometry.LatLng;
 
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback, LocationEngineListener, PermissionsListener, GoogleApiClient.OnConnectionFailedListener {
@@ -429,7 +423,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Set up navigation buttons.
         setOnClickForNavigationButtons(navigationWalkButton, navigationCarButton, navigationBikeButton, navigationTaxiButton);
-        navigationCarButton.callOnClick(); // to set walk as the default routing option.
+//        navigationCarButton.callOnClick(); // to set walk as the default routing option.
 
 
         //-----------------------Yelp-----------------------------------------------
@@ -637,6 +631,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
 
+                navigationCarButton.callOnClick(); // to set walk as the default routing option.
+
+
                 geoLocate();
 
                 destinationInformation.setVisibility(View.VISIBLE);
@@ -667,14 +664,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
                 LatLng southWestCorner = new LatLng(southPoint, westPoint);
                 LatLng northEastCorner = new LatLng(northPoint, eastPoint);
-
-                mapboxMap.addMarker(new MarkerViewOptions()
-                        .position(southWestCorner)
-                        .icon(icon));
-
-                mapboxMap.addMarker(new MarkerViewOptions()
-                        .position(northEastCorner)
-                        .icon(icon));
 
                 LatLngBounds latLngBounds = new LatLngBounds.Builder()
                         .include(southWestCorner) // Northeast
@@ -930,6 +919,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 // TODO: make markers show up on map now
                 toleranceSlider.setVisibility(View.VISIBLE);
                 navigationRowWrapper.setVisibility(View.GONE);
+                findRestaurantsButton.setVisibility(View.GONE);
                 yelpQueryMaker(destinationPosition.latitude(), destinationPosition.longitude());
                 // TODO: This and the one in setOnClickForFiltersTrigger just use destination position!!
                 ArrayList<StepIntersection> intersections = new ArrayList<>();
@@ -967,6 +957,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vTaxi.setBackground(getResources().getDrawable(R.color.white));
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
                 PROFILE_TYPE = DirectionsCriteria.PROFILE_WALKING;
+                findRestaurantsButton.setVisibility(View.VISIBLE);
                 drawRoute();
             }
         });
@@ -982,6 +973,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vTaxi.setBackground(getResources().getDrawable(R.color.white));
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
                 PROFILE_TYPE = DirectionsCriteria.PROFILE_DRIVING_TRAFFIC;
+                findRestaurantsButton.setVisibility(View.VISIBLE);
                 drawRoute();
             }
         });
@@ -997,6 +989,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vTaxi.setBackground(getResources().getDrawable(R.color.white));
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
                 PROFILE_TYPE = DirectionsCriteria.PROFILE_CYCLING;
+                findRestaurantsButton.setVisibility(View.VISIBLE);
                 System.out.println("wow bicycle click");
                 drawRoute();
             }
@@ -1013,6 +1006,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vTaxi.setBackground(getResources().getDrawable(R.color.colorPrimary));
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi_pressed));
                 PROFILE_TYPE = DirectionsCriteria.PROFILE_DRIVING_TRAFFIC;
+                findRestaurantsButton.setVisibility(View.VISIBLE);
                 drawRoute();
             }
         });
