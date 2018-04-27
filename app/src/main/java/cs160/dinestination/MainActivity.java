@@ -193,7 +193,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     YelpFusionApiFactory yelpApiFactory;
     YelpFusionApi yelpFusionApi;
     ArrayList<String> currentCuisineFilters;
-
+    Icon pinpointIcon;
+    IconFactory iconFactory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -208,6 +209,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         filtersBottomSheet = findViewById(R.id.filters_bottom_sheet);
         filtersSheetBehavior = BottomSheetBehavior.from(filtersBottomSheet);
+
+        iconFactory = IconFactory.getInstance(MainActivity.this);
+        pinpointIcon = iconFactory.fromResource(R.drawable.pinpoint);
 
         mSeekBar = findViewById(R.id.seekBar);
         mSwitch1 = findViewById(R.id.switch1);
@@ -847,7 +851,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         params.put("radius", String.valueOf(toleranceSlider.getProgress() + 200)); // wait lol this only shows up after query has been made.
         // ^ Needs some conversion factor, not a static addition. should also account for wait time, in theory...
         params.put("open_now", "true");
-        params.put("term", "restaurants"); // could just chuck everything in term?? 'restaurants, burgers' seems to work.
+        params.put("term", "restaurants");
         params.put("limit", "50"); // 20 by default
 
         String cuisineQueryString = "";
@@ -861,27 +865,21 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
                 SearchResponse searchResponse = response.body();
                 for (Business restaurant : searchResponse.getBusinesses()) {
-//                    Log.d("HEREHEREYelpQueryMaker", restaurant.getName() + "," + restaurant.getCoordinates().getLatitude());
-                    IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
-                    Icon icon = iconFactory.fromResource(R.drawable.pinpoint);
+//                    Log.d("YelpQueryMaker", restaurant.getName() + "," + restaurant.getCoordinates().getLatitude());
                     LatLng ll = new LatLng(restaurant.getCoordinates().getLatitude(), restaurant.getCoordinates().getLongitude());
                     mapboxMap.addMarker(new MarkerViewOptions()
                             .position(ll)
-                            .icon(icon));
+                            .icon(pinpointIcon));
                 }
             }
             @Override
             public void onFailure(Call<SearchResponse> call, Throwable t) {
                 // HTTP error happened, do something to handle it.
-                Log.d("HEREHEREYelpQueryMaker", "oh no, something went wrong");
+                Log.d("YelpQueryMaker", "oh no, something went wrong");
             }
         };
         Call<SearchResponse> call = yelpFusionApi.getBusinessSearch(params);
         call.enqueue(callback);
-
-        // returns something? or just renders directly?
-
-
     }
 
     /**
@@ -891,26 +889,22 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 // TODO: make markers show up on map now
                 toleranceSlider.setVisibility(View.VISIBLE);
                 navigationRowWrapper.setVisibility(View.GONE);
                 yelpQueryMaker(destinationPosition.latitude(), destinationPosition.longitude());
                 // TODO: This and the one in setOnClickForFiltersTrigger just use destination position!!
-                // Todo: need to get all the route segments. getRoute doesn't do that, need to get a Directions obj I think.
                 ArrayList<StepIntersection> intersections = new ArrayList<>();
                 for (RouteLeg leg : currentRoute.legs()) { // this is only giving the first step right now.
                     for (LegStep s : leg.steps()) {
                         for (StepIntersection l : s.intersections()) {
                             if (!intersections.contains(l)) intersections.add(l);
-//                                yelpQueryMaker(l.location().latitude(), l.location().longitude());
                         }
                     }
                 }
                 for (StepIntersection s : intersections) {
                     yelpQueryMaker(s.location().latitude(), s.location().longitude());
                 }
-
             }
         });
     }
@@ -936,8 +930,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
                 PROFILE_TYPE = DirectionsCriteria.PROFILE_WALKING;
                 drawRoute();
-                // drawHardcodedRoute();
-                // getRoute(originPosition, destinationPosition);
             }
         });
         vCar.setOnClickListener(new View.OnClickListener() {
@@ -953,8 +945,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
                 PROFILE_TYPE = DirectionsCriteria.PROFILE_DRIVING_TRAFFIC;
                 drawRoute();
-                System.out.println("pls call me");
-                // getRoute(originPosition, destinationPosition);
             }
         });
         vBike.setOnClickListener(new View.OnClickListener() {
@@ -971,8 +961,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 PROFILE_TYPE = DirectionsCriteria.PROFILE_CYCLING;
                 System.out.println("wow bicycle click");
                 drawRoute();
-                // drawHardcodedRoute();
-                // getRoute(originPosition, destinationPosition);
             }
         });
         vTaxi.setOnClickListener(new View.OnClickListener() {
@@ -988,8 +976,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi_pressed));
                 PROFILE_TYPE = DirectionsCriteria.PROFILE_DRIVING_TRAFFIC;
                 drawRoute();
-                // drawHardcodedRoute();
-                // getRoute(originPosition, destinationPosition);
             }
         });
     }
@@ -1004,9 +990,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         BitmapFactory.Options options = new BitmapFactory.Options();
         MainActivity.this.mapboxMap = mapboxMap;
         /* Image: An image is loaded and added to the map. */
-        Bitmap icon = BitmapFactory.decodeResource(
-                MainActivity.this.getResources(), R.drawable.pinpoint, options);
-        mapboxMap.addImage(MARKER_IMAGE, icon);
+//        Bitmap icon = BitmapFactory.decodeResource(
+//                MainActivity.this.getResources(), R.drawable.pinpoint, options);
+//        mapboxMap.addImage(MARKER_IMAGE, icon);
         //addMarkers();
 
         mapboxMap.setOnMapClickListener(new MapboxMap.OnMapClickListener() {
@@ -1044,7 +1030,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 System.out.println(point);
                 destinationPosition = com.mapbox.geojson.Point.fromLngLat(point.getLongitude(), point.getLatitude());
-                //destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.283399, 37.873960);
                 originPosition = com.mapbox.geojson.Point.fromLngLat(-122.257290, 37.867460);
 
                 getRoute(originPosition, destinationPosition);
@@ -1054,18 +1039,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void drawRoute() {
-//        if (originPosition == null) {
-//            originPosition = com.mapbox.geojson.Point.fromLngLat(originLocation.getLongitude(), originLocation.getLatitude());
-//
-//        }
-//        if (destinationPosition == null) {
-//            destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.283399, 37.873960);
-//
-//        }
+        if (mapboxMap != null) mapboxMap.clear();
         originPosition = com.mapbox.geojson.Point.fromLngLat(originLocation.getLongitude(), originLocation.getLatitude());
-//        destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.283399, 37.873960);
-
-
         getRoute(originPosition, destinationPosition);
     }
 
