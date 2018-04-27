@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.PointF;
 import android.location.Address;
 import android.location.Geocoder;
@@ -462,6 +461,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         //--------------------------------------------------------------------------
 
 
+
+//        filtersRowTopBar.setVisibility(View.VISIBLE);
+        filtersRowGenerator();
+
     } // END THE ON CREATE METHOD
 
 
@@ -481,11 +484,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (list.size() > 0) {
             Address address = list.get(0);
-            address.getLatitude();
-            address.getLongitude();
 
             Log.d(TAG, "geoLocate: found a location: " + address.toString());
-            Toast.makeText(this, "" + String.valueOf(address.getLatitude()) + " " + String.valueOf(address.getLongitude()), Toast.LENGTH_LONG).show();
 
             destLat = address.getLatitude();
             destLon = address.getLongitude();
@@ -585,6 +585,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         if (mSwitch1.isChecked()) stringsForFilterButtons.add("Groups");
         if (mSwitch2.isChecked()) stringsForFilterButtons.add("Kids");
 
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(4,0,4,0);
+        lp.height = 105;
         if (stringsForFilterButtons.size() != 0) { // if filters have been applied
             appliedFiltersWrapper.removeViewsInLayout(1, appliedFiltersWrapper.getChildCount()-1);
             filtersRowTopBar.removeAllViewsInLayout(); // since never want AddFilters button showing up.
@@ -598,9 +601,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             addFiltersButton.setVisibility(View.GONE);
             layoverRectangle.setImageAlpha(0);
 
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            lp.setMargins(4,0,4,0);
-            lp.height = 105;
             for (String label : stringsForFilterButtons) {
                 Button buttonToAdd = filtersRowGenerateButton(label);
                 Button buttonToAdd2 = filtersRowGenerateButton(label);
@@ -615,7 +615,15 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             layoverRectangle.setImageAlpha(100);
 
             filtersRowTopBar.removeAllViewsInLayout();
-            filtersRowTopBar.setVisibility(View.GONE);
+            Button addFiltz = filtersRowGenerateButton("Add filters");
+            addFiltz.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                }
+            });
+            filtersRowTopBar.addView(addFiltz, lp);
+//            filtersRowTopBar.setVisibility(View.GONE);
         }
     }
 
@@ -653,6 +661,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         exitInputButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                filtersRowTopBar.setVisibility(View.VISIBLE);
 
                 navigationCarButton.callOnClick(); // to set walk as the default routing option.
 
@@ -693,7 +703,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         .include(northEastCorner) // Southwest
                         .build();
 
-                mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 50), 5000);
+                mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 50), 2000);
             }
         });
     }
