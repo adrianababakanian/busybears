@@ -54,12 +54,18 @@ import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.api.directions.v5.DirectionsCriteria;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
+import com.mapbox.api.directions.v5.models.LegStep;
 import com.mapbox.api.directions.v5.models.RouteLeg;
+import com.mapbox.api.directions.v5.models.StepIntersection;
 import com.mapbox.geocoder.MapboxGeocoder;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.appyvet.materialrangebar.RangeBar;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
+import com.mapbox.mapboxsdk.annotations.MarkerView;
+import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -368,7 +374,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         setOnClickForFilterBack(filtersBackButton);
         setOnClickForFindRestaurants(findRestaurantsButton);
 
-
         layoverRectangle.setImageAlpha(0);
         layoverRectangle.setZ(4);
 
@@ -377,7 +382,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         addLocationEngineListener();
 
         setupUI(findViewById(R.id.mainRootView));
-
 
         // Google autocomplete API client.
         mGoogleApiClient = new GoogleApiClient
@@ -890,11 +894,26 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 // Todo: need to get all the route segments. getRoute doesn't do that, need to get a Directions obj I think.
                 for (RouteLeg leg : currentRoute.legs()) { // this is only giving the first step right now.
                     Log.d("findrestronclick routeleg", leg.summary().toString());
+                    for (LegStep s : leg.steps()) {
+//                        Log.d("route lolcats", s.destinations().toString());
+                        Log.d("route lolcats", s.intersections().toString());
+                        for (StepIntersection l : s.intersections()) {
+                            Log.d("irene", String.valueOf(l.location().latitude() + "," + String.valueOf(l.location().longitude())));
+
+                            IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
+                            Icon icon = iconFactory.fromResource(R.drawable.pinpoint);
+                            LatLng ll = new LatLng(l.location().latitude(), l.location().longitude());
+                            mapboxMap.addMarker(new MarkerViewOptions()
+                                    .position(ll)
+                                    .icon(icon));
+                        }
+                    }
                 }
 //                navigationMapRoute.
-                for (com.mapbox.geojson.Point p : currentRoute.routeOptions().coordinates()) {
-                    Log.d("hello route", String.valueOf(p.latitude()));
-                }
+//                for (com.mapbox.geojson.Point p : currentRoute.routeOptions().coordinates()) {
+//                    Log.d("hello route", String.valueOf(p.latitude()));
+//                }
+
             }
         });
     }
