@@ -54,6 +54,7 @@ import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.api.directions.v5.DirectionsCriteria;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
+import com.mapbox.api.directions.v5.models.RouteLeg;
 import com.mapbox.geocoder.MapboxGeocoder;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.appyvet.materialrangebar.RangeBar;
@@ -422,7 +423,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         //--------------------------------------------------------------------------
 
 
-
     } // END THE ON CREATE METHOD
 
 
@@ -492,6 +492,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
 //                        Toast.makeText(getApplicationContext(), Double.toString(currentRoute.distance()), Toast.LENGTH_SHORT).show();
                         navigationMapRoute.addRoute(currentRoute);
+
+//                        for (RouteLeg rl : currentRoute.legs()) {
+//                            Log.d("the other route", rl.summary().toString()); // shows same thing as currentRoute
+//                        }
                     }
 
                     @Override
@@ -678,6 +682,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 if (filtersSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
                     filtersSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     filtersRowGenerator();
+                    if (findRestaurantsButton.getVisibility() == View.VISIBLE) {
+                        yelpQueryMaker(destinationPosition.latitude(), destinationPosition.longitude());
+                    }
+
                 } else { // else case will never occur. Cannot click checkmark while collapsed.
                     filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 }
@@ -832,7 +840,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         params.put("longitude", String.valueOf(longitude));
         params.put("price", getYelpifiedPriceRange());
         params.put("radius", String.valueOf(toleranceSlider.getProgress() + 1700)); // wait lol this only shows up after query has been made.
-        // ^ Needs some conversion factor, not a static addition.
+        // ^ Needs some conversion factor, not a static addition. should also account for wait time, in theory...
         params.put("open_now", "true");
         params.put("term", "restaurants"); // could just chuck everything in term?? 'restaurants, burgers' seems to work.
 
@@ -877,7 +885,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 toleranceSlider.setVisibility(View.VISIBLE);
                 navigationRowWrapper.setVisibility(View.GONE);
                 yelpQueryMaker(destinationPosition.latitude(), destinationPosition.longitude());
-                // TODO: THIS DOES NOT GET CALLED IF THEY UPDATE THE FILTERS TOP ROW.
+                // TODO: This and the one in setOnClickForFiltersTrigger just use destination position!!
+                // Todo: need to get all the route segments. getRoute doesn't do that, need to get a Directions obj I think.
+                for (RouteLeg leg : currentRoute.legs()) { // this is only giving the first step right now.
+                    Log.d("findrestronclick routeleg", leg.summary().toString());
+                }
+//                navigationMapRoute.
             }
         });
     }
