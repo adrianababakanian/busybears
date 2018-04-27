@@ -430,7 +430,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             }
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            public void onTextChanged(CharSequence charSequence, int start, int count, int after) {
                 if (charSequence.toString().trim().length()==0) {
                     exitInputButton.setEnabled(false);
                     exitInputButton.setBackgroundColor(getResources().getColor(R.color.lightGray));
