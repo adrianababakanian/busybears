@@ -23,6 +23,7 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:id="@+id/PictureOf"
                 android:scaleType="centerCrop"
                 android:adjustViewBounds="true"
                 android:padding="7dp"
@@ -42,11 +43,13 @@
             android:orientation="vertical">
             <TextView
                 style="@style/TitleFont"
+                android:id="@+id/NameOf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Burma Superstar"/>
             <TextView
                 style="@style/AddressFont"
+                android:id="@+id/AddressOf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:lineSpacingMultiplier="1.35"
