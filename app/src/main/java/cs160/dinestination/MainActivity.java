@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 
-import android.graphics.Path;
 import android.location.Address;
 import android.location.Geocoder;
 import android.support.annotation.NonNull;
@@ -23,7 +22,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -48,7 +46,8 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Places;
-import com.google.android.gms.maps.model.LatLngBounds;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+// import com.google.android.gms.maps.model.LatLngBounds;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.api.directions.v5.DirectionsCriteria;
@@ -57,16 +56,18 @@ import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.geocoder.MapboxGeocoder;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.appyvet.materialrangebar.RangeBar;
-import com.mapbox.android.core.permissions.PermissionsListener;
-import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
-import com.mapbox.mapboxsdk.geometry.LatLng;
+// import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerMode;
 import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin;
-import com.mapbox.mapboxsdk.style.layers.Property;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
@@ -155,6 +156,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     // Route-related.
     private com.mapbox.geojson.Point originPosition = com.mapbox.geojson.Point.fromLngLat(-122.257290, 37.867460);
     private com.mapbox.geojson.Point destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.257290, 37.867460);
+
+    private double southPoint = 0.0;
+    private double westPoint = 0.0;
+    private double northPoint = 0.0;
+    private double eastPoint = 0.0;
+
+    private double originLon = 0.0;
+    private double originLat = 0.0;
+    private double destLat = 0.0;
+    private double destLon = 0.0;
+
     private DirectionsRoute currentRoute;
     private static final String TAG = "DirectionsActivity";
     private NavigationMapRoute navigationMapRoute;
@@ -166,8 +178,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
 
     PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
-    private static final LatLngBounds BOUNDS_GREATER_BAY_AREA = new LatLngBounds(
+    private static final com.google.android.gms.maps.model.LatLngBounds BOUNDS_GREATER_BAY_AREA = new com.google.android.gms.maps.model.LatLngBounds(
             new com.google.android.gms.maps.model.LatLng(37.7749, -122.4194), new com.google.android.gms.maps.model.LatLng(37.9101, -122.0652));
+// private static final LatLngBounds BOUNDS_GREATER_BAY_AREA = new LatLngBounds(
+//         37.9101, -122.0652, 37.7749, -122.4194);
     // Location layer-related.
     private PermissionsManager permissionsManager;
     private LocationLayerPlugin locationPlugin;
@@ -421,6 +435,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             Log.d(TAG, "geoLocate: found a location: " + address.toString());
             Toast.makeText(this, "" + String.valueOf(address.getLatitude()) + " " + String.valueOf(address.getLongitude()), Toast.LENGTH_LONG).show();
 
+            destLat = address.getLatitude();
+            destLon = address.getLongitude();
             destinationPosition = com.mapbox.geojson.Point.fromLngLat(address.getLongitude(), address.getLatitude());
             System.out.println(destinationPosition);
 
@@ -453,6 +469,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         }
 
                         currentRoute = response.body().routes().get(0);
+
+                        System.out.println(currentRoute.legs());
 
                         // Draw the route on the map
                         if (navigationMapRoute != null) {
@@ -590,6 +608,27 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 findRestaurantsButton.setVisibility(View.VISIBLE);
                 navigationRowWrapper.setVisibility(View.VISIBLE);
                 toleranceSlider.setVisibility(View.GONE);
+
+                IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
+                Icon icon = iconFactory.fromResource(R.drawable.pinpoint);
+
+                LatLng southWestCorner = new LatLng(southPoint, westPoint);
+                LatLng northEastCorner = new LatLng(northPoint, eastPoint);
+
+                mapboxMap.addMarker(new MarkerViewOptions()
+                        .position(southWestCorner)
+                        .icon(icon));
+
+                mapboxMap.addMarker(new MarkerViewOptions()
+                        .position(northEastCorner)
+                        .icon(icon));
+
+                LatLngBounds latLngBounds = new LatLngBounds.Builder()
+                        .include(southWestCorner) // Northeast
+                        .include(northEastCorner) // Southwest
+                        .build();
+
+                mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 50), 5000);
             }
         });
     }
@@ -934,40 +973,60 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        mapboxMap.addOnMapLongClickListener(new MapboxMap.OnMapLongClickListener() {
-            @Override
-            public void onMapLongClick(@NonNull LatLng point) {
-                System.out.println("Long click registered");
-                PointF screenPoint = mapboxMap.getProjection().toScreenLocation(point);
-                List<Feature> features = mapboxMap.queryRenderedFeatures(screenPoint, "my.layer.id");
-                if (!features.isEmpty()) {
-                    Feature selectedFeature = features.get(0);
-                    String title = selectedFeature.getStringProperty("title");
-                    Toast.makeText(getApplicationContext(), "You selected " + title, Toast.LENGTH_SHORT).show();
-                }
-                System.out.println(point);
-                destinationPosition = com.mapbox.geojson.Point.fromLngLat(point.getLongitude(), point.getLatitude());
-                //destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.283399, 37.873960);
-                originPosition = com.mapbox.geojson.Point.fromLngLat(-122.257290, 37.867460);
-
-                getRoute(originPosition, destinationPosition);
-            }
-        });
+//        mapboxMap.addOnMapLongClickListener(new MapboxMap.OnMapLongClickListener() {
+//            @Override
+//            public void onMapLongClick(@NonNull LatLng point) {
+//                System.out.println("Long click registered");
+//                PointF screenPoint = mapboxMap.getProjection().toScreenLocation(point);
+//                List<Feature> features = mapboxMap.queryRenderedFeatures(screenPoint, "my.layer.id");
+//                if (!features.isEmpty()) {
+//                    Feature selectedFeature = features.get(0);
+//                    String title = selectedFeature.getStringProperty("title");
+//                    Toast.makeText(getApplicationContext(), "You selected " + title, Toast.LENGTH_SHORT).show();
+//                }
+//                System.out.println(point);
+//                destinationPosition = com.mapbox.geojson.Point.fromLngLat(point.getLongitude(), point.getLatitude());
+//                //destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.283399, 37.873960);
+//                originPosition = com.mapbox.geojson.Point.fromLngLat(-122.257290, 37.867460);
+//
+//                getRoute(originPosition, destinationPosition);
+//            }
+//        });
 
     }
 
     private void drawRoute() {
-//        if (originPosition == null) {
-//            originPosition = com.mapbox.geojson.Point.fromLngLat(originLocation.getLongitude(), originLocation.getLatitude());
-//
-//        }
-//        if (destinationPosition == null) {
-//            destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.283399, 37.873960);
-//
-//        }
-        originPosition = com.mapbox.geojson.Point.fromLngLat(originLocation.getLongitude(), originLocation.getLatitude());
-//        destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.283399, 37.873960);
+        originLat = originLocation.getLatitude();
+        originLon = originLocation.getLongitude();
 
+        originPosition = com.mapbox.geojson.Point.fromLngLat(originLocation.getLongitude(), originLocation.getLatitude());
+
+        if (originLat < destLat) {
+            southPoint = originLat;
+            northPoint = destLat;
+        } else {
+            southPoint = originLat;
+            northPoint = destLat;
+        }
+        if (originLon < destLon) {
+            westPoint = originLon;
+            eastPoint = destLon;
+        } else {
+            westPoint = destLon;
+            eastPoint = originLon;
+        }
+
+//        double latDist = (java.lang.Math.abs(northPoint - southPoint)/0.027264299999998798)*0.017826;
+//        double lonDist = (java.lang.Math.abs(java.lang.Math.abs(westPoint) - java.lang.Math.abs(eastPoint))/0.027043066666664117)*0.017826;
+
+        double latDist = (java.lang.Math.abs(northPoint - southPoint));
+        double lonDist = (java.lang.Math.abs(java.lang.Math.abs(westPoint) - java.lang.Math.abs(eastPoint)));
+
+
+        westPoint -= lonDist*0.5; eastPoint += lonDist*0.5; southPoint -= latDist*0.4; northPoint += latDist*0.6;
+
+        System.out.println(northPoint-southPoint);
+        System.out.println(westPoint-eastPoint);
 
         getRoute(originPosition, destinationPosition);
     }
