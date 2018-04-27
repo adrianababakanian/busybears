@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.PointF;
 import android.location.Address;
 import android.location.Geocoder;
@@ -18,6 +19,8 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -420,6 +423,26 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 return false;
             }
         });
+        exitInputButton.setEnabled(false);
+        exitInputButton.setBackgroundColor(getResources().getColor(R.color.lightGray));
+        whereToEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.toString().trim().length()==0) {
+                    exitInputButton.setEnabled(false);
+                    exitInputButton.setBackgroundColor(getResources().getColor(R.color.lightGray));
+                } else {
+                    exitInputButton.setEnabled(true);
+                    exitInputButton.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
 
         // Set up navigation buttons.
         setOnClickForNavigationButtons(navigationWalkButton, navigationCarButton, navigationBikeButton, navigationTaxiButton);
@@ -633,13 +656,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
                 navigationCarButton.callOnClick(); // to set walk as the default routing option.
 
-
                 geoLocate();
 
                 destinationInformation.setVisibility(View.VISIBLE);
                 timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 whereToInputViewFlipper.showNext();
-                whereToElement.setVisibility(View.GONE);
+                whereToElement.setVisibility(View.GONE); // this flippiness. search button greyed out until destination input.
+                // search without any input. then tap where to. then cross - then things are overlayed.
                 String whereToText = whereToEditText.getText().toString();
                 whereToPlace.setText(whereToText);
                 String meridian = "am";

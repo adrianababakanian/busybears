@@ -43,7 +43,7 @@
         android:id="@+id/exit_input_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorPrimary"
+        android:background="@color/colorPrimary"
         android:text="Search"
         android:fontFamily="@font/lucia_grande"
         android:textSize="16dp"
