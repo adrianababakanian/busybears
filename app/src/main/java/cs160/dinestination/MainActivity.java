@@ -83,6 +83,7 @@ import com.mapbox.services.android.telemetry.location.LostLocationEngine;
 import com.mapbox.services.commons.geojson.Feature;
 import com.mapbox.services.commons.geojson.FeatureCollection;
 import com.mapbox.services.commons.geojson.Point;
+import com.squareup.picasso.Picasso;
 import com.yelp.fusion.client.connection.YelpFusionApi;
 import com.yelp.fusion.client.connection.YelpFusionApiFactory;
 import com.yelp.fusion.client.models.Business;
@@ -90,6 +91,10 @@ import com.yelp.fusion.client.models.Category;
 import com.yelp.fusion.client.models.SearchResponse;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -900,7 +905,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 for (int x = 0; x < searchResponse.getBusinesses().size(); x++) {
                     restaurant = searchResponse.getBusinesses().get(x);
 //                    Log.d("YelpQueryMaker", restaurant.getName() + "," + restaurant.getCoordinates().getLatitude());
-                    Log.d("HELLOHELLOHELLO", restaurant.getLocation().getAddress1());
+                    //Log.d("HELLOHELLOHELLO", restaurant.getLocation().getAddress1());
                     LatLng ll = new LatLng(restaurant.getCoordinates().getLatitude(), restaurant.getCoordinates().getLongitude());
                     mapboxMap.addMarker(new MarkerViewOptions()
                             .position(ll)
@@ -927,6 +932,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                             String addressess = String.valueOf(marker.getPosition().getLatitude()) +
                                     String.valueOf(marker.getPosition().getLongitude());
                             tv2.setText(String.valueOf(addresses1.get(addressess)));
+
+                            /*ImageView iv1 =(ImageView)findViewById(R.id.PictureOf);
+                            String picss = String.valueOf(marker.getPosition().getLatitude()) +
+                                    String.valueOf(marker.getPosition().getLongitude());
+                            Log.d("HiHiHiHiHi", String.valueOf(pics1.get(picss)));
+                            Picasso.with(getApplicationContext()).load(picss).into(iv1);*/
 
                             if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
                                 previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
