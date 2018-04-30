@@ -66,6 +66,7 @@ import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+import com.mapbox.mapboxsdk.maps.widgets.MyLocationViewSettings;
 import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerMode;
 import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
@@ -363,12 +364,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             ;
         });
 
-        MapboxGeocoder client = new MapboxGeocoder.Builder()
-                .setAccessToken(mapboxAccessToken)
-                .setLocation("The White House")
-                .build();
-        System.out.println(client);
-
         getApplicationContext().setTheme(R.style.AppTheme);
 
         mSeekBar.setZ(999);
@@ -451,13 +446,15 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         yelpApiFactory = new YelpFusionApiFactory();
         yelpFusionApi = null;
         try {
-            yelpFusionApi = yelpApiFactory.createAPI("dczs4nuyUTOJWGPaXth8Zqt0IwzGoD0Wr-8OZgDmdu4G0oa3M3K-GzlPVYFAh4indjgmImwbDSSaWnh2d7KQgSFly0AresZM9PGy6p4IRUgJcE3ElHJyWyXIb7jeWnYx");
+            yelpFusionApi = yelpApiFactory.createAPI("x4HzIK9Yg9t9HzBDOVrmPwydPeNPqV3fTJL6pLVj4XBSQ7cEVNuP9G9qqhMOxM_wxlxdq7JQfz-ZJQ6Q8DzbeCDUdA5F7I1uGRrTyFItQQmariY0BYlx7dxPKpXnWnYx");
         } catch (IOException e) {
             e.printStackTrace();
         }
         currentCuisineFilters = new ArrayList<>();
 //        yelpQueryMaker(destinationPosition.latitude(), destinationPosition.longitude());
         //--------------------------------------------------------------------------
+
+
 
 
 
@@ -1048,17 +1045,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     //////// MAPBOX THINGS ////////
     /**
-     * Mapboc overrides.
+     * Mapbox overrides.
      */
     @Override
     public void onMapReady(final MapboxMap mapboxMap) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        MainActivity.this.mapboxMap = mapboxMap;
-        /* Image: An image is loaded and added to the map. */
-//        Bitmap icon = BitmapFactory.decodeResource(
-//                MainActivity.this.getResources(), R.drawable.pinpoint, options);
-//        mapboxMap.addImage(MARKER_IMAGE, icon);
-        //addMarkers();
 
         mapboxMap.setOnMapClickListener(new MapboxMap.OnMapClickListener() {
             @Override
@@ -1071,13 +1061,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     Toast.makeText(getApplicationContext(), "You selected " + title, Toast.LENGTH_SHORT).show();
                 }
                 System.out.println(point);
-                if ((point.getLatitude() <= 37.866528+0.0015 && point.getLatitude() >= 37.866528-0.0015) && (point.getLongitude() <= -122.258722+0.0015 && point.getLongitude() >= -122.258722-0.0015)) {
-                    if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
-                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                    } else {
-                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    }
-                }
+//                if ((point.getLatitude() <= 37.866528+0.0015 && point.getLatitude() >= 37.866528-0.0015) && (point.getLongitude() <= -122.258722+0.0015 && point.getLongitude() >= -122.258722-0.0015)) {
+//                    if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
+//                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+//                    } else {
+//                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+//                    }
+//                }
 
             }
         });
