@@ -1,0 +1,66 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <!-- Checkbox styling theme. -->
+    <style name="CheckBoxTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@drawable/checked_text</item>
+        <item name="android:fontFamily">@font/lucia_grande</item>
+        <item name="android:textSize">14dp</item>
+        <item name="android:buttonTint">@color/colorPrimaryDark</item>
+    </style>
+
+    <!-- Primary application font. -->
+    <style name="MainFont" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:fontFamily">@font/lucia_grande</item>
+        <item name="android:textSize">16dp</item>
+        <item name="android:textColor">@color/textColorDark</item>
+    </style>
+
+    <!-- Large application font. -->
+    <style name="LargeFont" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:fontFamily">@font/lucia_grande</item>
+        <item name="android:textSize">18dp</item>
+        <item name="android:textColor">@color/textColorDark</item>
+    </style>
+
+    <!-- Large bold application font. -->
+    <style name="TitleFont" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:fontFamily">@font/bold_lucia_grande</item>
+        <item name="android:textSize">18dp</item>
+        <item name="android:textColor">@color/textColorDark</item>
+    </style>
+
+    <!-- Small application font. -->
+    <style name="SmallFont" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:fontFamily">@font/lucia_grande</item>
+        <item name="android:textSize">12dp</item>
+        <item name="android:textColor">@color/textColorDark</item>
+    </style>
+
+    <!-- Address font. -->
+    <style name="AddressFont" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:fontFamily">@font/lucia_grande</item>
+        <item name="android:textSize">12dp</item>
+        <item name="android:textColor">@color/textColorLight</item>
+    </style>
+
+    <!-- Mapbox navigation styling. -->
+    <style name="NavigationMapRoute">
+        <!-- Colors -->
+        <item name="routeColor">@color/colorPrimaryDark</item>
+        <item name="routeModerateCongestionColor">@color/colorPrimaryDark</item>
+        <item name="routeSevereCongestionColor">@color/colorPrimaryDark</item>
+        <item name="routeShieldColor">@color/white</item>
+        <!-- Scales -->
+        <item name="routeScale">1.0</item>
+    </style>
+
+</resources>

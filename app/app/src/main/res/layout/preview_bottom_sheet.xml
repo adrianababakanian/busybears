@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/preview_bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="550px"
+    android:background="#fff"
+    android:orientation="vertical"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="0dp"
+    app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+    android:gravity="center">
+
+    <!-- preview popup content wrapper -->
+    <LinearLayout
+        android:layout_width="800px"
+        android:layout_height="300px"
+        android:orientation="horizontal">
+        <FrameLayout
+            android:layout_width="300px"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:adjustViewBounds="true"
+                android:padding="7dp"
+                android:src="@drawable/burma2"/>
+
+            <ImageView
+                android:src="@drawable/frame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="450px"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="50px"
+            android:orientation="vertical">
+            <TextView
+                style="@style/TitleFont"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Burma Superstar"/>
+            <TextView
+                style="@style/AddressFont"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:lineSpacingMultiplier="1.35"
+                android:text="2175 Chestnut St \nSan Francisco, CA 94213 "/>
+            <TextView
+                style="@style/SmallFont"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:lineSpacingMultiplier="1.35"
+                android:layout_marginTop="40px"
+                android:text="Very likely to work with your schedule"/>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:mapbox="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="cs160.dinestination.MainActivity"
+    app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+    android:id="@+id/mainRootView">
+
+
+    <ViewFlipper
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/viewFlipper1" >
+
+        <include
+            android:id="@+id/where_to_element"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="300px"
+            layout="@layout/where_to_preview_element" />
+        <!--100dp = 300px at xxhdpi (nexus 5x)-->
+
+        <include
+            android:id="@+id/top_input_element"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="000dp"
+            layout="@layout/main_top_input_element"
+            android:visibility="invisible" />
+
+    </ViewFlipper>
+
+    <include layout="@layout/time_spinner_bottom_sheet" />
+
+    <!-- mapbox mapview element -->
+    <com.mapbox.mapboxsdk.maps.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        mapbox:mapbox_cameraTargetLat="37.879842"
+        mapbox:mapbox_cameraTargetLng="-122.269532"
+        mapbox:mapbox_styleUrl="@string/mapbox_style_light"
+        mapbox:mapbox_cameraTilt="0"
+        mapbox:mapbox_cameraZoom="13"/>
+
+    <!-- include the layover rectangle element -->
+    <include layout="@layout/layover_rectangle" />
+
+    <!-- include the preview bottom sheet -->
+    <include layout="@layout/filters_bottom_sheet" />
+
+    <!-- include the filters bottom sheet  -->
+    <include layout="@layout/preview_bottom_sheet" />
+
+    <Button
+        android:id="@+id/find_restaurants_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="670dp"
+        android:layout_gravity="center_horizontal"
+        android:backgroundTint="@color/colorPrimary"
+        android:fontFamily="@font/lucia_grande"
+        android:layout_marginStart="23dp"
+        android:layout_marginEnd="23dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:text="Find restaurants"
+        android:textAllCaps="false"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/white"
+        android:textSize="16dp"
+        android:visibility="gone"/>
+
+        <include
+            android:visibility="gone"
+            android:id="@+id/filter_row_top_bar"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="23dp"
+            android:layout_marginEnd="23dp"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            layout="@layout/filtered_row_top_input_element" />
+        <!--must put this below the filters bottom sheet, else the addFilters button fails-->
+
+    <include
+        android:visibility="gone"
+        android:id="@+id/destination_information"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        layout="@layout/destination_information"/>
+
+
+
+
+</android.support.design.widget.CoordinatorLayout>

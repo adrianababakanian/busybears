@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_top_input_element"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bottom_gradient">
+    <!--android:animateLayoutChanges="true"-->
+
+    <ImageView
+        android:id="@+id/close_top_input_elem"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="16dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/ic_close_24dp" />
+
+    <ImageView
+        android:id="@+id/add_top_input_elem"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="110dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/destination_top_input_elem"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_add_24dp" />
+
+    <ImageView
+        android:id="@+id/blue_square_top_input_elem"
+        android:layout_width="9.5dp"
+        android:layout_height="9.5dp"
+        android:layout_marginEnd="19dp"
+        android:layout_marginTop="122dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toStartOf="@+id/destination_top_input_elem"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/blue_square" />
+
+    <ImageView
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toBottomOf="@+id/blue_square_top_input_elem"
+        app:layout_constraintRight_toLeftOf="@+id/applied_filters_top_input_elem"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="34.5dp"
+        android:src="@mipmap/slider_50px" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_marginBottom="1dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="68dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintEnd_toStartOf="@+id/curr_location_top_input_elem"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/ic_circle_grey_24dp" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="1.6dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="7dp"
+        android:layout_marginEnd="23dp"
+        android:background="@color/colorPrimaryDark"
+        app:layout_constraintBottom_toTopOf="@+id/blue_square_top_input_elem"
+        app:layout_constraintEnd_toStartOf="@+id/curr_location_top_input_elem" />
+
+
+    <EditText
+        android:id="@+id/curr_location_top_input_elem"
+        android:layout_width="310dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/lighterGray"
+        android:hint="Current location"
+        android:textColorHint="@color/colorPrimaryDark"
+        android:inputType="text"
+        android:paddingLeft="20dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:textColor="@color/textColorLight"
+        android:fontFamily="@font/lucia_grande"
+        android:textSize="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/destination_top_input_elem"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <AutoCompleteTextView
+        android:id="@+id/destination_top_input_elem"
+        android:layout_width="310dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/curr_location_top_input_elem"
+        android:layout_marginTop="105dp"
+        android:background="@color/lightGray"
+        android:hint="Where to?"
+        android:inputType="text"
+        android:paddingLeft="20dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:textColor="@color/textColorDark"
+        android:fontFamily="@font/lucia_grande"
+        android:textSize="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/applied_filters_top_input_elem"
+        android:layout_width="366dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="144dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="visible"
+        android:paddingBottom="12dp"
+        app:layout_constraintVertical_bias="1.0">
+        <include
+            android:id="@+id/applied_filter_elems_top_input_elem"
+            layout="@layout/filtered_row_top_input_element"
+            />
+    </android.support.constraint.ConstraintLayout>
+
+
+
+
+
+</android.support.constraint.ConstraintLayout>
