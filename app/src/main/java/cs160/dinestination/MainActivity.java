@@ -274,6 +274,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         timeSpinnerBottomSheet.setZ(2);
         layoutPreviewBottomSheet.setZ(999);
 
+        exitInputButton.setZ(1000);
+        findRestaurantsButton.setZ(999);
+
         timeSpinnerSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
@@ -656,7 +659,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             }
         });
-        findRestaurantsButton.setVisibility(View.VISIBLE);
+        if (timeSpinnerSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+            findRestaurantsButton.setVisibility(View.VISIBLE);
+        }
         return newPlusButton;
     }
 
