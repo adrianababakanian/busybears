@@ -47,6 +47,10 @@ import com.appyvet.materialrangebar.RangeBar;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Places;
+
+import com.mapbox.mapboxsdk.annotations.*;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+// import com.google.android.gms.maps.model.LatLngBounds;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.api.directions.v5.DirectionsCriteria;
@@ -60,8 +64,9 @@ import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
+import com.appyvet.materialrangebar.RangeBar;
+
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
-import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -81,12 +86,17 @@ import com.mapbox.services.android.telemetry.location.LostLocationEngine;
 import com.mapbox.services.commons.geojson.Feature;
 import com.mapbox.services.commons.geojson.FeatureCollection;
 import com.mapbox.services.commons.geojson.Point;
+import com.squareup.picasso.Picasso;
 import com.yelp.fusion.client.connection.YelpFusionApi;
 import com.yelp.fusion.client.connection.YelpFusionApiFactory;
 import com.yelp.fusion.client.models.Business;
 import com.yelp.fusion.client.models.SearchResponse;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -95,6 +105,7 @@ import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 // import com.google.android.gms.maps.model.LatLngBounds;
 // import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -268,6 +279,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         timeSpinnerBottomSheet.setZ(999);
         filtersBottomSheet.setZ(1000);
         timeSpinnerBottomSheet.setZ(2);
+        layoutPreviewBottomSheet.setZ(999);
 
         timeSpinnerSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -900,6 +912,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         return priceRangeQueryStr;
     }
 
+    Business restaurant;
+    HashMap names1 = new HashMap<String, String>();
+    HashMap addresses1 = new HashMap<String, String>();
+    HashMap pics1 = new HashMap<String, String>();
     private void yelpQueryMaker(Double latitude, Double longitude) {
         // docs: https://www.yelp.com/developers/documentation/v3/business_search
         // GOOD FOR KIDS, GOOD FOR GROUPS - NOT POSSIBLE USING API.
@@ -923,13 +939,53 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         Callback<SearchResponse> callback = new Callback<SearchResponse>() {
             @Override
             public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
-                SearchResponse searchResponse = response.body();
-                for (Business restaurant : searchResponse.getBusinesses()) {
+                final SearchResponse searchResponse = response.body();
+                for (int x = 0; x < searchResponse.getBusinesses().size(); x++) {
+                    restaurant = searchResponse.getBusinesses().get(x);
 //                    Log.d("YelpQueryMaker", restaurant.getName() + "," + restaurant.getCoordinates().getLatitude());
+                    //Log.d("HELLOHELLOHELLO", restaurant.getLocation().getAddress1());
                     LatLng ll = new LatLng(restaurant.getCoordinates().getLatitude(), restaurant.getCoordinates().getLongitude());
                     mapboxMap.addMarker(new MarkerViewOptions()
                             .position(ll)
                             .icon(pinpointIcon));
+                    names1.put(String.valueOf(restaurant.getCoordinates().getLatitude()) +
+                            String.valueOf(restaurant.getCoordinates().getLongitude()), restaurant.getName());
+                    addresses1.put(String.valueOf(restaurant.getCoordinates().getLatitude()) +
+                            String.valueOf(restaurant.getCoordinates().getLongitude()), restaurant.getLocation().getAddress1() + "\n" + restaurant.getLocation().getCity() + " " + restaurant.getLocation().getState() + " " + String.valueOf(restaurant.getLocation().getZipCode()));
+                    pics1.put(String.valueOf(restaurant.getCoordinates().getLatitude()) +
+                            String.valueOf(restaurant.getCoordinates().getLongitude()), restaurant.getImageUrl());
+
+
+                    mapboxMap.getMarkerViewManager().setOnMarkerViewClickListener(new MapboxMap.OnMarkerViewClickListener() {
+                        @Override
+                        public boolean onMarkerClick(@NonNull com.mapbox.mapboxsdk.annotations.Marker marker, @NonNull View view, @NonNull MapboxMap.MarkerViewAdapter adapter) {
+                            Timber.e(marker.toString());
+                            //setContentView(R.layout.preview_bottom_sheet);
+                            TextView tv1 = (TextView)findViewById(R.id.NameOf);
+                            String namess = String.valueOf(marker.getPosition().getLatitude()) +
+                                    String.valueOf(marker.getPosition().getLongitude());
+                            tv1.setText(String.valueOf(names1.get(namess)));
+
+                            TextView tv2 = (TextView)findViewById(R.id.AddressOf);
+                            String addressess = String.valueOf(marker.getPosition().getLatitude()) +
+                                    String.valueOf(marker.getPosition().getLongitude());
+                            tv2.setText(String.valueOf(addresses1.get(addressess)));
+
+                            /*ImageView iv1 =(ImageView)findViewById(R.id.PictureOf);
+                            String picss = String.valueOf(marker.getPosition().getLatitude()) +
+                                    String.valueOf(marker.getPosition().getLongitude());
+                            Log.d("HiHiHiHiHi", String.valueOf(pics1.get(picss)));
+                            Picasso.with(getApplicationContext()).load(picss).into(iv1);*/
+
+                            if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
+                                previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                            } else {
+                                previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                            }
+                            //Log.d("HELLOHELLOHELLO", "Hi");
+                            return false;
+                        }
+                    });
                 }
             }
             @Override
