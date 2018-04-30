@@ -92,6 +92,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -210,6 +212,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     ArrayList<String> currentCuisineFilters;
     Icon pinpointIcon;
     IconFactory iconFactory;
+
+    Lock lock;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -474,6 +478,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
 //        filtersRowTopBar.setVisibility(View.VISIBLE);
         filtersRowGenerator();
+
+
+        this.lock = new ReentrantLock();
 
     } // END THE ON CREATE METHOD
 
@@ -934,16 +941,19 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
                 SearchResponse searchResponse = response.body();
+                originPosition = com.mapbox.geojson.Point.fromLngLat(-122.258875, 37.865593);
+                destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.2702069, 37.8706731);
                 for (Business restaurant : searchResponse.getBusinesses()) {
 //                    Log.d("YelpQueryMaker", restaurant.getName() + "," + restaurant.getCoordinates().getLatitude());
                     LatLng ll = new LatLng(restaurant.getCoordinates().getLatitude(), restaurant.getCoordinates().getLongitude());
                     mapboxMap.addMarker(new MarkerViewOptions()
                             .position(ll)
                             .icon(pinpointIcon));
-                    Log.d("yelpQueryMaker", "calling getTempRoute");
-                    getTempRoute(originPosition, destinationPosition,
-                            com.mapbox.geojson.Point.fromLngLat(
-                                    restaurant.getCoordinates().getLatitude(), restaurant.getCoordinates().getLongitude()));
+                    Log.d("yelpQueryMaker", restaurant.getName());
+
+//                    getTempRoute(originPosition, destinationPosition,
+//                            com.mapbox.geojson.Point.fromLngLat(
+//                                    restaurant.getCoordinates().getLatitude(), restaurant.getCoordinates().getLongitude()));
 
                 }
             }
@@ -1147,7 +1157,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         System.out.println(northPoint-southPoint);
         System.out.println(westPoint-eastPoint);
         //hard coded
-        //originPosition = com.mapbox.geojson.Point.fromLngLat(-122.258875, 37.865593);
 
         getRoute(originPosition, destinationPosition);
         Log.d("First getRoute", "About to start split path calculations");
@@ -1156,7 +1165,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private void getTempRoute(com.mapbox.geojson.Point origin, com.mapbox.geojson.Point destination, final com.mapbox.geojson.Point bizLoc) {
+    private void getTempRoute(final com.mapbox.geojson.Point origin, final com.mapbox.geojson.Point destination, final com.mapbox.geojson.Point bizLoc) {
         Log.d("getTempRoute", "called");
         NavigationRoute.builder()
                 .accessToken(Mapbox.getAccessToken())
@@ -1185,7 +1194,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                             curDistance = analyzeRoute.distance();
                             finalDistance += curDistance;
                             Log.d("Distance set to ", Double.toString(finalDistance));
-                            getTempRoute2(bizLoc, destinationPosition); // com.mapbox.geojson.Point.fromLngLat(-122.2702069, 37.8706731)
+                            finalDistance = 0;
+//                            getTempRoute2(bizLoc, destinationPosition); // com.mapbox.geojson.Point.fromLngLat(-122.2702069, 37.8706731)
                         }   else {
                             return;
                         }
@@ -1194,11 +1204,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
                     @Override
                     public void onFailure(Call<DirectionsResponse> call, Throwable throwable) {
-                        Log.e(TAG, "onTempRout error: " + throwable.getMessage());
+                        Log.e(TAG, "onTempRoute error: " + throwable.getMessage());
                     }
                 });
     }
-    private void getTempRoute2(com.mapbox.geojson.Point origin, com.mapbox.geojson.Point destination) {
+    private void getTempRoute2(final com.mapbox.geojson.Point origin, final com.mapbox.geojson.Point destination) {
+        Log.d("getTempRoute2", String.valueOf(getTempRoute2Called));
         NavigationRoute.builder()
                 .accessToken(Mapbox.getAccessToken())
                 .origin(origin)
@@ -1209,22 +1220,23 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
                         // You can get the generic HTTP info about the response
+                        Log.d("getTempRoute2", "onResponse");
                         if (true) { //getTempRoute2Called == false
 //                            getTempRoute2Called = true;
-                            Log.d(TAG, "Doing temp route: " + response.code());
+                            Log.d(TAG, "Doing temp route 2: " + response.code());
                             if (response.body() == null) {
                                 Log.e(TAG, "No routes found, make sure you set the right user and access token.");
                                 return;
 
                             } else if (response.body().routes().size() < 1) {
-                                Log.e(TAG, "No routes found");
+                                Log.e(TAG, "No routes found 2");
                                 return;
                             }
-
+                            Log.d("getTempRoute2", "pls");
                             analyzeRoute = response.body().routes().get(0);
                             curDistance = analyzeRoute.distance();
                             finalDistance += curDistance;
-                            Log.d("Final distance is ", Double.toString(finalDistance));
+                            Log.d("Final distance 2 is ", Double.toString(finalDistance));
                         } else {
                             return;
                         }
@@ -1233,7 +1245,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
                     @Override
                     public void onFailure(Call<DirectionsResponse> call, Throwable throwable) {
-                        Log.e(TAG, "onTempRout error: " + throwable.getMessage());
+                        Log.e(TAG, "onTempRoute2 error: " + throwable.getMessage());
                     }
                 });
     }
