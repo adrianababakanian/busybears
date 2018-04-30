@@ -1230,7 +1230,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
                             } else if (response.body().routes().size() < 1) {
                                 Log.e(TAG, "No routes found 2");
-                                return;
+                                return; 
                             }
                             Log.d("getTempRoute2", "pls");
                             analyzeRoute = response.body().routes().get(0);
