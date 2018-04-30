@@ -47,10 +47,6 @@ import com.appyvet.materialrangebar.RangeBar;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Places;
-
-import com.mapbox.mapboxsdk.annotations.*;
-import com.mapbox.mapboxsdk.geometry.LatLng;
-// import com.google.android.gms.maps.model.LatLngBounds;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.api.directions.v5.DirectionsCriteria;
@@ -64,9 +60,8 @@ import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
-import com.appyvet.materialrangebar.RangeBar;
-
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -86,17 +81,12 @@ import com.mapbox.services.android.telemetry.location.LostLocationEngine;
 import com.mapbox.services.commons.geojson.Feature;
 import com.mapbox.services.commons.geojson.FeatureCollection;
 import com.mapbox.services.commons.geojson.Point;
-import com.squareup.picasso.Picasso;
 import com.yelp.fusion.client.connection.YelpFusionApi;
 import com.yelp.fusion.client.connection.YelpFusionApiFactory;
 import com.yelp.fusion.client.models.Business;
 import com.yelp.fusion.client.models.SearchResponse;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -106,6 +96,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
+
+// import com.google.android.gms.maps.model.LatLngBounds;
 
 // import com.google.android.gms.maps.model.LatLngBounds;
 // import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -275,9 +267,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         navigationBikeButton.setZ(999);
 
+        topInputElement.setZ(1000);
         whereToInputViewFlipper.setZ(999);
         timeSpinnerBottomSheet.setZ(999);
-        filtersBottomSheet.setZ(1000);
+        filtersBottomSheet.setZ(999);
         timeSpinnerBottomSheet.setZ(2);
         layoutPreviewBottomSheet.setZ(999);
 
@@ -663,6 +656,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             }
         });
+        findRestaurantsButton.setVisibility(View.VISIBLE);
         return newPlusButton;
     }
 
@@ -763,6 +757,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 if (filtersSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
                     filtersSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     filtersRowGenerator();
+                    mapboxMap.removeAnnotations();
                     if (findRestaurantsButton.getVisibility() == View.VISIBLE) {
                         yelpQueryMaker(destinationPosition.latitude(), destinationPosition.longitude());
                     }
