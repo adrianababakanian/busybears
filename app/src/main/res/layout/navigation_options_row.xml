@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true"
+    android:layout_alignParentStart="true"
+    android:src="@drawable/box_gradient">
+
+
+    <ImageButton
+        android:id="@+id/navigation_walk_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_navigation_walk_24dp"
+        android:paddingLeft="31dp"
+        android:paddingRight="31dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        />
+
+    <ImageButton
+        android:id="@+id/navigation_car_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_navigation_car_24dp"
+        android:paddingLeft="31dp"
+        android:paddingRight="31dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        />
+
+    <ImageButton
+        android:id="@+id/navigation_bike_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_navigation_bike_24dp"
+        android:paddingLeft="31dp"
+        android:paddingRight="31dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        />
+
+    <ImageButton
+        android:id="@+id/navigation_taxi_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:src="@drawable/ic_navigation_call_taxi"
+        android:paddingLeft="31dp"
+        android:paddingRight="31dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        />
+
+
+</LinearLayout>

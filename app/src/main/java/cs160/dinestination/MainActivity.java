@@ -195,7 +195,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
     private static final com.google.android.gms.maps.model.LatLngBounds BOUNDS_GREATER_BAY_AREA = new com.google.android.gms.maps.model.LatLngBounds(
             new com.google.android.gms.maps.model.LatLng(37.7749, -122.4194), new com.google.android.gms.maps.model.LatLng(37.9101, -122.0652));
-    // private static final LatLngBounds BOUNDS_GREATER_BAY_AREA = new LatLngBounds(
+// private static final LatLngBounds BOUNDS_GREATER_BAY_AREA = new LatLngBounds(
 //         37.9101, -122.0652, 37.7749, -122.4194);
     // Location layer-related.
     private PermissionsManager permissionsManager;
@@ -294,8 +294,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 //                        whereToInputViewFlipper.showNext(); // allows dragging instead, but if they drag down and then up again, top input disappears but this remains.
                         break;
                     case BottomSheetBehavior.STATE_SETTLING: { mapView.setVisibility(View.VISIBLE); }
-                    // the movement phase between expanded and collapsed.
-                    break;
+                        // the movement phase between expanded and collapsed.
+                        break;
                 }
             }
             @Override
@@ -922,7 +922,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         // ^ Needs some conversion factor, not a static addition. should also account for wait time, in theory...
         params.put("open_now", "true");
         params.put("term", "restaurants");
-        params.put("limit", "50"); // 20 by default
+        params.put("limit", "1"); // 20 by default
 
         String cuisineQueryString = "";
         for (String str : currentCuisineFilters) {
@@ -940,6 +940,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     mapboxMap.addMarker(new MarkerViewOptions()
                             .position(ll)
                             .icon(pinpointIcon));
+                    Log.d("yelpQueryMaker", "calling getTempRoute");
+                    getTempRoute(originPosition, destinationPosition,
+                            com.mapbox.geojson.Point.fromLngLat(
+                                    restaurant.getCoordinates().getLatitude(), restaurant.getCoordinates().getLongitude()));
+
                 }
             }
             @Override
@@ -1001,7 +1006,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
                 PROFILE_TYPE = DirectionsCriteria.PROFILE_WALKING;
                 findRestaurantsButton.setVisibility(View.VISIBLE);
-
+                getTempRoute2Called = false;
+                getTempRouteCalled = false;
                 drawRoute();
             }
         });
@@ -1018,7 +1024,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
                 PROFILE_TYPE = DirectionsCriteria.PROFILE_DRIVING_TRAFFIC;
                 findRestaurantsButton.setVisibility(View.VISIBLE);
-
+                getTempRoute2Called = false;
+                getTempRouteCalled = false;
                 drawRoute();
             }
         });
@@ -1036,7 +1043,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 PROFILE_TYPE = DirectionsCriteria.PROFILE_CYCLING;
                 findRestaurantsButton.setVisibility(View.VISIBLE);
                 System.out.println("wow bicycle click");
-
+                getTempRoute2Called = false;
+                getTempRouteCalled = false;
                 drawRoute();
             }
         });
@@ -1053,7 +1061,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi_pressed));
                 PROFILE_TYPE = DirectionsCriteria.PROFILE_DRIVING_TRAFFIC;
                 findRestaurantsButton.setVisibility(View.VISIBLE);
-
+                getTempRoute2Called = false;
+                getTempRouteCalled = false;
                 drawRoute();
             }
         });
@@ -1071,33 +1080,40 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         Bitmap icon = BitmapFactory.decodeResource(
                 MainActivity.this.getResources(), R.drawable.pinpoint, options);
         mapboxMap.addImage(MARKER_IMAGE, icon);
-
-//        mapboxMap.addOnMapLongClickListener(new MapboxMap.OnMapLongClickListener() {
-//            @Override
-//            public void onMapLongClick(@NonNull LatLng point) {
-//                PointF screenPoint = mapboxMap.getProjection().toScreenLocation(point);
-//                List<Feature> features = mapboxMap.queryRenderedFeatures(screenPoint, "my.layer.id");
-//                if (!features.isEmpty()) {
-//                    Feature selectedFeature = features.get(0);
-//                    String title = selectedFeature.getStringProperty("title");
-//                    Toast.makeText(getApplicationContext(), "You selected " + title, Toast.LENGTH_SHORT).show();
-//                }
-//                System.out.println(point);
-//                destinationPosition = com.mapbox.geojson.Point.fromLngLat(point.getLongitude(), point.getLatitude());
-//                originPosition = com.mapbox.geojson.Point.fromLngLat(-122.258875, 37.865593);
-//                Log.d("Search for me", "About to do getRoute stuff");
-//                //Log.d("Business wait time", Double.toString(getWaitTime(37.869599999, -122.25878, 37.86442, -122.24920)));
-//                getRoute(originPosition, destinationPosition);
-//            }
-//        });
-
-
     }
 
     private void drawRoute() {
         finalDistance = 0.0;
         getTempRouteCalled = false;
         getTempRoute2Called = false;
+        /* Image: An image is loaded and added to the map. */
+//        Bitmap icon = BitmapFactory.decodeResource(
+//                MainActivity.this.getResources(), R.drawable.pinpoint, options);
+//        mapboxMap.addImage(MARKER_IMAGE, icon);
+        //addMarkers();
+
+        mapboxMap.setOnMapClickListener(new MapboxMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(@NonNull LatLng point) {
+                PointF screenPoint = mapboxMap.getProjection().toScreenLocation(point);
+                List<Feature> features = mapboxMap.queryRenderedFeatures(screenPoint, "my.layer.id");
+                if (!features.isEmpty()) {
+                    Feature selectedFeature = features.get(0);
+                    String title = selectedFeature.getStringProperty("title");
+                    Toast.makeText(getApplicationContext(), "You selected " + title, Toast.LENGTH_SHORT).show();
+                }
+                System.out.println(point);
+                if ((point.getLatitude() <= 37.866528+0.0015 && point.getLatitude() >= 37.866528-0.0015) && (point.getLongitude() <= -122.258722+0.0015 && point.getLongitude() >= -122.258722-0.0015)) {
+                    if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
+                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    } else {
+                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    }
+                }
+
+            }
+        });
+
         if (mapboxMap != null) mapboxMap.clear();
 
         originLat = originLocation.getLatitude();
@@ -1126,7 +1142,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         double latDist = (java.lang.Math.abs(northPoint - southPoint));
         double lonDist = (java.lang.Math.abs(java.lang.Math.abs(westPoint) - java.lang.Math.abs(eastPoint)));
 
-
         westPoint -= lonDist*0.5; eastPoint += lonDist*0.5; southPoint -= latDist*0.4; northPoint += latDist*0.6;
 
         System.out.println(northPoint-southPoint);
@@ -1137,24 +1152,25 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         getRoute(originPosition, destinationPosition);
         Log.d("First getRoute", "About to start split path calculations");
 
-        getTempRoute(originPosition, com.mapbox.geojson.Point.fromLngLat(-122.2702069, 37.8706731)); // clark kerr);
-
-
-
+//        getTempRoute(originPosition, destinationPosition); // clark kerr); com.mapbox.geojson.Point.fromLngLat(-122.2702069, 37.8706731)
 
     }
-    private void getTempRoute(com.mapbox.geojson.Point origin, com.mapbox.geojson.Point destination) {
+
+    private void getTempRoute(com.mapbox.geojson.Point origin, com.mapbox.geojson.Point destination, final com.mapbox.geojson.Point bizLoc) {
+        Log.d("getTempRoute", "called");
         NavigationRoute.builder()
                 .accessToken(Mapbox.getAccessToken())
                 .origin(origin)
                 .destination(destination)
+                .profile(PROFILE_TYPE)
                 .build()
                 .getRoute(new Callback<DirectionsResponse>() {
                     @Override
                     public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
                         // You can get the generic HTTP info about the response
-                        if (getTempRouteCalled == false) {
-                            getTempRouteCalled = true;
+                        Log.d("getTempRoute", String.valueOf(getTempRouteCalled));
+                        if (true) { //getTempRouteCalled == false
+//                            getTempRouteCalled = true;
                             Log.d(TAG, "Doing temp route: " + response.code());
                             if (response.body() == null) {
                                 Log.e(TAG, "No routes found, make sure you set the right user and access token.");
@@ -1169,7 +1185,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                             curDistance = analyzeRoute.distance();
                             finalDistance += curDistance;
                             Log.d("Distance set to ", Double.toString(finalDistance));
-                            getTempRoute2(com.mapbox.geojson.Point.fromLngLat(-122.2702069, 37.8706731), destinationPosition);
+                            getTempRoute2(bizLoc, destinationPosition); // com.mapbox.geojson.Point.fromLngLat(-122.2702069, 37.8706731)
                         }   else {
                             return;
                         }
@@ -1187,13 +1203,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 .accessToken(Mapbox.getAccessToken())
                 .origin(origin)
                 .destination(destination)
+                .profile(PROFILE_TYPE)
                 .build()
                 .getRoute(new Callback<DirectionsResponse>() {
                     @Override
                     public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
                         // You can get the generic HTTP info about the response
-                        if (getTempRoute2Called == false) {
-                            getTempRoute2Called = true;
+                        if (true) { //getTempRoute2Called == false
+//                            getTempRoute2Called = true;
                             Log.d(TAG, "Doing temp route: " + response.code());
                             if (response.body() == null) {
                                 Log.e(TAG, "No routes found, make sure you set the right user and access token.");
@@ -1220,6 +1237,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 });
     }
+
+//        getRoute(originPosition, destinationPosition);
+//    }
+
     private void addMarkers() {
         if (!ADDED_MARKERS) {
             List<Feature> features = new ArrayList<>();
@@ -1249,8 +1270,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * Mapbox overrides.
      */
-
-
     @SuppressWarnings( {"MissingPermission"})
     private void enableLocationPlugin() {
         // Check if permissions are enabled and if not request

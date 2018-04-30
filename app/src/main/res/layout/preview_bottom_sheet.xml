@@ -26,7 +26,7 @@
                 android:scaleType="centerCrop"
                 android:adjustViewBounds="true"
                 android:padding="7dp"
-                android:src="@drawable/delarosa"/>
+                android:src="@drawable/burma2"/>
 
             <ImageView
                 android:src="@drawable/frame"
@@ -44,7 +44,7 @@
                 style="@style/TitleFont"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Delarosa"/>
+                android:text="Burma Superstar"/>
             <TextView
                 style="@style/AddressFont"
                 android:layout_width="wrap_content"
