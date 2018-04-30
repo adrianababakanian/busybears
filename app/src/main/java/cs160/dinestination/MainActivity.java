@@ -189,8 +189,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
     private static final com.google.android.gms.maps.model.LatLngBounds BOUNDS_GREATER_BAY_AREA = new com.google.android.gms.maps.model.LatLngBounds(
             new com.google.android.gms.maps.model.LatLng(37.7749, -122.4194), new com.google.android.gms.maps.model.LatLng(37.9101, -122.0652));
-// private static final LatLngBounds BOUNDS_GREATER_BAY_AREA = new LatLngBounds(
-//         37.9101, -122.0652, 37.7749, -122.4194);
+
     // Location layer-related.
     private PermissionsManager permissionsManager;
     private LocationLayerPlugin locationPlugin;
@@ -686,7 +685,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 whereToPlace.setTextColor(getResources().getColor(R.color.textColorDark));
                 whereToTime.setTextColor(getResources().getColor(R.color.textColorDark));
 
-                // addMarkers();
                 drawRoute();
                 findRestaurantsButton.setVisibility(View.VISIBLE);
                 navigationRowWrapper.setVisibility(View.VISIBLE);
@@ -703,7 +701,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         .include(northEastCorner) // Southwest
                         .build();
 
-                mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 50), 2000);
+                mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 80, 600, 80, 200), 2000);
+//                double currZoom = mapboxMap.getCameraPosition().zoom;
+//                mapboxMap.setZoom(currZoom-0.2);
             }
         });
     }
@@ -1113,7 +1113,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         double lonDist = (java.lang.Math.abs(java.lang.Math.abs(westPoint) - java.lang.Math.abs(eastPoint)));
 
 
-        westPoint -= lonDist*0.5; eastPoint += lonDist*0.5; southPoint -= latDist*0.4; northPoint += latDist*0.6;
+//        westPoint += lonDist*0.2; eastPoint -= lonDist*0.2; southPoint += latDist*0.2; northPoint -= latDist*0.2;
 
         System.out.println(northPoint-southPoint);
         System.out.println(westPoint-eastPoint);
