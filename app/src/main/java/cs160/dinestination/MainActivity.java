@@ -208,6 +208,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     Icon pinpointIcon;
     IconFactory iconFactory;
 
+    //Details Activity
+    Double selectedPlaceLat;
+    Double selectedPlaceLong;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -347,6 +351,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 Intent goToDetailsIntent = new Intent(MainActivity.this, DetailsActivity.class);
+                goToDetailsIntent.putExtra("placeLat", selectedPlaceLat);
+                goToDetailsIntent.putExtra("placeLong", selectedPlaceLong);
                 startActivity(goToDetailsIntent);
             }
         });
@@ -460,7 +466,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         yelpApiFactory = new YelpFusionApiFactory();
         yelpFusionApi = null;
         try {
-            yelpFusionApi = yelpApiFactory.createAPI("dczs4nuyUTOJWGPaXth8Zqt0IwzGoD0Wr-8OZgDmdu4G0oa3M3K-GzlPVYFAh4indjgmImwbDSSaWnh2d7KQgSFly0AresZM9PGy6p4IRUgJcE3ElHJyWyXIb7jeWnYx");
+            yelpFusionApi = yelpApiFactory.createAPI("x4HzIK9Yg9t9HzBDOVrmPwydPeNPqV3fTJL6pLVj4XBSQ7cEVNuP9G9qqhMOxM_wxlxdq7JQfz-ZJQ6Q8DzbeCDUdA5F7I1uGRrTyFItQQmariY0BYlx7dxPKpXnWnYx");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -970,6 +976,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                             String addressess = String.valueOf(marker.getPosition().getLatitude()) +
                                     String.valueOf(marker.getPosition().getLongitude());
                             tv2.setText(String.valueOf(addresses1.get(addressess)));
+
+                            selectedPlaceLat = restaurant.getCoordinates().getLatitude();
+                            selectedPlaceLong = restaurant.getCoordinates().getLongitude();
 
                             /*ImageView iv1 =(ImageView)findViewById(R.id.PictureOf);
                             String picss = String.valueOf(marker.getPosition().getLatitude()) +

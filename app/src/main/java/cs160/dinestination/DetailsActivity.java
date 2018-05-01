@@ -5,7 +5,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -19,11 +22,19 @@ public class DetailsActivity extends AppCompatActivity {
     String addr;
     String estimate;
     String wait;
+    Double placeLat;
+    Double placeLong;
+    private GridView gridView;
+    private GridViewAdapter gridAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
+
+        gridView = (GridView) findViewById(R.id.gridView);
+        gridAdapter = new GridViewAdapter(this, R.layout.grid_item_layout, getData());
+        gridView.setAdapter(gridAdapter);
 
         // TextViews that need to change based on data passed through
         restaurantName = findViewById(R.id.restaurantName);
@@ -35,6 +46,11 @@ public class DetailsActivity extends AppCompatActivity {
         back = findViewById(R.id.back);
 
         Bundle bundle = getIntent().getExtras();
+        placeLat = bundle.getDouble("placeLat");
+        placeLong = bundle.getDouble("placeLong");
+
+        
+
 //        name = bundle.getString("");
 //        addr = bundle.getString("");
 //        estimate = bundle.getString("");
@@ -65,5 +81,10 @@ public class DetailsActivity extends AppCompatActivity {
 //        });
 
 
+    }
+
+    private ArrayList<ImageItem> getData() {
+        final ArrayList<ImageItem> imageItems = new ArrayList<>();
+        return imageItems;
     }
 }
