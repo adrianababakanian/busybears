@@ -87,11 +87,22 @@ import com.yelp.fusion.client.connection.YelpFusionApiFactory;
 import com.yelp.fusion.client.models.Business;
 import com.yelp.fusion.client.models.SearchResponse;
 
+import org.jdeferred2.Deferred;
+import org.jdeferred2.DeferredManager;
+import org.jdeferred2.DoneCallback;
+import org.jdeferred2.impl.DefaultDeferredManager;
+import org.jdeferred2.impl.DeferredObject;
+
 import java.io.IOException;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -466,7 +477,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         yelpApiFactory = new YelpFusionApiFactory();
         yelpFusionApi = null;
         try {
-            yelpFusionApi = yelpApiFactory.createAPI("dczs4nuyUTOJWGPaXth8Zqt0IwzGoD0Wr-8OZgDmdu4G0oa3M3K-GzlPVYFAh4indjgmImwbDSSaWnh2d7KQgSFly0AresZM9PGy6p4IRUgJcE3ElHJyWyXIb7jeWnYx");
+            yelpFusionApi = yelpApiFactory.createAPI("x4HzIK9Yg9t9HzBDOVrmPwydPeNPqV3fTJL6pLVj4XBSQ7cEVNuP9G9qqhMOxM_wxlxdq7JQfz-ZJQ6Q8DzbeCDUdA5F7I1uGRrTyFItQQmariY0BYlx7dxPKpXnWnYx");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -480,7 +491,21 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         filtersRowGenerator();
 
 
-        this.lock = new ReentrantLock();
+//        this.lock = new ReentrantLock();
+
+
+//        doDaGetTempRoute(null, null, null, null).then(res -> plsWork());
+//        DeferredManager dm = new DefaultDeferredManager();
+//        Deferred deferred = new DeferredObject();
+//        org.jdeferred2.Promise promise = deferred.promise();
+//        promise.done(new DoneCallback() {
+//            @Override
+//            public void onDone(Object result) {
+//                Log.d("hhelo", "hello");
+//            }
+//        });
+//        deferred.resolve("hi");
+        plsWorkParent();
 
     } // END THE ON CREATE METHOD
 
@@ -921,6 +946,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         // docs: https://www.yelp.com/developers/documentation/v3/business_search
         // GOOD FOR KIDS, GOOD FOR GROUPS - NOT POSSIBLE USING API.
         // also no options for attire. - could match to price range instead..
+        Log.d("yelpQueryMaker", "function called");
         Map<String, String> params = new HashMap<>();
         params.put("latitude", String.valueOf(latitude));
         params.put("longitude", String.valueOf(longitude));
@@ -955,6 +981,20 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 //                            com.mapbox.geojson.Point.fromLngLat(
 //                                    restaurant.getCoordinates().getLatitude(), restaurant.getCoordinates().getLongitude()));
 
+//                    getTempRoute(originPosition, com.mapbox.geojson.Point.fromLngLat(
+//                            restaurant.getCoordinates().getLatitude(), restaurant.getCoordinates().getLongitude()));
+//                    getTempRoute(com.mapbox.geojson.Point.fromLngLat(
+//                            restaurant.getCoordinates().getLatitude(), restaurant.getCoordinates().getLongitude()), destinationPosition);
+
+                    final CountDownLatch allDoneSignal = new CountDownLatch(2);
+//                    doDaGetTempRoute(allDoneSignal, originPosition, com.mapbox.geojson.Point.fromLngLat(
+//                            restaurant.getCoordinates().getLatitude(), restaurant.getCoordinates().getLongitude()), destinationPosition);
+//                    .then(res -> plsWork());
+
+//                        Log.d("yelpQueryMaker", String.valueOf(allDoneSignal.getCount()));
+//                        allDoneSignal.await();
+                    Log.d("yelpQueryMaker", "oh all done");
+
                 }
             }
             @Override
@@ -965,6 +1005,68 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         };
         Call<SearchResponse> call = yelpFusionApi.getBusinessSearch(params);
         call.enqueue(callback);
+    }
+
+//    private Promise doDaGetTempRoute(CountDownLatch cdLatch, com.mapbox.geojson.Point origin, com.mapbox.geojson.Point business, com.mapbox.geojson.Point destination){
+//        Promise p = new Promise();
+//        Log.d("yelpquerymaker", "in dodagettemproute");
+//        new Thread(()->{
+////                getTempRoute(origin, business, cdLatch, p);
+////                getTempRoute(business, destination, cdLatch);
+//                Log.d("yelpquerymaker" , "pritn 1");
+//                String myObject = "hello how are you yelpquerymaker";
+//                p.resolve(myObject);
+//                Log.d("yelpquerymaker" , "pritn2");
+//
+//        });
+//        Log.d("yelpquerymaker", "returning");
+//        return p;
+//    }
+    private void plsWorkParent() {
+        Date time = new java.util.Date(System.currentTimeMillis());
+        System.out.println(new SimpleDateFormat("HH:mm:ss").format(time));
+//        Log.d("hello before", String.valueOf(System.currentTimeMillis()));
+
+        Deferred deferred = new DeferredObject();
+        org.jdeferred2.Promise promise = deferred.promise();
+        promise.done(new DoneCallback() {
+            @Override
+            public void onDone(Object result) {
+                System.out.println("on done");
+//                Log.d("hello after", String.valueOf(System.currentTimeMillis()));
+                Date time = new java.util.Date(System.currentTimeMillis());
+                System.out.println(new SimpleDateFormat("HH:mm:ss").format(time));
+            }
+        });
+//        TimeUnit.SECONDS.sleep(1);
+        try {
+            java.util.concurrent.TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) { }
+
+        plsWork();
+        deferred.resolve("hi");
+    }
+
+    private boolean plsWork() {
+        Log.d("yelpquerymaker", "system hello");
+        Deferred deferred = new DeferredObject();
+        org.jdeferred2.Promise promise = deferred.promise();
+        promise.done(new DoneCallback() {
+            @Override
+            public void onDone(Object result) {
+//                Log.d("hello after", String.valueOf(System.currentTimeMillis()));
+                try {
+                    java.util.concurrent.TimeUnit.SECONDS.sleep(2);
+                } catch (Exception e) {
+                }
+                System.out.println("inside:");
+                Date time = new java.util.Date(System.currentTimeMillis());
+                System.out.println(new SimpleDateFormat("HH:mm:ss").format(time));
+                System.out.println("inside done");
+            }
+        });
+        deferred.resolve("hi");
+        return true;
     }
 
     /**
@@ -1163,10 +1265,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
 //        getTempRoute(originPosition, destinationPosition); // clark kerr); com.mapbox.geojson.Point.fromLngLat(-122.2702069, 37.8706731)
 
+
     }
 
-    private void getTempRoute(final com.mapbox.geojson.Point origin, final com.mapbox.geojson.Point destination, final com.mapbox.geojson.Point bizLoc) {
-        Log.d("getTempRoute", "called");
+//    private void getTempRoute(final com.mapbox.geojson.Point origin, final com.mapbox.geojson.Point destination, final com.mapbox.geojson.Point bizLoc) {
+private void getTempRoute(final com.mapbox.geojson.Point origin, final com.mapbox.geojson.Point destination, CountDownLatch cl, Promise p) {
+            Log.d("getTempRoute", "called");
         NavigationRoute.builder()
                 .accessToken(Mapbox.getAccessToken())
                 .origin(origin)
@@ -1178,26 +1282,33 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
                         // You can get the generic HTTP info about the response
                         Log.d("getTempRoute", String.valueOf(getTempRouteCalled));
-                        if (true) { //getTempRouteCalled == false
+                        try {
+                            if (true) { //getTempRouteCalled == false
 //                            getTempRouteCalled = true;
-                            Log.d(TAG, "Doing temp route: " + response.code());
-                            if (response.body() == null) {
-                                Log.e(TAG, "No routes found, make sure you set the right user and access token.");
-                                return;
+                                Log.d(TAG, "Doing temp route: " + response.code());
+                                if (response.body() == null) {
+                                    Log.e(TAG, "No routes found, make sure you set the right user and access token.");
+                                    return;
 
-                            } else if (response.body().routes().size() < 1) {
-                                Log.e(TAG, "No routes found");
+                                } else if (response.body().routes().size() < 1) {
+                                    Log.e(TAG, "No routes found");
+                                    return;
+                                }
+
+                                analyzeRoute = response.body().routes().get(0);
+                                curDistance = analyzeRoute.distance();
+                                finalDistance += curDistance;
+                                Log.d("Distance set to ", Double.toString(finalDistance));
+                                finalDistance = 0;
+                                Log.d("gettemproute", "after final dist");
+//                            getTempRoute2(bizLoc, destinationPosition); // com.mapbox.geojson.Point.fromLngLat(-122.2702069, 37.8706731)
+                            } else {
                                 return;
                             }
-
-                            analyzeRoute = response.body().routes().get(0);
-                            curDistance = analyzeRoute.distance();
-                            finalDistance += curDistance;
-                            Log.d("Distance set to ", Double.toString(finalDistance));
-                            finalDistance = 0;
-//                            getTempRoute2(bizLoc, destinationPosition); // com.mapbox.geojson.Point.fromLngLat(-122.2702069, 37.8706731)
-                        }   else {
-                            return;
+                        } finally {
+                            Log.d("gettemproute", "finally block");
+                            cl.countDown();
+                            p.resolve("hello pls resolve");
                         }
 
                     }
@@ -1205,9 +1316,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onFailure(Call<DirectionsResponse> call, Throwable throwable) {
                         Log.e(TAG, "onTempRoute error: " + throwable.getMessage());
+                        cl.countDown();
                     }
                 });
     }
+
     private void getTempRoute2(final com.mapbox.geojson.Point origin, final com.mapbox.geojson.Point destination) {
         Log.d("getTempRoute2", String.valueOf(getTempRoute2Called));
         NavigationRoute.builder()
@@ -1230,7 +1343,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
                             } else if (response.body().routes().size() < 1) {
                                 Log.e(TAG, "No routes found 2");
-                                return; 
+                                return;
                             }
                             Log.d("getTempRoute2", "pls");
                             analyzeRoute = response.body().routes().get(0);
