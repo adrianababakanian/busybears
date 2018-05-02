@@ -58,6 +58,11 @@ public class DetailsActivity extends AppCompatActivity {
         String restaurantInputTime = getIntent().getStringExtra("inputTime");
         String restaurantInputPlace = getIntent().getStringExtra("inputPlace");
 
+        Double restaurantWaitTimeSeconds = Double.valueOf(getIntent().getStringExtra("waitTime"));
+        String restaurantWaitTimeStr = String.valueOf(Math.ceil(restaurantWaitTimeSeconds / 60));
+        restaurantWaitTimeStr = restaurantWaitTimeStr.substring(0, restaurantWaitTimeStr.length()-2);
+        String restaurantArriveTime = getIntent().getStringExtra("arriveTime");
+
 //        gridView = (GridView) findViewById(R.id.gridView);
 //        gridAdapter = new GridViewAdapter(this, R.layout.grid_item_layout, getData());
 //        gridView.setAdapter(gridAdapter);
@@ -68,8 +73,11 @@ public class DetailsActivity extends AppCompatActivity {
         restaurantAddr = findViewById(R.id.restaurantAddr);
         restaurantAddr.setText(restaurantAddressVal);
         waitTime = findViewById(R.id.waitTime);
+        waitTime.setText("Wait ~" + restaurantWaitTimeStr + " mins");
         arrivalEstimate = findViewById(R.id.arrivalEstimate);
-        arrivalEstimate.setText(restaurantInputPlace + " " + restaurantInputTime);
+//        arrivalEstimate.setText(restaurantInputPlace + " " + restaurantInputTime);
+        arrivalEstimate.setText("Likely to arrive at "+ restaurantInputPlace + " by " + restaurantArriveTime);
+
         // Buttons
         routeMe = (ImageButton) findViewById(R.id.routeMe);
         routeMe2 = findViewById(R.id.routeMe2);
@@ -84,7 +92,8 @@ public class DetailsActivity extends AppCompatActivity {
         yelpApiFactory = new YelpFusionApiFactory();
         yelpFusionApi = null;
         try {
-            yelpFusionApi = yelpApiFactory.createAPI("dczs4nuyUTOJWGPaXth8Zqt0IwzGoD0Wr-8OZgDmdu4G0oa3M3K-GzlPVYFAh4indjgmImwbDSSaWnh2d7KQgSFly0AresZM9PGy6p4IRUgJcE3ElHJyWyXIb7jeWnYx");
+            yelpFusionApi = yelpApiFactory.createAPI("lpPa7H7FfyvUsUwy3SXzFTPvzT3XMpKigRKwjtVy1DIvzEXFISs5_qc5u33z0-jDB2VbGnXdjAGn9RayJW5ft0Ayx3irRzdfvGMVyOm0yGcWVPtAD3HfF_a8w3XpWnYx");
+//            yelpFusionApi = yelpApiFactory.createAPI("dczs4nuyUTOJWGPaXth8Zqt0IwzGoD0Wr-8OZgDmdu4G0oa3M3K-GzlPVYFAh4indjgmImwbDSSaWnh2d7KQgSFly0AresZM9PGy6p4IRUgJcE3ElHJyWyXIb7jeWnYx");
         } catch (IOException e) {
             e.printStackTrace();
         }

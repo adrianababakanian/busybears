@@ -54,13 +54,15 @@
                 android:layout_height="wrap_content"
                 android:lineSpacingMultiplier="1.35"
                 android:text="2175 Chestnut St \nSan Francisco, CA 94213 "/>
+
             <TextView
+                android:id="@+id/ArriveBy"
                 style="@style/SmallFont"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:lineSpacingMultiplier="1.35"
                 android:layout_marginTop="40px"
-                android:text="Very likely to work with your schedule"/>
+                android:lineSpacingMultiplier="1.35"
+                android:text="Very likely to work with your schedule" />
         </LinearLayout>
 
 

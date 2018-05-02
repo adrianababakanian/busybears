@@ -90,12 +90,15 @@ import com.yelp.fusion.client.models.Business;
 import com.yelp.fusion.client.models.SearchResponse;
 
 
+import org.w3c.dom.Text;
+
 import java.io.IOException;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -388,6 +391,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 goToDetailsIntent.putExtra("pictures", resPic);
                 goToDetailsIntent.putExtra("inputTime", whereToTime.getText());
                 goToDetailsIntent.putExtra("inputPlace", String.valueOf(whereToPlace.getText()).split(",")[0]);
+                goToDetailsIntent.putExtra("arriveTime", resArriveTime);
+                goToDetailsIntent.putExtra("waitTime", String.valueOf(resWaitTime));
                 //goToDetailsIntent.putExtra("inputTime", inputTime);
                 startActivity(goToDetailsIntent);
             }
@@ -1069,10 +1074,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     HashMap names1 = new HashMap<String, String>();
     HashMap addresses1 = new HashMap<String, String>();
     HashMap pics1 = new HashMap<String, String>();
+    HashMap arriveTimes1 = new HashMap<String, String>();
     HashMap placeIDs = new HashMap<String, String>();
+    HashMap waitTimes1 = new HashMap<String, Double>();
     String resName;
     String resAddr;
     String resPic;
+    String resArriveTime;
+    String resWaitTime;
     private void yelpQueryMaker(Double latitude, Double longitude) throws ParseException {
         // docs: https://www.yelp.com/developers/documentation/v3/business_search
         // GOOD FOR KIDS, GOOD FOR GROUPS - NOT POSSIBLE USING API.
@@ -1125,64 +1134,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     getTempRoute(originPosition, destinationPosition, com.mapbox.geojson.Point.fromLngLat(
                             restaurant.getCoordinates().getLongitude(), restaurant.getCoordinates().getLatitude()), restaurant.getName(), true);
-//=======
-//                final SearchResponse searchResponse = response.body();
-//                for (int x = 0; x < searchResponse.getBusinesses().size(); x++) {
-//                    restaurant = searchResponse.getBusinesses().get(x);
-////                    Log.d("YelpQueryMaker", restaurant.getName() + "," + restaurant.getCoordinates().getLatitude());
-//                    LatLng ll = new LatLng(restaurant.getCoordinates().getLatitude(), restaurant.getCoordinates().getLongitude());
-//                    mapboxMap.addMarker(new MarkerViewOptions()
-//                            .position(ll)
-//                            .icon(pinpointIcon));
-//                    names1.put(String.valueOf(restaurant.getCoordinates().getLatitude()) +
-//                            String.valueOf(restaurant.getCoordinates().getLongitude()), restaurant.getName());
-//                    addresses1.put(String.valueOf(restaurant.getCoordinates().getLatitude()) +
-//                            String.valueOf(restaurant.getCoordinates().getLongitude()), restaurant.getLocation().getAddress1() + "\n" + restaurant.getLocation().getCity() + " " + restaurant.getLocation().getState() + " " + String.valueOf(restaurant.getLocation().getZipCode()));
-//                    pics1.put(String.valueOf(restaurant.getCoordinates().getLatitude()) +
-//                            String.valueOf(restaurant.getCoordinates().getLongitude()), restaurant.getImageUrl());
-//                    placeIDs.put(String.valueOf(restaurant.getCoordinates().getLatitude()) +
-//                            String.valueOf(restaurant.getCoordinates().getLongitude()), restaurant.getId());
-//
-//
-//                    mapboxMap.getMarkerViewManager().setOnMarkerViewClickListener(new MapboxMap.OnMarkerViewClickListener() {
-//                        @Override
-//                        public boolean onMarkerClick(@NonNull com.mapbox.mapboxsdk.annotations.Marker marker, @NonNull View view, @NonNull MapboxMap.MarkerViewAdapter adapter) {
-//                            Timber.e(marker.toString());
-//                            //setContentView(R.layout.preview_bottom_sheet);
-//                            TextView tv1 = (TextView)findViewById(R.id.NameOf);
-//                            String namess = String.valueOf(marker.getPosition().getLatitude()) +
-//                                    String.valueOf(marker.getPosition().getLongitude());
-//                            tv1.setText(String.valueOf(names1.get(namess)));
-//                            resName = String.valueOf(names1.get(namess));
-//
-//                            TextView tv2 = (TextView)findViewById(R.id.AddressOf);
-//                            String addressess = String.valueOf(marker.getPosition().getLatitude()) +
-//                                    String.valueOf(marker.getPosition().getLongitude());
-//                            tv2.setText(String.valueOf(addresses1.get(addressess)));
-//                            resAddr = String.valueOf(addresses1.get(addressess));
-//
-//                            selectedPlaceLat = restaurant.getCoordinates().getLatitude();
-//                            selectedPlaceLong = restaurant.getCoordinates().getLongitude();
-//                            placeID = String.valueOf(placeIDs.get(namess));
-//
-//                            ImageView iv1 =(ImageView)findViewById(R.id.PictureOf);
-//                            String picss = String.valueOf(marker.getPosition().getLatitude()) +
-//                                    String.valueOf(marker.getPosition().getLongitude());
-//                            Picasso.with(getApplicationContext()).load(String.valueOf(pics1.get(picss))).into(iv1);
-//                            resPic = String.valueOf(pics1.get(picss));
-//
-//                            if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
-//                                previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-//                            }
-////                            else {
-////                                previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-////                                previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-////
-////                            }
-//                            return false;
-//                        }
-//                    });
-//>>>>>>> origin/master
                 }
             }
             @Override
@@ -1441,7 +1392,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                         analyzeRoute = response.body().routes().get(0);
 //                        curDistance = analyzeRoute.distance();
-                        curDistance = analyzeRoute.duration();
+                        curDistance = analyzeRoute.duration(); // pulls duration instead, vars still names 'distance'.
                         if (isParent) {
                             if (!(Boolean) testMap.get(restName).get("halfUpdated")) {
                                 testMap.get(restName).put("halfUpdated", true);
@@ -1456,17 +1407,16 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                                 Log.d("Distance full set to ", String.valueOf(testMap.get(restName)) + ";" + restName);
                         Log.d("testMap so far:", testMap.toString());
                                 if (testMap.size() >= 4) {
-                                    for (HashMap<String, Object> subMap : testMap.values()) {
+                                    for (final HashMap<String, Object> subMap : testMap.values()) {
                                         final Business curRes = (Business) subMap.get("businessObj");
-                                        // .notify????? Notify a listener??? Could work that way too.
                                         LatLng ll = new LatLng(curRes.getCoordinates().getLatitude(), curRes.getCoordinates().getLongitude());
-//                                        mapboxMap.addMarker(new MarkerViewOptions()
-//                                                .position(ll)
-//                                                .icon(pinpointIcon));
 
                                         mapboxMap.addMarker(new MarkerViewOptions()
                                                 .position(ll)
                                                 .icon(pinpointIcon));
+
+//                                        subMap.get("distance"); // THIS IS THE WAIT TIME IN SECONDS
+
                                         names1.put(String.valueOf(curRes.getCoordinates().getLatitude()) +
                                                 String.valueOf(curRes.getCoordinates().getLongitude()), curRes.getName());
                                         addresses1.put(String.valueOf(curRes.getCoordinates().getLatitude()) +
@@ -1475,34 +1425,54 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                                                 String.valueOf(curRes.getCoordinates().getLongitude()), curRes.getImageUrl());
                                         placeIDs.put(String.valueOf(curRes.getCoordinates().getLatitude()) +
                                                 String.valueOf(curRes.getCoordinates().getLongitude()), curRes.getId());
+                                        waitTimes1.put(String.valueOf(curRes.getCoordinates().getLatitude()) +
+                                                String.valueOf(curRes.getCoordinates().getLongitude()), (Double)subMap.get("distance"));
 
+                                        // TODO: CALCULATE THE TOTAL WAIT TIME, THEN STICK IN. THIS IS TOTAL WAIT TIME.
+                                        Calendar calendar = Calendar.getInstance(); // gets a calendar using the default time zone and locale.
+                                        Double durationInSecs = (Double)subMap.get("distance");
+                                        calendar.add(Calendar.SECOND, durationInSecs.intValue());
+                                        long secs = calendar.getTimeInMillis() / 1000;
+                                        String display = String.format("%02d:%02d", secs / 3600, (secs % 3600) / 60);
+                                        SimpleDateFormat format1 = new SimpleDateFormat("hh:mm a");
+                                        String formattedArrivalTime = format1.format(calendar.getTime());
+                                        formattedArrivalTime = formattedArrivalTime.replace("AM", "am").replace("PM","pm");
+
+                                        arriveTimes1.put(String.valueOf(curRes.getCoordinates().getLatitude()) +
+                                                String.valueOf(curRes.getCoordinates().getLongitude()), formattedArrivalTime); // this is duration
+//                                        Log.d("wait duration is ", arriveTimes1.toString());
 
                                         mapboxMap.getMarkerViewManager().setOnMarkerViewClickListener(new MapboxMap.OnMarkerViewClickListener() {
                                             @Override
                                             public boolean onMarkerClick(@NonNull com.mapbox.mapboxsdk.annotations.Marker marker, @NonNull View view, @NonNull MapboxMap.MarkerViewAdapter adapter) {
                                                 Timber.e(marker.toString());
                                                 //setContentView(R.layout.preview_bottom_sheet);
-                                                TextView tv1 = (TextView) findViewById(R.id.NameOf);
-                                                String namess = String.valueOf(marker.getPosition().getLatitude()) +
+                                                String idStr = String.valueOf(marker.getPosition().getLatitude()) +
                                                         String.valueOf(marker.getPosition().getLongitude());
-                                                tv1.setText(String.valueOf(names1.get(namess)));
-                                                resName = String.valueOf(names1.get(namess));
+
+                                                TextView tv1 = (TextView) findViewById(R.id.NameOf);
+                                                tv1.setText(String.valueOf(names1.get(idStr)));
+                                                resName = String.valueOf(names1.get(idStr));
 
                                                 TextView tv2 = (TextView) findViewById(R.id.AddressOf);
-                                                String addressess = String.valueOf(marker.getPosition().getLatitude()) +
-                                                        String.valueOf(marker.getPosition().getLongitude());
-                                                tv2.setText(String.valueOf(addresses1.get(addressess)));
-                                                resAddr = String.valueOf(addresses1.get(addressess));
+                                                tv2.setText(String.valueOf(addresses1.get(idStr)));
+                                                resAddr = String.valueOf(addresses1.get(idStr));
 
                                                 selectedPlaceLat = curRes.getCoordinates().getLatitude();
                                                 selectedPlaceLong = curRes.getCoordinates().getLongitude();
-                                                placeID = String.valueOf(placeIDs.get(namess));
+                                                placeID = String.valueOf(placeIDs.get(idStr));
 
                                                 ImageView iv1 = (ImageView) findViewById(R.id.PictureOf);
-                                                String picss = String.valueOf(marker.getPosition().getLatitude()) +
-                                                        String.valueOf(marker.getPosition().getLongitude());
-                                                Picasso.with(getApplicationContext()).load(String.valueOf(pics1.get(picss))).into(iv1);
-                                                resPic = String.valueOf(pics1.get(picss));
+                                                Picasso.with(getApplicationContext()).load(String.valueOf(pics1.get(idStr))).into(iv1);
+                                                resPic = String.valueOf(pics1.get(idStr));
+
+                                                // set the val somewhere.
+
+//                                                arriveTimes1.put()
+                                                TextView tv3 = (TextView) findViewById(R.id.ArriveBy);
+                                                tv3.setText("Likely to arrive at your destination by " + String.valueOf(arriveTimes1.get(idStr)));
+                                                resArriveTime = String.valueOf(arriveTimes1.get(idStr));
+                                                resWaitTime = String.valueOf(waitTimes1.get(idStr));
 
                                                 if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
                                                     previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
