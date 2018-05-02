@@ -1,15 +1,22 @@
 package cs160.dinestination;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.squareup.picasso.Picasso;
 import com.yelp.fusion.client.connection.YelpFusionApi;
 import com.yelp.fusion.client.connection.YelpFusionApiFactory;
@@ -17,6 +24,8 @@ import com.yelp.fusion.client.models.Business;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,7 +42,7 @@ public class DetailsActivity extends AppCompatActivity {
     ImageView img2;
     ImageView img3;
     ImageButton routeMe;
-    Button back;
+    ImageButton back;
     String name;
     String addr;
     String estimate;
@@ -43,6 +52,10 @@ public class DetailsActivity extends AppCompatActivity {
     String placeID;
     private GridView gridView;
     private GridViewAdapter gridAdapter;
+    BarChart barChart;
+    ArrayList<String> dates;
+    Random random;
+    ArrayList<BarEntry> barEntries;
 
     YelpFusionApiFactory yelpApiFactory;
     YelpFusionApi yelpFusionApi;
@@ -74,7 +87,7 @@ public class DetailsActivity extends AppCompatActivity {
         routeMe = (ImageButton) findViewById(R.id.routeMe);
         routeMe2 = findViewById(R.id.routeMe2);
         routeMe2.setText("Route me to " + restaurantNameVal);
-        back = findViewById(R.id.back);
+        back = (ImageButton) findViewById(R.id.back);
 
         Bundle bundle = getIntent().getExtras();
         placeLat = bundle.getDouble("placeLat");
@@ -84,7 +97,7 @@ public class DetailsActivity extends AppCompatActivity {
         yelpApiFactory = new YelpFusionApiFactory();
         yelpFusionApi = null;
         try {
-            yelpFusionApi = yelpApiFactory.createAPI("dczs4nuyUTOJWGPaXth8Zqt0IwzGoD0Wr-8OZgDmdu4G0oa3M3K-GzlPVYFAh4indjgmImwbDSSaWnh2d7KQgSFly0AresZM9PGy6p4IRUgJcE3ElHJyWyXIb7jeWnYx");
+            yelpFusionApi = yelpApiFactory.createAPI("lpPa7H7FfyvUsUwy3SXzFTPvzT3XMpKigRKwjtVy1DIvzEXFISs5_qc5u33z0-jDB2VbGnXdjAGn9RayJW5ft0Ayx3irRzdfvGMVyOm0yGcWVPtAD3HfF_a8w3XpWnYx");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -109,7 +122,9 @@ public class DetailsActivity extends AppCompatActivity {
 //                Intent intent = new Intent (DetailsActivity.this, RoutingActivity.class);
 //            }
 //        });
+        barChart = (BarChart) findViewById(R.id.chart);
 
+        createRandomBarGraph("2016/05/05", "2016/06/01");
 
     }
 
@@ -141,5 +156,66 @@ public class DetailsActivity extends AppCompatActivity {
     private ArrayList<ImageItem> getData() {
         final ArrayList<ImageItem> imageItems = new ArrayList<>();
         return imageItems;
+    }
+
+    public void createRandomBarGraph(String Date1, String Date2){
+
+        XAxis xaxis = barChart.getXAxis();
+        YAxis yaxisL = barChart.getAxisLeft();
+        YAxis yaxisR = barChart.getAxisRight();
+
+        xaxis.setDrawGridLines(false);
+        xaxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
+        yaxisL.setDrawGridLines(false);
+        yaxisL.setDrawLabels(false);
+        yaxisR.setDrawGridLines(false);
+        yaxisR.setDrawLabels(false);
+
+        Legend legend = barChart.getLegend();
+        legend.setEnabled(false);
+
+        List<BarEntry> entries = new ArrayList<>();
+        entries.add(new BarEntry(0f, 80f));
+        entries.add(new BarEntry(1f, 60f));
+        entries.add(new BarEntry(2f, 50f));
+        entries.add(new BarEntry(3f, 40f));
+        entries.add(new BarEntry(4f, 80f));
+        entries.add(new BarEntry(5f, 60f));
+        entries.add(new BarEntry(6f, 60f));
+        entries.add(new BarEntry(7f, 30f));
+        entries.add(new BarEntry(8f, 80f));
+        entries.add(new BarEntry(9f, 60f));
+        entries.add(new BarEntry(10f, 50f));
+        entries.add(new BarEntry(11f, 70f));
+        entries.add(new BarEntry(12f, 60f));
+        entries.add(new BarEntry(13f, 40f));
+        entries.add(new BarEntry(14f, 20f));
+        entries.add(new BarEntry(15f, 80f));
+        entries.add(new BarEntry(16f, 30f));
+        entries.add(new BarEntry(17f, 40f));
+        entries.add(new BarEntry(18f, 60f));
+        entries.add(new BarEntry(19f, 80f));
+        entries.add(new BarEntry(20f, 80f));
+        entries.add(new BarEntry(21f, 80f));
+        entries.add(new BarEntry(22f, 80f));
+        entries.add(new BarEntry(23f, 80f));
+
+
+
+        BarDataSet set = new BarDataSet(entries, "BarDataSet");
+        set.setColor(Color.parseColor("#9FD5FF"));
+
+        BarData data = new BarData(set);
+        data.setBarWidth(0.9f); // set custom bar width
+        data.setDrawValues(false);
+        barChart.setDrawValueAboveBar(false);
+        barChart.getDescription().setText("");
+        barChart.setData(data);
+        barChart.setFitBars(true); // make the x-axis fit exactly all bars
+        barChart.setVisibleXRangeMaximum(12);
+        barChart.moveViewToX(8);
+        barChart.invalidate(); // refresh
+
     }
 }
