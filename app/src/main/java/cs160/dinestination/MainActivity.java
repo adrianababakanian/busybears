@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.location.Address;
@@ -44,7 +43,6 @@ import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.appyvet.materialrangebar.RangeBar;
@@ -56,8 +54,6 @@ import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.api.directions.v5.DirectionsCriteria;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
-import com.mapbox.api.directions.v5.models.LegStep;
-import com.mapbox.api.directions.v5.models.RouteLeg;
 import com.mapbox.api.directions.v5.models.StepIntersection;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
@@ -93,11 +89,7 @@ import com.yelp.fusion.client.models.Hour;
 import com.yelp.fusion.client.models.Open;
 import com.yelp.fusion.client.models.SearchResponse;
 
-
-import org.w3c.dom.Text;
-
 import java.io.IOException;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -108,7 +100,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -1095,7 +1086,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         params.put("latitude", String.valueOf(latitude));
         params.put("longitude", String.valueOf(longitude));
         params.put("price", getYelpifiedPriceRange());
-        params.put("radius", String.valueOf(toleranceSlider.getProgress() + 210)); // wait lol this only shows up after query has been made.
+        params.put("radius", String.valueOf(toleranceSlider.getProgress() + 410)); // wait lol this only shows up after query has been made.
         // ^ Needs some conversion factor, not a static addition. should also account for wait time, in theory...
 
         String rawDate = new Date().toString();
@@ -1107,7 +1098,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         params.put("open_at", String.valueOf(unixTime));
         params.put("term", "restaurants");
 
-        params.put("limit", "8"); // 20 by default
+        params.put("limit", "5"); // 20 by default
 
         String cuisineQueryString = "";
         for (String str : currentCuisineFilters) {
@@ -1168,30 +1159,32 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 try {
                     yelpQueryMaker(originPosition.latitude(), originPosition.longitude());
                     yelpQueryMaker(destinationPosition.latitude(), destinationPosition.longitude());
+                    StepIntersection midway = currentRoute.legs().get(0).steps().get(0).intersections().get(currentRoute.legs().get(0).steps().get(0).intersections().size()/2);
+                    yelpQueryMaker(midway.location().latitude(), midway.location().longitude());
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
                 // TODO: This and the one in setOnClickForFiltersTrigger just use destination position!!
                 ArrayList<StepIntersection> intersections = new ArrayList<>();
-                for (RouteLeg leg : currentRoute.legs()) { // this is only giving the first step right now.
-                    for (LegStep s : leg.steps()) {
+//                for (RouteLeg leg : currentRoute.legs()) { // this is only giving the first step right now.
+//                    for (LegStep s : leg.steps()) {
 //                        for (StepIntersection l : s.intersections()) {
 //                            if (!intersections.contains(l)) intersections.add(l);
 //                        }
-                        for (int i = 0; i < s.intersections().size(); i+=2) {
-                            if (!intersections.contains(s.intersections().get(i))) intersections.add(s.intersections().get(i));
-                        }
-                    }
-                }
+//                        for (int i = 0; i < s.intersections().size(); i+=s.intersections().size()/2) {
+//                            if (!intersections.contains(s.intersections().get(i))) intersections.add(s.intersections().get(i));
+//                        }
+//                    }
+//                }
 
 
-                for (StepIntersection s : intersections) {
-                    try {
-                        yelpQueryMaker(s.location().latitude(), s.location().longitude());
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                }
+//                for (StepIntersection s : intersections) {
+//                    try {
+//                        yelpQueryMaker(s.location().latitude(), s.location().longitude());
+//                    } catch (ParseException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
             }
         });
     }
@@ -1415,7 +1408,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                                 testMap.get(restName).put("distance", (Double) testMap.get(restName).get("distance") + curDistance);
                                 Log.d("Distance full set to ", String.valueOf(testMap.get(restName)) + ";" + restName);
                         Log.d("testMap so far:", testMap.toString());
-                                if (testMap.size() >= 7) {
+                                if (testMap.size() >= 5) {
                                     for (final HashMap<String, Object> subMap : testMap.values()) {
                                         final Business curRes = (Business) subMap.get("businessObj");
                                         LatLng ll = new LatLng(curRes.getCoordinates().getLatitude(), curRes.getCoordinates().getLongitude());
