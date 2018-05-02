@@ -1,6 +1,5 @@
 package cs160.dinestination;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -29,6 +28,7 @@ public class DetailsActivity extends AppCompatActivity {
     TextView restaurantAddr;
     TextView waitTime;
     TextView arrivalEstimate;
+    TextView routeMe2;
     ImageView img1;
     ImageView img2;
     ImageView img3;
@@ -72,6 +72,8 @@ public class DetailsActivity extends AppCompatActivity {
         arrivalEstimate.setText(restaurantInputPlace + " " + restaurantInputTime);
         // Buttons
         routeMe = (ImageButton) findViewById(R.id.routeMe);
+        routeMe2 = findViewById(R.id.routeMe2);
+        routeMe2.setText("Route me to " + restaurantNameVal);
         back = findViewById(R.id.back);
 
         Bundle bundle = getIntent().getExtras();
@@ -82,7 +84,7 @@ public class DetailsActivity extends AppCompatActivity {
         yelpApiFactory = new YelpFusionApiFactory();
         yelpFusionApi = null;
         try {
-            yelpFusionApi = yelpApiFactory.createAPI("x4HzIK9Yg9t9HzBDOVrmPwydPeNPqV3fTJL6pLVj4XBSQ7cEVNuP9G9qqhMOxM_wxlxdq7JQfz-ZJQ6Q8DzbeCDUdA5F7I1uGRrTyFItQQmariY0BYlx7dxPKpXnWnYx");
+            yelpFusionApi = yelpApiFactory.createAPI("dczs4nuyUTOJWGPaXth8Zqt0IwzGoD0Wr-8OZgDmdu4G0oa3M3K-GzlPVYFAh4indjgmImwbDSSaWnh2d7KQgSFly0AresZM9PGy6p4IRUgJcE3ElHJyWyXIb7jeWnYx");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -93,8 +95,10 @@ public class DetailsActivity extends AppCompatActivity {
         back.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(DetailsActivity.this, MainActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(DetailsActivity.this, MainActivity.class);
+//                startActivity(intent);
+            finish();
+
             }
 
         });
