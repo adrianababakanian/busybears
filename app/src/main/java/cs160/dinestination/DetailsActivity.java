@@ -7,9 +7,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.yelp.fusion.client.connection.YelpFusionApi;
@@ -32,7 +32,7 @@ public class DetailsActivity extends AppCompatActivity {
     ImageView img1;
     ImageView img2;
     ImageView img3;
-    Button routeMe;
+    ImageButton routeMe;
     Button back;
     String name;
     String addr;
@@ -71,7 +71,7 @@ public class DetailsActivity extends AppCompatActivity {
         arrivalEstimate = findViewById(R.id.arrivalEstimate);
         arrivalEstimate.setText(restaurantInputPlace + " " + restaurantInputTime);
         // Buttons
-        routeMe = findViewById(R.id.routeMe);
+        routeMe = (ImageButton) findViewById(R.id.routeMe);
         back = findViewById(R.id.back);
 
         Bundle bundle = getIntent().getExtras();
@@ -115,7 +115,6 @@ public class DetailsActivity extends AppCompatActivity {
             public void onResponse(Call<Business> call, Response<Business> response) {
                 Business business = response.body();
                 ArrayList<String> photos = business.getPhotos();
-                Toast.makeText(getBaseContext(), String.valueOf(photos.size()), Toast.LENGTH_SHORT).show();
                 img1 = findViewById(R.id.food1);
                 Picasso.with(getApplicationContext()).load(photos.get(0)).resize(img1.getMeasuredWidth(), img1.getMeasuredHeight()).centerCrop().into(img1);
                 img2 = findViewById(R.id.food2);

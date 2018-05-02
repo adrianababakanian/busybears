@@ -695,7 +695,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 destinationInformation.setVisibility(View.VISIBLE);
                 timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 whereToInputViewFlipper.showNext();
-                whereToElement.setVisibility(View.GONE); // this flippiness. search button greyed out until destination input.
+                whereToElement.setVisibility(View.INVISIBLE); // this flippiness. search button greyed out until destination input.
                 // search without any input. then tap where to. then cross - then things are overlayed.
                 String whereToText = whereToEditText.getText().toString();
                 whereToPlace.setText(whereToText);
@@ -1155,8 +1155,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
      */
     @Override
     public void onMapReady(final MapboxMap mapboxMap) {
-
-        mapboxMap.setOnMapClickListener(new MapboxMap.OnMapClickListener() {
+        mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
             @Override
             public void onMapClick(@NonNull LatLng point) {
                 PointF screenPoint = mapboxMap.getProjection().toScreenLocation(point);
@@ -1166,7 +1165,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     String title = selectedFeature.getStringProperty("title");
                     Toast.makeText(getApplicationContext(), "You selected " + title, Toast.LENGTH_SHORT).show();
                 }
-                System.out.println(point);
+                previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                System.out.println("why are you like this");
+                Toast.makeText(getApplicationContext(), "mapclick", Toast.LENGTH_SHORT).show();
 //                if ((point.getLatitude() <= 37.866528+0.0015 && point.getLatitude() >= 37.866528-0.0015) && (point.getLongitude() <= -122.258722+0.0015 && point.getLongitude() >= -122.258722-0.0015)) {
 //                    if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
 //                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
