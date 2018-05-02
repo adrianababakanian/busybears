@@ -2,6 +2,8 @@ package cs160.dinestination;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -1213,6 +1215,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         vTaxi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                DialogFragment newFragment = new RideshareDialog();
+                newFragment.show(getFragmentManager(), "hello");
+
                 vWalk.setBackground(getResources().getDrawable(R.color.white));
                 vWalk.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_walk_24dp));
                 vCar.setBackground(getResources().getDrawable(R.color.white));
