@@ -1175,11 +1175,15 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 ArrayList<StepIntersection> intersections = new ArrayList<>();
                 for (RouteLeg leg : currentRoute.legs()) { // this is only giving the first step right now.
                     for (LegStep s : leg.steps()) {
-                        for (StepIntersection l : s.intersections()) {
-                            if (!intersections.contains(l)) intersections.add(l);
+//                        for (StepIntersection l : s.intersections()) {
+//                            if (!intersections.contains(l)) intersections.add(l);
+//                        }
+                        for (int i = 0; i < s.intersections().size(); i+=2) {
+                            if (!intersections.contains(s.intersections().get(i))) intersections.add(s.intersections().get(i));
                         }
                     }
                 }
+
 
                 for (StepIntersection s : intersections) {
                     try {
