@@ -793,14 +793,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
         }
-//        if (view.getId() != R.id.preview_bottom_sheet) {
-//            view.setOnTouchListener(new View.OnTouchListener() {
-//                public boolean onTouch(View v, MotionEvent event) {
-//                    hidePreviewElement(MainActivity.this);
-//                    return false;
-//                }
-//            });
-//        }
         // If a layout container, iterate over children and seed recursion.
         if (view instanceof ViewGroup) {
             for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
@@ -1423,11 +1415,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
             @Override
             public void onLocationChanged(Location location) {
-//                Log.d("Latitude: ", Double.toString(location.getLatitude()));
-//                Log.d("Longitude: ", Double.toString(location.getLongitude()));
-//                Log.d("Latitude: ", Double.toString(lastLocation.getLatitude()));
-//                Log.d("Longitude: ", Double.toString(lastLocation.getLongitude()));
-//                Log.e("Location: ", lastLocation.toString());
             }
         });
     }
@@ -1437,5 +1424,22 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            View view = getCurrentFocus();
+            if (view != null && view instanceof EditText) {
+                Rect r = new Rect();
+                view.getGlobalVisibleRect(r);
+                int rawX = (int)ev.getRawX();
+                int rawY = (int)ev.getRawY();
+                if (!r.contains(rawX, rawY)) {
+                    view.clearFocus();
+                }
+            }
+        }
+        return super.dispatchTouchEvent(ev);
     }
 }
