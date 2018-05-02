@@ -73,7 +73,7 @@ public class DetailsActivity extends AppCompatActivity {
         restaurantAddr = findViewById(R.id.restaurantAddr);
         restaurantAddr.setText(restaurantAddressVal);
         waitTime = findViewById(R.id.waitTime);
-        waitTime.setText("Wait ~" + restaurantWaitTimeStr + " mins");
+        waitTime.setText("Estimated wait time: " + restaurantWaitTimeStr + " mins");
         arrivalEstimate = findViewById(R.id.arrivalEstimate);
 //        arrivalEstimate.setText(restaurantInputPlace + " " + restaurantInputTime);
         arrivalEstimate.setText("Likely to arrive at "+ restaurantInputPlace + " by " + restaurantArriveTime);

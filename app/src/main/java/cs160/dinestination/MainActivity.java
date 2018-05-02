@@ -1162,7 +1162,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 testMap.clear();
 
                 // TODO: make markers show up on map now
-                toleranceSlider.setVisibility(View.VISIBLE);
+//                toleranceSlider.setVisibility(View.VISIBLE); // never fully implemented
                 navigationRowWrapper.setVisibility(View.GONE);
                 findRestaurantsButton.setVisibility(View.GONE);
                 try {
@@ -1442,6 +1442,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                                         int whatHourItIs = timePicker.getHour();
                                         Double howLongAtRestaurant = (arr.get(whatHourItIs).second);
                                         calendar.add(Calendar.MINUTE, howLongAtRestaurant.intValue());
+                                        calendar.add(Calendar.MINUTE, 20); // time to eat
 
                                         long secs = calendar.getTimeInMillis() / 1000;
                                         String display = String.format("%02d:%02d", secs / 3600, (secs % 3600) / 60);
@@ -1522,7 +1523,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         double total = 0;
         double popularity = business.getReviewCount();
         ArrayList<Category> cat = business.getCategories();
-        total += business.getRating()*5;
+        total += business.getRating()*2.7;
 
         if (cat.contains("thai")) {
             total *= 0.9;
