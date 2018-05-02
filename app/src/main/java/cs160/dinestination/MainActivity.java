@@ -106,12 +106,6 @@ import retrofit2.Response;
 // import com.google.android.gms.maps.model.LatLngBounds;
 // import com.mapbox.mapboxsdk.geometry.LatLng;
 
-import org.jdeferred2.Deferred;
-import org.jdeferred2.DeferredManager;
-import org.jdeferred2.DoneCallback;
-import org.jdeferred2.Promise;
-import org.jdeferred2.impl.DefaultDeferredManager;
-import org.jdeferred2.impl.DeferredObject;
 
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback, LocationEngineListener, PermissionsListener, GoogleApiClient.OnConnectionFailedListener {
@@ -1002,71 +996,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
                 for (final StepIntersection s : intersections) { // added final for thread things
-//                    Thread task = new Thread() {
-//                        @Override
-//                        public void run() {
-//                            yelpQueryMaker(s.location().latitude(), s.location().longitude());
-//                        }
-//                    };
-//                    task.run();
                     yelpQueryMaker(s.location().latitude(), s.location().longitude());
                 }
-
-                // wait for results, then draw the markers of whatever you had time to receive.
-//                try {
-////                    TimeUnit.SECONDS.sleep(15);
-//                    Thread.sleep(5000); // forcing everything to stop. it's all in the same thread..
-//                    Log.d("HELLO TIME", testMap.toString()); // THIS NEEDS TO CONTAIN TIME, NOT DISTANCE!!!
-//                } catch (InterruptedException e) {
-//
-//                }
-
-//                while (testMap.size() != 3) { // this just hangs everything
-//
-//                }
-//                Log.d("HELLO TIME", testMap.toString());
-
-
-//                final CountDownLatch cl = new CountDownLatch(1);
-//                Deferred deferred = new DeferredObject();
-//                Promise promise = deferred.promise();
-//                promise.done(new DoneCallback() {
-//                    @Override
-//                    public void onDone(Object result) {
-////                        try {
-////                            cl.await();
-////                        } catch (InterruptedException e) {
-////
-////                        }
-//                        Log.d("HELLO TIME", testMap.toString());
-//                    }
-//                });
-//                try {
-////                    TimeUnit.SECONDS.sleep(5);
-////                    java.util.concurrent.TimeUnit.SECONDS.sleep(10);
-//
-//                    Thread.sleep(5000);
-////                    cl.countDown();
-//                } catch (InterruptedException e) {
-//
-//                }
-//                deferred.resolve(null);
-
-
-//                Thread task = new Thread() {
-//                    @Override
-//                    public void run() {
-//                        try {
-////                            Thread.sleep(5000);
-//                            java.util.concurrent.TimeUnit.SECONDS.sleep(10);
-//                            Log.d("HELLO TIME", testMap.toString());
-//                        } catch (InterruptedException e) {
-//
-//                        }
-//                    }
-//                };
-//                task.run();
-
             }
         });
     }
