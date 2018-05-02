@@ -2,7 +2,6 @@ package cs160.dinestination;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +27,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -72,6 +70,7 @@ import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import com.mapbox.services.android.telemetry.location.LocationEngine;
@@ -88,6 +87,8 @@ import com.yelp.fusion.client.connection.YelpFusionApiFactory;
 import com.yelp.fusion.client.models.Business;
 import com.yelp.fusion.client.models.SearchResponse;
 
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
+
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -103,11 +104,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
 
-// import com.google.android.gms.maps.model.LatLngBounds;
-
-// import com.google.android.gms.maps.model.LatLngBounds;
-// import com.mapbox.mapboxsdk.geometry.LatLng;
-
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback, LocationEngineListener, PermissionsListener, GoogleApiClient.OnConnectionFailedListener {
     /**
@@ -116,6 +112,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
     String priceRange;
+
+    private Button button;
 
     // UI elements.
     BottomSheetBehavior previewSheetBehavior;
@@ -204,6 +202,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private LocationLayerPlugin locationPlugin;
     private LocationEngine locationEngine;
     private Location originLocation = new Location("");
+    private Location destinationLocation = new Location("");
     // private Location originLocation = new Location(-122.257290, 37.867460);
 
     // Yelp API v3
@@ -326,6 +325,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     navigationRowWrapper.setVisibility(View.GONE);
                     // whereToElementReposition(false);
                     whereToInputViewFlipper.showNext();
+                    layoverRectangle.setImageAlpha(0);
                 } else {
                     timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
@@ -380,6 +380,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                layoverRectangle.setImageAlpha(80);
             }
         });
 
@@ -457,14 +458,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Set up navigation buttons.
         setOnClickForNavigationButtons(navigationWalkButton, navigationCarButton, navigationBikeButton, navigationTaxiButton);
-//        navigationCarButton.callOnClick(); // to set walk as the default routing option.
-
 
         //-----------------------Yelp-----------------------------------------------
         yelpApiFactory = new YelpFusionApiFactory();
         yelpFusionApi = null;
         try {
-            yelpFusionApi = yelpApiFactory.createAPI("x4HzIK9Yg9t9HzBDOVrmPwydPeNPqV3fTJL6pLVj4XBSQ7cEVNuP9G9qqhMOxM_wxlxdq7JQfz-ZJQ6Q8DzbeCDUdA5F7I1uGRrTyFItQQmariY0BYlx7dxPKpXnWnYx");
+            yelpFusionApi = yelpApiFactory.createAPI("dczs4nuyUTOJWGPaXth8Zqt0IwzGoD0Wr-8OZgDmdu4G0oa3M3K-GzlPVYFAh4indjgmImwbDSSaWnh2d7KQgSFly0AresZM9PGy6p4IRUgJcE3ElHJyWyXIb7jeWnYx");
+//            yelpFusionApi = yelpApiFactory.createAPI("x4HzIK9Yg9t9HzBDOVrmPwydPeNPqV3fTJL6pLVj4XBSQ7cEVNuP9G9qqhMOxM_wxlxdq7JQfz-ZJQ6Q8DzbeCDUdA5F7I1uGRrTyFItQQmariY0BYlx7dxPKpXnWnYx");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -482,6 +482,27 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
+
+        button = findViewById(R.id.startButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+//                Point origin = Point.fromLngLat(originLocation.getLongitude(), destinationLocation.getLatitude());
+//                Point destination = destinationPosition;
+                // Pass in your Amazon Polly pool id for speech synthesis using Amazon Polly
+                // Set to null to use the default Android speech synthesizer
+                String awsPoolId = null;
+                boolean simulateRoute = true;
+                NavigationLauncherOptions options = NavigationLauncherOptions.builder()
+                        .origin(originPosition)
+                        .destination(destinationPosition)
+                        .awsPoolId(awsPoolId)
+                        .shouldSimulateRoute(simulateRoute)
+                        .build();
+
+                // Call this method with Context from within an Activity
+                NavigationLauncher.startNavigation(MainActivity.this, options);
             }
         });
 
@@ -526,6 +547,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     break;
                     case BottomSheetBehavior.STATE_DRAGGING:
                         filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // prevents dragging
+                        layoverRectangle.setImageAlpha(1);
 //                        whereToInputViewFlipper.showNext(); // allows dragging instead, but if they drag down and then up again, top input disappears but this remains.
                         break;
                     case BottomSheetBehavior.STATE_SETTLING: { mapView.setVisibility(View.VISIBLE); }
@@ -692,6 +714,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onClick(View v) {
                     filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    layoverRectangle.setImageAlpha(1);
+
                 }
             });
             addFiltz.setPadding(60, 0, 60, 0);
@@ -722,6 +746,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                layoverRectangle.setImageAlpha(1);
             }
         });
         if (timeSpinnerSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
@@ -867,9 +892,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     filtersSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     filtersRowGenerator();
                     mapboxMap.removeAnnotations();
+                    layoverRectangle.setImageAlpha(0);
 
                 } else { // else case will never occur. Cannot click checkmark while collapsed.
                     filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    layoverRectangle.setImageAlpha(1);
                 }
             }
         });
@@ -1378,6 +1405,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         Location lastLocation = locationEngine.getLastLocation();
         if (lastLocation != null) {
             originLocation = lastLocation;
+            destinationLocation = lastLocation;
             setCameraPosition(lastLocation);
             Log.d("lastLocation", lastLocation.toString());
         } else {

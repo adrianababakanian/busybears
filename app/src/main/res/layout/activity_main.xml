@@ -7,9 +7,17 @@
     android:layout_height="match_parent"
     android:screenOrientation="portrait"
     tools:context="cs160.dinestination.MainActivity"
-    android:screenOrientation="portrait"
     app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
     android:id="@+id/mainRootView">
+
+    <Button
+        android:id="@+id/startButton"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:padding="5px"
+        android:layout_margin="20px"
+        android:text="Start navigation"
+        android:enabled="true"/>
 
     <View
         android:id="@+id/touch_outside"

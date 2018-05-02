@@ -40,6 +40,7 @@ dependencies {
     implementation 'com.mapbox.mapboxsdk:mapbox-android-core:0.2.0'
     implementation "com.mapzen.android:lost:3.0.2"
 
+
     implementation 'com.mapbox.mapboxsdk:mapbox-android-navigation:0.12.0'
     implementation ('com.mapbox.mapboxsdk:mapbox-android-navigation-ui:0.12.0') {
         transitive = true
