@@ -89,24 +89,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/routeMe2"
-        style="@style/Widget.AppCompat.Button.Borderless.Colored"
-        android:layout_width="244dp"
-        android:layout_height="42dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:text="Route me to Burma Superstar"
-        android:textAlignment="viewStart"
-        android:textAppearance="@style/TextAppearance.AppCompat"
-        android:textColor="#7EC5F2"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/hr"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.158"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <!--<ImageView-->
         <!--android:id="@+id/imageView"-->
         <!--android:layout_width="328dp"-->
@@ -124,7 +106,7 @@
         android:id="@+id/chart"
         android:layout_width="match_parent"
         android:layout_height="145dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="44dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -175,9 +157,10 @@
         android:layout_height="1dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="68dp"
+        android:layout_marginTop="36dp"
         android:background="#939393"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.485"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/chart" />
 

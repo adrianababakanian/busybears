@@ -374,6 +374,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 goToDetailsIntent.putExtra("inputTime", whereToTime.getText());
                 goToDetailsIntent.putExtra("inputPlace", String.valueOf(whereToPlace.getText()).split(",")[0]);
                 //goToDetailsIntent.putExtra("inputTime", inputTime);
+                goToDetailsIntent.putExtra("inputLat", String.valueOf(originLat));
+                goToDetailsIntent.putExtra("inputLon", String.valueOf(originLon));
+//                goToDetailsIntent.putExtra("originPosition", String.valueOf(originPosition));
                 startActivity(goToDetailsIntent);
             }
         });

@@ -17,6 +17,8 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
 import com.squareup.picasso.Picasso;
 import com.yelp.fusion.client.connection.YelpFusionApi;
 import com.yelp.fusion.client.connection.YelpFusionApiFactory;
@@ -37,7 +39,6 @@ public class DetailsActivity extends AppCompatActivity {
     TextView restaurantAddr;
     TextView waitTime;
     TextView arrivalEstimate;
-    TextView routeMe2;
     ImageView img1;
     ImageView img2;
     ImageView img3;
@@ -70,6 +71,9 @@ public class DetailsActivity extends AppCompatActivity {
         String restaurantPictureVal = getIntent().getStringExtra("pictures");
         String restaurantInputTime = getIntent().getStringExtra("inputTime");
         String restaurantInputPlace = getIntent().getStringExtra("inputPlace");
+        String originLat = getIntent().getStringExtra("inputLon");
+        String originLon = getIntent().getStringExtra("inputLat");
+//        String originPosition = getIntent().getStringExtra("originPosition");
 
 //        gridView = (GridView) findViewById(R.id.gridView);
 //        gridAdapter = new GridViewAdapter(this, R.layout.grid_item_layout, getData());
@@ -85,8 +89,6 @@ public class DetailsActivity extends AppCompatActivity {
         arrivalEstimate.setText(restaurantInputPlace + " " + restaurantInputTime);
         // Buttons
         routeMe = (ImageButton) findViewById(R.id.routeMe);
-        routeMe2 = findViewById(R.id.routeMe2);
-        routeMe2.setText("Route me to " + restaurantNameVal);
         back = (ImageButton) findViewById(R.id.back);
 
         Bundle bundle = getIntent().getExtras();
@@ -124,9 +126,34 @@ public class DetailsActivity extends AppCompatActivity {
 //        });
         barChart = (BarChart) findViewById(R.id.chart);
 
-        createRandomBarGraph("2016/05/05", "2016/06/01");
+        createRandomBarGraph();
+
+        final com.mapbox.geojson.Point originPosition = com.mapbox.geojson.Point.fromLngLat(-122.258844, 37.876051);
+        final com.mapbox.geojson.Point destinationPosition = com.mapbox.geojson.Point.fromLngLat(placeLong, placeLat);
+
+
+        routeMe.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+//                Point origin = Point.fromLngLat(originLocation.getLongitude(), destinationLocation.getLatitude());
+//                Point destination = destinationPosition;
+                // Pass in your Amazon Polly pool id for speech synthesis using Amazon Polly
+                // Set to null to use the default Android speech synthesizer
+                String awsPoolId = null;
+                boolean simulateRoute = true;
+                NavigationLauncherOptions options = NavigationLauncherOptions.builder()
+                        .origin(originPosition)
+                        .destination(destinationPosition)
+                        .awsPoolId(awsPoolId)
+                        .shouldSimulateRoute(simulateRoute)
+                        .build();
+
+                // Call this method with Context from within an Activity
+                NavigationLauncher.startNavigation(DetailsActivity.this, options);
+            }
+        });
 
     }
+
 
     private void yelpBusinessQuery() {
         Callback<Business> callback = new Callback<Business>() {
@@ -158,7 +185,7 @@ public class DetailsActivity extends AppCompatActivity {
         return imageItems;
     }
 
-    public void createRandomBarGraph(String Date1, String Date2){
+    public void createRandomBarGraph(){
 
         XAxis xaxis = barChart.getXAxis();
         YAxis yaxisL = barChart.getAxisLeft();
