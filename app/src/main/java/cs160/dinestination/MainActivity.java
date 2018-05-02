@@ -186,7 +186,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private DirectionsRoute analyzeRoute;
     private double curDistance;
 
-    private static final String TAG = "DirectionsActivity";
+    private static final String TAG = "DirectionsThings";
     private NavigationMapRoute navigationMapRoute;
     private Boolean ADDED_MARKERS = Boolean.FALSE;
     private String PROFILE_TYPE;
@@ -474,7 +474,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 //        filtersRowTopBar.setVisibility(View.VISIBLE);
         filtersRowGenerator();
 
-        testMap = new HashMap<>();
+        testMap = new HashMap<>(); // PUT THE RESTAURANT OBJS INTO THIS
 
     } // END THE ON CREATE METHOD
 
@@ -533,8 +533,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
                         currentRoute = response.body().routes().get(0);
 
-                        System.out.println(currentRoute.legs());
-
                         // Draw the route on the map
                         if (navigationMapRoute != null) {
                             navigationMapRoute.removeRoute();
@@ -543,8 +541,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                             //navigationMapRoute = new NavigationMapRoute(navigation, mapView, mapboxMap);
                             navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
                         }
-
-//                        Toast.makeText(getApplicationContext(), Double.toString(currentRoute.distance()), Toast.LENGTH_SHORT).show();
                         navigationMapRoute.addRoute(currentRoute);
 //                        findRestaurantsButton.setVisibility(View.VISIBLE); //NEW FINDRESTAURANTSBUTTON
 //                        for (RouteLeg rl : currentRoute.legs()) {
@@ -923,7 +919,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         // ^ Needs some conversion factor, not a static addition. should also account for wait time, in theory...
         params.put("open_now", "true");
         params.put("term", "restaurants");
-        params.put("limit", "1"); // 20 by default
+        params.put("limit", "3"); // 20 by default
 
         String cuisineQueryString = "";
         for (String str : currentCuisineFilters) {
@@ -950,6 +946,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         initHM.put("distance", -1.0);
                         initHM.put("halfUpdated", false);
                         initHM.put("fullUpdated", false);
+                        initHM.put("businessObj", restaurant);
                         testMap.put(restaurant.getName(), initHM);
                     }
                     getTempRoute(originPosition, destinationPosition, com.mapbox.geojson.Point.fromLngLat(
@@ -994,10 +991,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 for (StepIntersection s : intersections) {
                     yelpQueryMaker(s.location().latitude(), s.location().longitude());
                 }
+
+                // wait for results, then draw the markers of whatever you had time to receive.
+                try {
+                    TimeUnit.SECONDS.sleep(15);
+                    Log.d("HELLO TIME", testMap.toString());
+                } catch (InterruptedException e) {
+
+                }
+
+
             }
         });
-
-
     }
 
     /**
@@ -1073,7 +1078,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
-
 
     //////// MAPBOX THINGS ////////
     /**
@@ -1159,7 +1163,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-private void getTempRoute(final com.mapbox.geojson.Point origin, final com.mapbox.geojson.Point destination, final com.mapbox.geojson.Point restaurant, String restName, boolean isParent) {
+private void getTempRoute(final com.mapbox.geojson.Point origin, final com.mapbox.geojson.Point destination, final com.mapbox.geojson.Point restaurant, final String restName, final boolean isParent) {
     com.mapbox.geojson.Point temp_origin;
     com.mapbox.geojson.Point temp_destination;
     if (isParent){
