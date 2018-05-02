@@ -7,6 +7,12 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppDialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowTitleStyle">@style/MainFont</item>
+        <!-- ...other stuff here... -->
+    </style>
+
+
     <!-- Checkbox styling theme. -->
     <style name="CheckBoxTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:layout_width">match_parent</item>
