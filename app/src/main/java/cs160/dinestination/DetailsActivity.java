@@ -3,12 +3,23 @@ package cs160.dinestination;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.yelp.fusion.client.connection.YelpFusionApi;
+import com.yelp.fusion.client.connection.YelpFusionApiFactory;
+import com.yelp.fusion.client.models.Business;
+
+import java.io.IOException;
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -24,8 +35,12 @@ public class DetailsActivity extends AppCompatActivity {
     String wait;
     Double placeLat;
     Double placeLong;
+    String placeID;
     private GridView gridView;
     private GridViewAdapter gridAdapter;
+
+    YelpFusionApiFactory yelpApiFactory;
+    YelpFusionApi yelpFusionApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +63,20 @@ public class DetailsActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         placeLat = bundle.getDouble("placeLat");
         placeLong = bundle.getDouble("placeLong");
+        placeID = bundle.getString("placeID");
 
-        
+        yelpApiFactory = new YelpFusionApiFactory();
+        yelpFusionApi = null;
+        try {
+            yelpFusionApi = yelpApiFactory.createAPI("x4HzIK9Yg9t9HzBDOVrmPwydPeNPqV3fTJL6pLVj4XBSQ7cEVNuP9G9qqhMOxM_wxlxdq7JQfz-ZJQ6Q8DzbeCDUdA5F7I1uGRrTyFItQQmariY0BYlx7dxPKpXnWnYx");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        yelpBusinessQuery();
+
+//        Toast.makeText(this, businessName, Toast.LENGTH_SHORT);
+
 
 //        name = bundle.getString("");
 //        addr = bundle.getString("");
@@ -81,6 +108,25 @@ public class DetailsActivity extends AppCompatActivity {
 //        });
 
 
+    }
+
+    private void yelpBusinessQuery() {
+        Callback<Business> callback = new Callback<Business>() {
+            @Override
+            public void onResponse(Call<Business> call, Response<Business> response) {
+                Business business = response.body();
+                ArrayList<String> photos = business.getPhotos();
+                Toast.makeText(getBaseContext(), photos.get(1), Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onFailure(Call<Business> call, Throwable t) {
+                // HTTP error happened, do something to handle it.
+                Log.d("business", "HALP");
+            }
+        };
+
+        Call<Business> call = yelpFusionApi.getBusiness(placeID);
+        call.enqueue(callback);
     }
 
     private ArrayList<ImageItem> getData() {

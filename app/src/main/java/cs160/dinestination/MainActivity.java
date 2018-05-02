@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.location.Address;
 import android.location.Geocoder;
@@ -55,7 +54,6 @@ import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.api.directions.v5.models.LegStep;
 import com.mapbox.api.directions.v5.models.RouteLeg;
 import com.mapbox.api.directions.v5.models.StepIntersection;
-import com.mapbox.geocoder.MapboxGeocoder;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
@@ -66,7 +64,6 @@ import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
-import com.mapbox.mapboxsdk.maps.widgets.MyLocationViewSettings;
 import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerMode;
 import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
@@ -88,10 +85,14 @@ import com.yelp.fusion.client.models.Business;
 import com.yelp.fusion.client.models.SearchResponse;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -211,6 +212,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     //Details Activity
     Double selectedPlaceLat;
     Double selectedPlaceLong;
+    String placeID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -353,6 +355,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 Intent goToDetailsIntent = new Intent(MainActivity.this, DetailsActivity.class);
                 goToDetailsIntent.putExtra("placeLat", selectedPlaceLat);
                 goToDetailsIntent.putExtra("placeLong", selectedPlaceLong);
+                goToDetailsIntent.putExtra("placeID", placeID);
                 startActivity(goToDetailsIntent);
             }
         });
@@ -632,6 +635,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 }
             });
+            addFiltz.setPadding(60, 0, 60, 0);
             filtersRowTopBar.addView(addFiltz, lp);
 //            filtersRowTopBar.setVisibility(View.GONE);
         }
@@ -715,7 +719,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         .include(northEastCorner) // Southwest
                         .build();
 
-                mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 80, 600, 80, 200), 2000);
+                mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 200, 600, 200, 400), 2000);
 //                double currZoom = mapboxMap.getCameraPosition().zoom;
 //                mapboxMap.setZoom(currZoom-0.2);
             }
@@ -766,9 +770,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     filtersSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     filtersRowGenerator();
                     mapboxMap.removeAnnotations();
-                    if (findRestaurantsButton.getVisibility() == View.VISIBLE) {
-                        yelpQueryMaker(destinationPosition.latitude(), destinationPosition.longitude());
-                    }
 
                 } else { // else case will never occur. Cannot click checkmark while collapsed.
                     filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -850,8 +851,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     break;
                     case BottomSheetBehavior.STATE_DRAGGING:
+                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // prevents dragging
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
+                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // prevents dragging
                         break;
                 }
             }
@@ -919,7 +922,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     HashMap names1 = new HashMap<String, String>();
     HashMap addresses1 = new HashMap<String, String>();
     HashMap pics1 = new HashMap<String, String>();
-    private void yelpQueryMaker(Double latitude, Double longitude) {
+    private void yelpQueryMaker(Double latitude, Double longitude) throws ParseException {
         // docs: https://www.yelp.com/developers/documentation/v3/business_search
         // GOOD FOR KIDS, GOOD FOR GROUPS - NOT POSSIBLE USING API.
         // also no options for attire. - could match to price range instead..
@@ -929,9 +932,15 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         params.put("price", getYelpifiedPriceRange());
         params.put("radius", String.valueOf(toleranceSlider.getProgress() + 200)); // wait lol this only shows up after query has been made.
         // ^ Needs some conversion factor, not a static addition. should also account for wait time, in theory...
-        params.put("open_now", "true");
+
+        String rawDate = new Date().toString();
+        String dateString = "" + rawDate.substring(0,3) + ", " + rawDate.substring(8,10) + " " + rawDate.substring(4,7) + " " + rawDate.substring(24) + " " + timePicker.getHour() + ":" + timePicker.getMinute() + ":00 PST";
+        DateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss z");
+        Date date = dateFormat.parse(dateString);
+        long unixTime = (long) (date.getTime() - 60 * 60 * 1000)/1000;
+        params.put("open_at", String.valueOf(unixTime));
         params.put("term", "restaurants");
-        params.put("limit", "50"); // 20 by default
+        params.put("limit", "20"); // 20 by default
 
         String cuisineQueryString = "";
         for (String str : currentCuisineFilters) {
@@ -976,6 +985,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
                             selectedPlaceLat = restaurant.getCoordinates().getLatitude();
                             selectedPlaceLong = restaurant.getCoordinates().getLongitude();
+                            placeID = restaurant.getId();
 
                             /*ImageView iv1 =(ImageView)findViewById(R.id.PictureOf);
                             String picss = String.valueOf(marker.getPosition().getLatitude()) +
@@ -1015,7 +1025,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 toleranceSlider.setVisibility(View.VISIBLE);
                 navigationRowWrapper.setVisibility(View.GONE);
                 findRestaurantsButton.setVisibility(View.GONE);
-                yelpQueryMaker(destinationPosition.latitude(), destinationPosition.longitude());
+                try {
+                    yelpQueryMaker(destinationPosition.latitude(), destinationPosition.longitude());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 // TODO: This and the one in setOnClickForFiltersTrigger just use destination position!!
                 ArrayList<StepIntersection> intersections = new ArrayList<>();
                 for (RouteLeg leg : currentRoute.legs()) { // this is only giving the first step right now.
@@ -1026,7 +1040,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
                 for (StepIntersection s : intersections) {
-                    yelpQueryMaker(s.location().latitude(), s.location().longitude());
+                    try {
+                        yelpQueryMaker(s.location().latitude(), s.location().longitude());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
