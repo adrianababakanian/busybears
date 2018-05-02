@@ -2,7 +2,6 @@ package cs160.dinestination;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +27,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -322,12 +320,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 if (timeSpinnerSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
                     timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     findRestaurantsButton.setVisibility(View.GONE);
                     navigationRowWrapper.setVisibility(View.GONE);
                     // whereToElementReposition(false);
                     whereToInputViewFlipper.showNext();
                 } else {
                     timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
             }
         });
@@ -337,12 +337,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 if (timeSpinnerSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
                     timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     findRestaurantsButton.setVisibility(View.GONE);
                     navigationRowWrapper.setVisibility(View.GONE);
                     whereToElement.setVisibility(View.GONE);
                     whereToInputViewFlipper.showNext();
                 } else {
                     timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
             }
         });
@@ -379,7 +381,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         addFiltersButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
             }
         });
 
@@ -692,6 +696,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onClick(View v) {
                     filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
             });
             addFiltz.setPadding(60, 0, 60, 0);
@@ -722,6 +727,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
         if (timeSpinnerSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
@@ -878,6 +884,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 } else { // else case will never occur. Cannot click checkmark while collapsed.
                     filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 }
+                if (timeSpinnerSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                    findRestaurantsButton.setVisibility(View.VISIBLE);
+                }
             }
         });
     }
@@ -906,6 +915,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 for (int i = 0; i < attire_ids.length; i++) {
                     CheckBox cBox = findViewById(attire_ids[i]);
                     cBox.setChecked(false);
+                }
+                mapboxMap.removeAnnotations();
+                if (timeSpinnerSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                    findRestaurantsButton.setVisibility(View.VISIBLE);
                 }
                 mSwitch1.setChecked(false);
                 mSwitch2.setChecked(false);
@@ -958,7 +971,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 //                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // prevents dragging
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
-                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // prevents dragging
+                        // previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // prevents dragging
                         break;
                 }
             }
