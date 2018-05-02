@@ -218,6 +218,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         Mapbox.getInstance(this, mapboxAccessToken);
 
         setContentView(R.layout.activity_main);
@@ -466,6 +467,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         filtersRowGenerator();
 
         setOnKeyListenerForWhereToPlace();
+
+        findViewById(R.id.touch_outside).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
 
     } // END THE ON CREATE METHOD
 
@@ -1215,8 +1223,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
      */
     @Override
     public void onMapReady(final MapboxMap mapboxMap) {
+        System.out.println("map is ready");
 
-        mapboxMap.setOnMapClickListener(new MapboxMap.OnMapClickListener() {
+        mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
             @Override
             public void onMapClick(@NonNull LatLng point) {
                 PointF screenPoint = mapboxMap.getProjection().toScreenLocation(point);
@@ -1226,7 +1235,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     String title = selectedFeature.getStringProperty("title");
                     Toast.makeText(getApplicationContext(), "You selected " + title, Toast.LENGTH_SHORT).show();
                 }
-                System.out.println(point);
+                System.out.println("why are you not closing");
+                previewSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
             }
         });
