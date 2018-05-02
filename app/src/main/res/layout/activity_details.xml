@@ -10,14 +10,14 @@
         android:id="@+id/restaurantName"
         android:layout_width="171dp"
         android:layout_height="25dp"
-        android:layout_marginTop="92dp"
+        android:layout_marginTop="100dp"
         android:text="Burma Superstar"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="#787A7F"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.137"
+        app:layout_constraintHorizontal_bias="0.133"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -46,9 +46,10 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/arrivalEstimate"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.073"
+        app:layout_constraintHorizontal_bias="0.077"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/restaurantAddr" />
+        app:layout_constraintTop_toBottomOf="@+id/restaurantAddr"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/arrivalEstimate"
@@ -56,11 +57,11 @@
         android:layout_height="18dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="40dp"
         android:text="Very likely to get to Berkeley BART by 6:10 PM"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.231"
+        app:layout_constraintHorizontal_bias="0.237"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/restaurantAddr" />
 
@@ -127,10 +128,10 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/food1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.172"
+        app:layout_constraintHorizontal_bias="0.158"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView"
-        app:layout_constraintVertical_bias="0.057" />
+        app:layout_constraintVertical_bias="0.404" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -138,7 +139,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="68dp"
+        android:layout_marginTop="88dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toStartOf="parent"
@@ -147,41 +148,42 @@
 
     <ImageView
         android:id="@+id/food1"
-        android:layout_width="185dp"
-        android:layout_height="196dp"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="24dp"
+        android:layout_width="230dp"
+        android:layout_height="242dp"
+        android:layout_marginStart="29dp"
+        android:layout_marginTop="30dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/hr"
-        app:srcCompat="@drawable/burma1" />
+        app:srcCompat="@drawable/bottom_gradient" />
 
     <ImageView
         android:id="@+id/food2"
-        android:layout_width="143dp"
-        android:layout_height="99dp"
+        android:layout_width="200dp"
+        android:layout_height="117dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.640"
         app:layout_constraintStart_toEndOf="@+id/food1"
         app:layout_constraintTop_toTopOf="@+id/food1"
-        app:srcCompat="@drawable/burma2" />
+        app:srcCompat="@drawable/bottom_gradient" />
 
     <ImageView
         android:id="@+id/food3"
-        android:layout_width="141dp"
-        android:layout_height="100dp"
+        android:layout_width="200dp"
+        android:layout_height="117dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="0dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.640"
         app:layout_constraintStart_toEndOf="@+id/food1"
         app:layout_constraintTop_toBottomOf="@+id/food2"
         app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/burma4" />
+        app:srcCompat="@drawable/bottom_gradient" />
 
     <TableRow
         android:id="@+id/hr"
@@ -189,27 +191,11 @@
         android:layout_height="1dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="76dp"
         android:background="#939393"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.485"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"/>
-
-    <GridView
-        android:id="@+id/gridView"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:clickable="true"
-        android:columnWidth="100dp"
-        android:drawSelectorOnTop="true"
-        android:focusable="true"
-        android:gravity="center"
-        android:numColumns="auto_fit"
-        android:stretchMode="columnWidth"
-        android:verticalSpacing="5dp"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="427dp" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
 </android.support.constraint.ConstraintLayout>

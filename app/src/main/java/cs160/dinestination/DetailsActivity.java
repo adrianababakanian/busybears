@@ -7,9 +7,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
 import com.yelp.fusion.client.connection.YelpFusionApi;
 import com.yelp.fusion.client.connection.YelpFusionApiFactory;
 import com.yelp.fusion.client.models.Business;
@@ -27,6 +29,9 @@ public class DetailsActivity extends AppCompatActivity {
     TextView restaurantAddr;
     TextView waitTime;
     TextView arrivalEstimate;
+    ImageView img1;
+    ImageView img2;
+    ImageView img3;
     Button routeMe;
     Button back;
     String name;
@@ -47,15 +52,24 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-        gridView = (GridView) findViewById(R.id.gridView);
-        gridAdapter = new GridViewAdapter(this, R.layout.grid_item_layout, getData());
-        gridView.setAdapter(gridAdapter);
+        String restaurantNameVal = getIntent().getStringExtra("names");
+        String restaurantAddressVal = getIntent().getStringExtra("addresses");
+        String restaurantPictureVal = getIntent().getStringExtra("pictures");
+        String restaurantInputTime = getIntent().getStringExtra("inputTime");
+        String restaurantInputPlace = getIntent().getStringExtra("inputPlace");
+
+//        gridView = (GridView) findViewById(R.id.gridView);
+//        gridAdapter = new GridViewAdapter(this, R.layout.grid_item_layout, getData());
+//        gridView.setAdapter(gridAdapter);
 
         // TextViews that need to change based on data passed through
         restaurantName = findViewById(R.id.restaurantName);
+        restaurantName.setText(restaurantNameVal);
         restaurantAddr = findViewById(R.id.restaurantAddr);
+        restaurantAddr.setText(restaurantAddressVal);
         waitTime = findViewById(R.id.waitTime);
         arrivalEstimate = findViewById(R.id.arrivalEstimate);
+        arrivalEstimate.setText(restaurantInputPlace + " " + restaurantInputTime);
         // Buttons
         routeMe = findViewById(R.id.routeMe);
         back = findViewById(R.id.back);
@@ -75,21 +89,6 @@ public class DetailsActivity extends AppCompatActivity {
 
         yelpBusinessQuery();
 
-//        Toast.makeText(this, businessName, Toast.LENGTH_SHORT);
-
-
-//        name = bundle.getString("");
-//        addr = bundle.getString("");
-//        estimate = bundle.getString("");
-//        wait = bundle.getString("");
-
-        /* Get data from prev page:
-            need restaurant name or key to grab more info
-        */
-//        restaurantName.setText(name);
-//        restaurantAddr.setText(addr);
-//        waitTime.setText(wait);
-//        arrivalEstimate.setText(estimate);
 
         back.setOnClickListener( new View.OnClickListener() {
             @Override
@@ -116,7 +115,14 @@ public class DetailsActivity extends AppCompatActivity {
             public void onResponse(Call<Business> call, Response<Business> response) {
                 Business business = response.body();
                 ArrayList<String> photos = business.getPhotos();
-                Toast.makeText(getBaseContext(), photos.get(1), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), String.valueOf(photos.size()), Toast.LENGTH_SHORT).show();
+                img1 = findViewById(R.id.food1);
+                Picasso.with(getApplicationContext()).load(photos.get(0)).resize(img1.getMeasuredWidth(), img1.getMeasuredHeight()).centerCrop().into(img1);
+                img2 = findViewById(R.id.food2);
+                Picasso.with(getApplicationContext()).load(photos.get(1)).resize(img1.getMeasuredWidth(), img1.getMeasuredHeight()).centerCrop().into(img2);
+                img3 = findViewById(R.id.food3);
+                Picasso.with(getApplicationContext()).load(photos.get(2)).resize(img1.getMeasuredWidth(), img1.getMeasuredHeight()).centerCrop().into(img3);
+
             }
             @Override
             public void onFailure(Call<Business> call, Throwable t) {

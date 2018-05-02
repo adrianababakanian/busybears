@@ -79,20 +79,21 @@ import com.mapbox.services.android.telemetry.location.LostLocationEngine;
 import com.mapbox.services.commons.geojson.Feature;
 import com.mapbox.services.commons.geojson.FeatureCollection;
 import com.mapbox.services.commons.geojson.Point;
+import com.squareup.picasso.Picasso;
 import com.yelp.fusion.client.connection.YelpFusionApi;
 import com.yelp.fusion.client.connection.YelpFusionApiFactory;
 import com.yelp.fusion.client.models.Business;
 import com.yelp.fusion.client.models.SearchResponse;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -356,6 +357,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 goToDetailsIntent.putExtra("placeLat", selectedPlaceLat);
                 goToDetailsIntent.putExtra("placeLong", selectedPlaceLong);
                 goToDetailsIntent.putExtra("placeID", placeID);
+                goToDetailsIntent.putExtra("names", resName);
+                goToDetailsIntent.putExtra("addresses", resAddr);
+                goToDetailsIntent.putExtra("pictures", resPic);
+                goToDetailsIntent.putExtra("inputTime", whereToTime.getText());
+                goToDetailsIntent.putExtra("inputPlace", String.valueOf(whereToPlace.getText()).split(",")[0]);
+                //goToDetailsIntent.putExtra("inputTime", inputTime);
                 startActivity(goToDetailsIntent);
             }
         });
@@ -922,6 +929,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     HashMap names1 = new HashMap<String, String>();
     HashMap addresses1 = new HashMap<String, String>();
     HashMap pics1 = new HashMap<String, String>();
+    HashMap placeIDs = new HashMap<String, String>();
+    String resName;
+    String resAddr;
+    String resPic;
     private void yelpQueryMaker(Double latitude, Double longitude) throws ParseException {
         // docs: https://www.yelp.com/developers/documentation/v3/business_search
         // GOOD FOR KIDS, GOOD FOR GROUPS - NOT POSSIBLE USING API.
@@ -938,9 +949,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         DateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss z");
         Date date = dateFormat.parse(dateString);
         long unixTime = (long) (date.getTime() - 60 * 60 * 1000)/1000;
+
         params.put("open_at", String.valueOf(unixTime));
         params.put("term", "restaurants");
-        params.put("limit", "20"); // 20 by default
+        params.put("limit", "5"); // 20 by default
 
         String cuisineQueryString = "";
         for (String str : currentCuisineFilters) {
@@ -966,6 +978,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                             String.valueOf(restaurant.getCoordinates().getLongitude()), restaurant.getLocation().getAddress1() + "\n" + restaurant.getLocation().getCity() + " " + restaurant.getLocation().getState() + " " + String.valueOf(restaurant.getLocation().getZipCode()));
                     pics1.put(String.valueOf(restaurant.getCoordinates().getLatitude()) +
                             String.valueOf(restaurant.getCoordinates().getLongitude()), restaurant.getImageUrl());
+                    placeIDs.put(String.valueOf(restaurant.getCoordinates().getLatitude()) +
+                            String.valueOf(restaurant.getCoordinates().getLongitude()), restaurant.getId());
 
 
                     mapboxMap.getMarkerViewManager().setOnMarkerViewClickListener(new MapboxMap.OnMarkerViewClickListener() {
@@ -977,21 +991,23 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                             String namess = String.valueOf(marker.getPosition().getLatitude()) +
                                     String.valueOf(marker.getPosition().getLongitude());
                             tv1.setText(String.valueOf(names1.get(namess)));
+                            resName = String.valueOf(names1.get(namess));
 
                             TextView tv2 = (TextView)findViewById(R.id.AddressOf);
                             String addressess = String.valueOf(marker.getPosition().getLatitude()) +
                                     String.valueOf(marker.getPosition().getLongitude());
                             tv2.setText(String.valueOf(addresses1.get(addressess)));
+                            resAddr = String.valueOf(addresses1.get(addressess));
 
                             selectedPlaceLat = restaurant.getCoordinates().getLatitude();
                             selectedPlaceLong = restaurant.getCoordinates().getLongitude();
-                            placeID = restaurant.getId();
+                            placeID = String.valueOf(placeIDs.get(namess));
 
-                            /*ImageView iv1 =(ImageView)findViewById(R.id.PictureOf);
+                            ImageView iv1 =(ImageView)findViewById(R.id.PictureOf);
                             String picss = String.valueOf(marker.getPosition().getLatitude()) +
                                     String.valueOf(marker.getPosition().getLongitude());
-                            Log.d("HiHiHiHiHi", String.valueOf(pics1.get(picss)));
-                            Picasso.with(getApplicationContext()).load(picss).into(iv1);*/
+                            Picasso.with(getApplicationContext()).load(String.valueOf(pics1.get(picss))).into(iv1);
+                            resPic = String.valueOf(pics1.get(picss));
 
                             if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
                                 previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
