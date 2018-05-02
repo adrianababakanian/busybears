@@ -53,7 +53,7 @@ dependencies {
         }
     }
 
-    implementation 'org.jdeferred.v2:jdeferred-core:2.0.0-beta1'
+//    implementation 'org.jdeferred.v2:jdeferred-core:2.0.0-beta1'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
