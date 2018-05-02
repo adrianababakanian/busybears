@@ -25,6 +25,7 @@ import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -87,6 +88,9 @@ import com.squareup.picasso.Picasso;
 import com.yelp.fusion.client.connection.YelpFusionApi;
 import com.yelp.fusion.client.connection.YelpFusionApiFactory;
 import com.yelp.fusion.client.models.Business;
+import com.yelp.fusion.client.models.Category;
+import com.yelp.fusion.client.models.Hour;
+import com.yelp.fusion.client.models.Open;
 import com.yelp.fusion.client.models.SearchResponse;
 
 
@@ -103,6 +107,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 
 import retrofit2.Call;
@@ -1425,19 +1430,29 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                                                 String.valueOf(curRes.getCoordinates().getLongitude()), curRes.getImageUrl());
                                         placeIDs.put(String.valueOf(curRes.getCoordinates().getLatitude()) +
                                                 String.valueOf(curRes.getCoordinates().getLongitude()), curRes.getId());
-                                        waitTimes1.put(String.valueOf(curRes.getCoordinates().getLatitude()) +
-                                                String.valueOf(curRes.getCoordinates().getLongitude()), (Double)subMap.get("distance"));
 
-                                        // TODO: CALCULATE THE TOTAL WAIT TIME, THEN STICK IN. THIS IS TOTAL WAIT TIME.
+
+                                        ArrayList<Pair <Integer, Double>> arr =  getWaitTime(curRes);
+
                                         Calendar calendar = Calendar.getInstance(); // gets a calendar using the default time zone and locale.
                                         Double durationInSecs = (Double)subMap.get("distance");
+//                                        durationInSecs = durationInSecs + 8;
                                         calendar.add(Calendar.SECOND, durationInSecs.intValue());
+
+                                        int whatHourItIs = timePicker.getHour();
+                                        Double howLongAtRestaurant = (arr.get(whatHourItIs).second);
+                                        calendar.add(Calendar.MINUTE, howLongAtRestaurant.intValue());
+
                                         long secs = calendar.getTimeInMillis() / 1000;
                                         String display = String.format("%02d:%02d", secs / 3600, (secs % 3600) / 60);
                                         SimpleDateFormat format1 = new SimpleDateFormat("hh:mm a");
                                         String formattedArrivalTime = format1.format(calendar.getTime());
                                         formattedArrivalTime = formattedArrivalTime.replace("AM", "am").replace("PM","pm");
 
+//
+
+                                        waitTimes1.put(String.valueOf(curRes.getCoordinates().getLatitude()) +
+                                                String.valueOf(curRes.getCoordinates().getLongitude()), (Double)howLongAtRestaurant);
                                         arriveTimes1.put(String.valueOf(curRes.getCoordinates().getLatitude()) +
                                                 String.valueOf(curRes.getCoordinates().getLongitude()), formattedArrivalTime); // this is duration
 //                                        Log.d("wait duration is ", arriveTimes1.toString());
@@ -1499,6 +1514,115 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 });
     }
+
+
+    private ArrayList<Pair<Integer,Double>> getWaitTime(Business business) {
+
+
+        double total = 0;
+        double popularity = business.getReviewCount();
+        ArrayList<Category> cat = business.getCategories();
+        total += business.getRating()*5;
+
+        if (cat.contains("thai")) {
+            total *= 0.9;
+        }
+        if (cat.contains("mexican")) {
+            total *= 0.8;
+        }
+        if (cat.contains("chinese")) {
+            total *= 1.1;
+        }
+        if (cat.contains("italian")) {
+            total *= 1.4;
+        }
+        if (cat.contains("burmese")) {
+            total *= 1.05;
+        }
+        if (cat.contains("indpak")) {
+            total *= 1.05;
+        }
+        if (cat.contains("newamerican")) {
+            total *= 0.95;
+        }
+        if (cat.contains("tradamerican")) {
+            total *= 1.15;
+        }
+        if (cat.contains("japanese")) {
+            total *= 1.2;
+        }
+
+        if (popularity < 100) {
+            total*=1.0;
+        } else if (popularity < 1000) {
+            total*=1.1;
+        } else {
+            total*=1.3;
+        }
+
+        ArrayList<Hour> Hours = new ArrayList<>();
+        ArrayList<Open> Opens = new ArrayList<>();
+
+//        Hour hour = business.getHours().get(0); // WED, probably
+//        Open open = hour.getOpen().get(0);
+        Integer start = 0;// = Integer.valueOf(open.getStart().substring(0, 2)); // usually around 6 or 7 earliest
+        Integer end = 24;// = Integer.valueOf(open.getStart().substring(0, 2)); // usually around 23 at latest
+        /*if (hour != null) {
+            if (open != null) {
+                start = Integer.valueOf(open.getStart().substring(0, 2)); // usually around 6 or 7 earliest
+                end = Integer.valueOf(open.getStart().substring(0, 2)); // usually around 23 at latest
+            }
+        }*/
+
+
+        ArrayList<Pair<Integer, Double>> WaitTimes = new ArrayList<>();
+        Random random = new Random();
+
+        for (int i = start; i < end; i++) {
+            double factor = 1.0;
+            if (i < 6) {
+                factor = 0.0;
+            } else if (i > 6 && i < 8) {
+                double f1 = 0.55;
+                double f2 = 0.66;
+                factor = random.nextBoolean() ? f1 : f2;
+            } else if (i < 8) {
+                double f1 = 0.6;
+                double f2 = 0.7;
+                factor = random.nextBoolean() ? f1 : f2;
+            } else if (i > 8 && i < 11) {
+                double f1 = 0.85;
+                double f2 = 0.93;
+                factor = random.nextBoolean() ? f1 : f2;
+            } else if (i > 11 && i < 13) {
+                double f1 = 1.22;
+                double f2 = 1.32;
+                factor = random.nextBoolean() ? f1 : f2;
+            } else if (i > 13 && i < 15) {
+                double f1 = 1.02;
+                double f2 = 0.93;
+                factor = random.nextBoolean() ? f1 : f2;
+            } else if (i > 15 && i < 17) {
+                double f1 = 0.88;
+                double f2 = 0.78;
+                factor = random.nextBoolean() ? f1 : f2;
+            } else if (i > 17 && i < 20) {
+                double f1 = 1.41;
+                double f2 = 1.51;
+                factor = random.nextBoolean() ? f1 : f2;
+            } else if (i > 20 && i < 24) {
+                double f1 = 1.05;
+                double f2 = 1.11;
+                factor = random.nextBoolean() ? f1 : f2;
+            }
+
+            WaitTimes.add(Pair.create(i, total*factor));
+        }
+
+
+        return WaitTimes;
+    }
+
 
     private void addMarkers() {
         if (!ADDED_MARKERS) {

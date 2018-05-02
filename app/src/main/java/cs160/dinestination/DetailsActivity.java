@@ -58,8 +58,8 @@ public class DetailsActivity extends AppCompatActivity {
         String restaurantInputTime = getIntent().getStringExtra("inputTime");
         String restaurantInputPlace = getIntent().getStringExtra("inputPlace");
 
-        Double restaurantWaitTimeSeconds = Double.valueOf(getIntent().getStringExtra("waitTime"));
-        String restaurantWaitTimeStr = String.valueOf(Math.ceil(restaurantWaitTimeSeconds / 60));
+        Double restaurantWaitTimeMins = Double.valueOf(getIntent().getStringExtra("waitTime"));
+        String restaurantWaitTimeStr = String.valueOf(Math.ceil(restaurantWaitTimeMins));
         restaurantWaitTimeStr = restaurantWaitTimeStr.substring(0, restaurantWaitTimeStr.length()-2);
         String restaurantArriveTime = getIntent().getStringExtra("arriveTime");
 
