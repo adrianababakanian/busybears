@@ -711,7 +711,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 whereToTime.setTextColor(getResources().getColor(R.color.textColorDark));
 
                 drawRoute();
-                findRestaurantsButton.setVisibility(View.VISIBLE);
+
+                findRestaurantsButton.setVisibility(View.INVISIBLE);
+                findRestaurantsButton.postDelayed(new Runnable() {
+                    public void run() {
+                        findRestaurantsButton.setVisibility(View.VISIBLE);
+                    }
+                }, 1500);
+
                 navigationRowWrapper.setVisibility(View.VISIBLE);
                 toleranceSlider.setVisibility(View.GONE);
 
