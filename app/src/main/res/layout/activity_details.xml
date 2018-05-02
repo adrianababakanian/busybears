@@ -10,14 +10,14 @@
         android:id="@+id/restaurantName"
         android:layout_width="171dp"
         android:layout_height="25dp"
-        android:layout_marginTop="92dp"
+        android:layout_marginTop="100dp"
         android:text="Burma Superstar"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="#787A7F"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.137"
+        app:layout_constraintHorizontal_bias="0.133"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -46,32 +46,33 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/arrivalEstimate"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.073"
+        app:layout_constraintHorizontal_bias="0.077"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/restaurantAddr" />
+        app:layout_constraintTop_toBottomOf="@+id/restaurantAddr"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/arrivalEstimate"
-        android:layout_width="wrap_content"
-        android:layout_height="18dp"
+        android:layout_width="337dp"
+        android:layout_height="42dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="36dp"
         android:text="Very likely to get to Berkeley BART by 6:10 PM"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.231"
+        app:layout_constraintHorizontal_bias="0.413"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/restaurantAddr" />
 
     <Button
         android:id="@+id/back"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
-        android:layout_width="19dp"
-        android:layout_height="29dp"
+        android:layout_width="37dp"
+        android:layout_height="39dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="36dp"
         android:paddingBottom="0dp"
         android:paddingEnd="0dp"
         android:paddingLeft="0dp"
@@ -89,25 +90,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <ImageButton
         android:id="@+id/routeMe"
-        style="@style/Widget.AppCompat.Button.Borderless.Colored"
-        android:layout_width="75dp"
-        android:layout_height="35dp"
-        android:layout_marginEnd="32dp"
+        android:layout_width="64dp"
+        android:layout_height="59dp"
+        android:layout_marginEnd="24dp"
         android:layout_marginTop="28dp"
-        android:paddingBottom="0dp"
-        android:paddingEnd="0dp"
-        android:paddingLeft="0dp"
-        android:paddingRight="0dp"
-        android:paddingStart="0dp"
-        android:paddingTop="0dp"
-        android:text="ROUTE ME"
-        android:textAlignment="viewStart"
-        android:textAppearance="@style/TextAppearance.AppCompat"
-        android:textColor="#7EC5F2"
-        android:textSize="14sp"
-        android:textStyle="bold"
+        android:background="@null"
+        android:src="@drawable/ic_directions_36dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -127,10 +117,10 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/food1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.172"
+        app:layout_constraintHorizontal_bias="0.158"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView"
-        app:layout_constraintVertical_bias="0.057" />
+        app:layout_constraintVertical_bias="0.404" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -138,7 +128,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="68dp"
+        android:layout_marginTop="88dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toStartOf="parent"
@@ -147,41 +137,42 @@
 
     <ImageView
         android:id="@+id/food1"
-        android:layout_width="185dp"
-        android:layout_height="196dp"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="24dp"
+        android:layout_width="230dp"
+        android:layout_height="242dp"
+        android:layout_marginStart="29dp"
+        android:layout_marginTop="30dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/hr"
-        app:srcCompat="@drawable/burma1" />
+        app:srcCompat="@drawable/bottom_gradient" />
 
     <ImageView
         android:id="@+id/food2"
-        android:layout_width="143dp"
-        android:layout_height="99dp"
+        android:layout_width="200dp"
+        android:layout_height="117dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.640"
         app:layout_constraintStart_toEndOf="@+id/food1"
         app:layout_constraintTop_toTopOf="@+id/food1"
-        app:srcCompat="@drawable/burma2" />
+        app:srcCompat="@drawable/bottom_gradient" />
 
     <ImageView
         android:id="@+id/food3"
-        android:layout_width="141dp"
-        android:layout_height="100dp"
+        android:layout_width="200dp"
+        android:layout_height="117dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="0dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.640"
         app:layout_constraintStart_toEndOf="@+id/food1"
         app:layout_constraintTop_toBottomOf="@+id/food2"
         app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/burma4" />
+        app:srcCompat="@drawable/bottom_gradient" />
 
     <TableRow
         android:id="@+id/hr"
@@ -189,11 +180,11 @@
         android:layout_height="1dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="76dp"
         android:background="#939393"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.485"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"/>
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
 </android.support.constraint.ConstraintLayout>

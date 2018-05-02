@@ -108,7 +108,9 @@ public class PlaceAutocompleteAdapter
         TextView textView1 = (TextView) row.findViewById(android.R.id.text1);
         TextView textView2 = (TextView) row.findViewById(android.R.id.text2);
         textView1.setText(item.getPrimaryText(STYLE_BOLD));
+        textView1.setTextAppearance(getContext(), R.style.MainFont);
         textView2.setText(item.getSecondaryText(STYLE_BOLD));
+        textView2.setTextAppearance(getContext(), R.style.MainFont);
 
         return row;
     }

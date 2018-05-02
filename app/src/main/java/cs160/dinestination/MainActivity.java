@@ -2,12 +2,15 @@ package cs160.dinestination;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -27,7 +30,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -56,7 +58,6 @@ import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.api.directions.v5.models.LegStep;
 import com.mapbox.api.directions.v5.models.RouteLeg;
 import com.mapbox.api.directions.v5.models.StepIntersection;
-import com.mapbox.geocoder.MapboxGeocoder;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
@@ -82,6 +83,7 @@ import com.mapbox.services.android.telemetry.location.LostLocationEngine;
 import com.mapbox.services.commons.geojson.Feature;
 import com.mapbox.services.commons.geojson.FeatureCollection;
 import com.mapbox.services.commons.geojson.Point;
+import com.squareup.picasso.Picasso;
 import com.yelp.fusion.client.connection.YelpFusionApi;
 import com.yelp.fusion.client.connection.YelpFusionApiFactory;
 import com.yelp.fusion.client.models.Business;
@@ -89,19 +91,23 @@ import com.yelp.fusion.client.models.SearchResponse;
 
 
 import java.io.IOException;
-import java.sql.Time;
+
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
+
+// import com.google.android.gms.maps.model.LatLngBounds;
 
 // import com.google.android.gms.maps.model.LatLngBounds;
 // import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -200,8 +206,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
     private static final com.google.android.gms.maps.model.LatLngBounds BOUNDS_GREATER_BAY_AREA = new com.google.android.gms.maps.model.LatLngBounds(
             new com.google.android.gms.maps.model.LatLng(37.7749, -122.4194), new com.google.android.gms.maps.model.LatLng(37.9101, -122.0652));
-// private static final LatLngBounds BOUNDS_GREATER_BAY_AREA = new LatLngBounds(
-//         37.9101, -122.0652, 37.7749, -122.4194);
+
     // Location layer-related.
     private PermissionsManager permissionsManager;
     private LocationLayerPlugin locationPlugin;
@@ -217,12 +222,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     IconFactory iconFactory;
 
     HashMap<String, HashMap<String, Object>> testMap;
-    int count1;
-    int count2;
+
+    //Details Activity
+    Double selectedPlaceLat;
+    Double selectedPlaceLong;
+    String placeID;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         Mapbox.getInstance(this, mapboxAccessToken);
 
         setContentView(R.layout.activity_main);
@@ -233,9 +243,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         filtersBottomSheet = findViewById(R.id.filters_bottom_sheet);
         filtersSheetBehavior = BottomSheetBehavior.from(filtersBottomSheet);
-
-        iconFactory = IconFactory.getInstance(MainActivity.this);
-        pinpointIcon = iconFactory.fromResource(R.drawable.pinpoint);
 
         mSeekBar = findViewById(R.id.seekBar);
         mSwitch1 = findViewById(R.id.switch1);
@@ -253,6 +260,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         whereToElement = findViewById(R.id.where_to_element);
         destinationInformation = findViewById(R.id.destination_information);
         whereToPlace = findViewById(R.id.where_to_place_sub);
+
+        whereToPlace.setSelectAllOnFocus(Boolean.TRUE);
+
         whereToTime = findViewById(R.id.where_to_time_sub);
         topInputElement = findViewById(R.id.top_input_element);
         whereToEditText = (AutoCompleteTextView) findViewById(R.id.destination_top_input_elem);
@@ -277,36 +287,46 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         navigationBikeButton = findViewById(R.id.navigation_bike_button);
         navigationTaxiButton = findViewById(R.id.navigation_taxi_button);
 
-        navigationBikeButton.setZ(999);
+        // Make icons for pinpoint
+        iconFactory = IconFactory.getInstance(MainActivity.this);
+        pinpointIcon = iconFactory.fromResource(R.drawable.smaller_pinpoint);
 
+        ImageView empty = findViewById(R.id.empty);
+        // empty.setZ(1000);
+
+        empty.setClickable(Boolean.FALSE);
+
+        empty.setOnTouchListener(new View.OnTouchListener(){
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // TODO Auto-generated method stub
+                return true;
+            }
+
+        });
+
+        // Set z-indices.
+        navigationBikeButton.setZ(999);
+        topInputElement.setZ(1000);
         whereToInputViewFlipper.setZ(999);
         timeSpinnerBottomSheet.setZ(999);
-        filtersBottomSheet.setZ(1000);
+        filtersBottomSheet.setZ(999);
         timeSpinnerBottomSheet.setZ(2);
+        layoutPreviewBottomSheet.setZ(999);
+        exitInputButton.setZ(1000);
+        findRestaurantsButton.setZ(999);
 
         curDistance = 0.0;
 
-        timeSpinnerSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+        setTimeSpinnerSheetBehavior();
+        setFiltersSheetBehavior();
+
+        empty.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                switch (newState) {
-                    case BottomSheetBehavior.STATE_HIDDEN:
-                        break;
-                    case BottomSheetBehavior.STATE_EXPANDED: { mapView.setVisibility(View.INVISIBLE); }
-                    break;
-                    case BottomSheetBehavior.STATE_COLLAPSED: { }
-                    break;
-                    case BottomSheetBehavior.STATE_DRAGGING:
-                        timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // prevents dragging
-//                        whereToInputViewFlipper.showNext(); // allows dragging instead, but if they drag down and then up again, top input disappears but this remains.
-                        break;
-                    case BottomSheetBehavior.STATE_SETTLING: { mapView.setVisibility(View.VISIBLE); }
-                        // the movement phase between expanded and collapsed.
-                        break;
-                }
-            }
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+            public void onClick(View view) {
+                previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
             }
         });
 
@@ -315,12 +335,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 if (timeSpinnerSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
                     timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     findRestaurantsButton.setVisibility(View.GONE);
                     navigationRowWrapper.setVisibility(View.GONE);
                     // whereToElementReposition(false);
                     whereToInputViewFlipper.showNext();
                 } else {
                     timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
             }
         });
@@ -330,12 +352,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 if (timeSpinnerSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
                     timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     findRestaurantsButton.setVisibility(View.GONE);
                     navigationRowWrapper.setVisibility(View.GONE);
                     whereToElement.setVisibility(View.GONE);
                     whereToInputViewFlipper.showNext();
                 } else {
                     timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
             }
         });
@@ -356,6 +380,15 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 Intent goToDetailsIntent = new Intent(MainActivity.this, DetailsActivity.class);
+                goToDetailsIntent.putExtra("placeLat", selectedPlaceLat);
+                goToDetailsIntent.putExtra("placeLong", selectedPlaceLong);
+                goToDetailsIntent.putExtra("placeID", placeID);
+                goToDetailsIntent.putExtra("names", resName);
+                goToDetailsIntent.putExtra("addresses", resAddr);
+                goToDetailsIntent.putExtra("pictures", resPic);
+                goToDetailsIntent.putExtra("inputTime", whereToTime.getText());
+                goToDetailsIntent.putExtra("inputPlace", String.valueOf(whereToPlace.getText()).split(",")[0]);
+                //goToDetailsIntent.putExtra("inputTime", inputTime);
                 startActivity(goToDetailsIntent);
             }
         });
@@ -363,7 +396,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         addFiltersButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
             }
         });
 
@@ -380,12 +415,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
             ;
         });
-
-        MapboxGeocoder client = new MapboxGeocoder.Builder()
-                .setAccessToken(mapboxAccessToken)
-                .setLocation("The White House")
-                .build();
-        System.out.println(client);
 
         getApplicationContext().setTheme(R.style.AppTheme);
 
@@ -424,20 +453,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         whereToEditText.setAdapter(mPlaceAutocompleteAdapter);
 
-        whereToEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if(actionId == EditorInfo.IME_ACTION_SEARCH
-                        || actionId == EditorInfo.IME_ACTION_DONE
-                        || keyEvent.getAction() == KeyEvent.ACTION_DOWN
-                        || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER){
-
-                    //execute our method for searching
-                    geoLocate();
-                }
-                return false;
-            }
-        });
         exitInputButton.setEnabled(false);
         exitInputButton.setBackgroundColor(getResources().getColor(R.color.lightGray));
         whereToEditText.addTextChangedListener(new TextWatcher() {
@@ -467,8 +482,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         yelpApiFactory = new YelpFusionApiFactory();
         yelpFusionApi = null;
         try {
-            yelpFusionApi = yelpApiFactory.createAPI("dczs4nuyUTOJWGPaXth8Zqt0IwzGoD0Wr-8OZgDmdu4G0oa3M3K-GzlPVYFAh4indjgmImwbDSSaWnh2d7KQgSFly0AresZM9PGy6p4IRUgJcE3ElHJyWyXIb7jeWnYx");
+//            yelpFusionApi = yelpApiFactory.createAPI("dczs4nuyUTOJWGPaXth8Zqt0IwzGoD0Wr-8OZgDmdu4G0oa3M3K-GzlPVYFAh4indjgmImwbDSSaWnh2d7KQgSFly0AresZM9PGy6p4IRUgJcE3ElHJyWyXIb7jeWnYx");
 //            yelpFusionApi = yelpApiFactory.createAPI("x4HzIK9Yg9t9HzBDOVrmPwydPeNPqV3fTJL6pLVj4XBSQ7cEVNuP9G9qqhMOxM_wxlxdq7JQfz-ZJQ6Q8DzbeCDUdA5F7I1uGRrTyFItQQmariY0BYlx7dxPKpXnWnYx");
+            yelpFusionApi = yelpApiFactory.createAPI("lpPa7H7FfyvUsUwy3SXzFTPvzT3XMpKigRKwjtVy1DIvzEXFISs5_qc5u33z0-jDB2VbGnXdjAGn9RayJW5ft0Ayx3irRzdfvGMVyOm0yGcWVPtAD3HfF_a8w3XpWnYx");
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -476,14 +493,74 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 //        yelpQueryMaker(destinationPosition.latitude(), destinationPosition.longitude());
         //--------------------------------------------------------------------------
 
-//        filtersRowTopBar.setVisibility(View.VISIBLE);
-        filtersRowGenerator();
 
         testMap = new HashMap<>(); // PUT THE RESTAURANT OBJS INTO THIS
-        count1 = 0;
-        count2 = 0;
+
+        filtersRowGenerator();
+
+        setOnKeyListenerForWhereToPlace();
+
+        findViewById(R.id.touch_outside).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
+
 
     } // END THE ON CREATE METHOD
+
+    private void setTimeSpinnerSheetBehavior() {
+        timeSpinnerSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        break;
+                    case BottomSheetBehavior.STATE_EXPANDED: { mapView.setVisibility(View.INVISIBLE); }
+                    break;
+                    case BottomSheetBehavior.STATE_COLLAPSED: { }
+                    break;
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // prevents dragging
+//                        whereToInputViewFlipper.showNext(); // allows dragging instead, but if they drag down and then up again, top input disappears but this remains.
+                        break;
+                    case BottomSheetBehavior.STATE_SETTLING: { mapView.setVisibility(View.VISIBLE); }
+                    // the movement phase between expanded and collapsed.
+                    break;
+                }
+            }
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+            }
+        });
+    }
+
+    private void setFiltersSheetBehavior() {
+        filtersSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        break;
+                    case BottomSheetBehavior.STATE_EXPANDED: { mapView.setVisibility(View.INVISIBLE); }
+                    break;
+                    case BottomSheetBehavior.STATE_COLLAPSED: { }
+                    break;
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // prevents dragging
+//                        whereToInputViewFlipper.showNext(); // allows dragging instead, but if they drag down and then up again, top input disappears but this remains.
+                        break;
+                    case BottomSheetBehavior.STATE_SETTLING: { mapView.setVisibility(View.VISIBLE); }
+                    // the movement phase between expanded and collapsed.
+                    break;
+                }
+            }
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+            }
+        });
+    }
 
 
     // Gecode and address from the places API.
@@ -634,8 +711,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onClick(View v) {
                     filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
             });
+            addFiltz.setPadding(60, 0, 60, 0);
             filtersRowTopBar.addView(addFiltz, lp);
 //            filtersRowTopBar.setVisibility(View.GONE);
         }
@@ -663,8 +742,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
+        if (timeSpinnerSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+            findRestaurantsButton.setVisibility(View.VISIBLE);
+        }
         return newPlusButton;
     }
 
@@ -685,7 +768,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 destinationInformation.setVisibility(View.VISIBLE);
                 timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 whereToInputViewFlipper.showNext();
-                whereToElement.setVisibility(View.GONE); // this flippiness. search button greyed out until destination input.
+                whereToElement.setVisibility(View.INVISIBLE); // this flippiness. search button greyed out until destination input.
                 // search without any input. then tap where to. then cross - then things are overlayed.
                 String whereToText = whereToEditText.getText().toString();
                 whereToPlace.setText(whereToText);
@@ -700,30 +783,76 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 whereToPlace.setTextColor(getResources().getColor(R.color.textColorDark));
                 whereToTime.setTextColor(getResources().getColor(R.color.textColorDark));
 
-                // addMarkers();
                 drawRoute();
-                findRestaurantsButton.setVisibility(View.VISIBLE); // MOVED TO INSIDE GETROUTE
+
+                findRestaurantsButton.setVisibility(View.INVISIBLE);
+                findRestaurantsButton.postDelayed(new Runnable() {
+                    public void run() {
+                        findRestaurantsButton.setVisibility(View.VISIBLE);
+                    }
+                }, 1500);
+
                 navigationRowWrapper.setVisibility(View.VISIBLE);
                 toleranceSlider.setVisibility(View.GONE);
 
-                IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
-                Icon icon = iconFactory.fromResource(R.drawable.pinpoint);
+            }
+        });
+    }
 
-                LatLng southWestCorner = new LatLng(southPoint, westPoint);
-                LatLng northEastCorner = new LatLng(northPoint, eastPoint);
+    // all the same things as the on click for the search button, to pass to the key listener
+    private void doAllTheThings() {
+        filtersRowTopBar.setVisibility(View.VISIBLE);
 
-                LatLngBounds latLngBounds = new LatLngBounds.Builder()
-                        .include(southWestCorner) // Northeast
-                        .include(northEastCorner) // Southwest
-                        .build();
+        navigationCarButton.callOnClick(); // to set walk as the default routing option.
 
-                mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 50), 2000);
+        geoLocate();
+
+        destinationInformation.setVisibility(View.VISIBLE);
+        timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        whereToInputViewFlipper.showNext();
+        whereToElement.setVisibility(View.GONE); // this flippiness. search button greyed out until destination input.
+        // search without any input. then tap where to. then cross - then things are overlayed.
+        String whereToText = whereToEditText.getText().toString();
+        whereToPlace.setText(whereToText);
+        String meridian = "am";
+        int hour = timePicker.getCurrentHour();
+        int minute = timePicker.getCurrentMinute();
+        String minuteStr = timePicker.getCurrentMinute().toString();
+        if (hour > 12) {meridian = "pm"; hour = hour - 12;}
+        if (minute < 10) {minuteStr = "0".concat(minuteStr);}
+        String hourStr = Integer.toString(hour);
+        whereToTime.setText("by "+hourStr+":"+minuteStr+meridian);
+        whereToPlace.setTextColor(getResources().getColor(R.color.textColorDark));
+        whereToTime.setTextColor(getResources().getColor(R.color.textColorDark));
+
+        drawRoute();
+        findRestaurantsButton.setVisibility(View.VISIBLE);
+        navigationRowWrapper.setVisibility(View.VISIBLE);
+        toleranceSlider.setVisibility(View.GONE);
+
+    }
+
+    // set enter button to trigger same events as search button
+    private void setOnKeyListenerForWhereToPlace() {
+        whereToEditText.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    switch (keyCode) {
+                        case KeyEvent.KEYCODE_ENTER:
+                            doAllTheThings();
+                            hideSoftKeyboard(MainActivity.this);
+                            return true;
+                        default:
+                            break;
+                    }
+                }
+                return false;
             }
         });
     }
 
     /**
-     * Set up the UI such that the soft keyboard is collapsed.
+     * Set up the UI such that the soft keyboard is collapsed when clicked off of.
      */
     public void setupUI(View view) {
         // Set up touch listener for non-text box views to hide keyboard.
@@ -745,7 +874,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     /**
-     * Hide the soft keyboard.
+     * Hide the soft keyboard and preview element for each marker.
      */
     public static void hideSoftKeyboard(Activity activity) {
         InputMethodManager inputMethodManager =
@@ -765,12 +894,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 if (filtersSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
                     filtersSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     filtersRowGenerator();
-                    if (findRestaurantsButton.getVisibility() == View.VISIBLE) {
-                        yelpQueryMaker(destinationPosition.latitude(), destinationPosition.longitude());
-                    }
+                    mapboxMap.removeAnnotations();
 
                 } else { // else case will never occur. Cannot click checkmark while collapsed.
                     filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                }
+                if (timeSpinnerSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                    findRestaurantsButton.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -800,6 +930,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 for (int i = 0; i < attire_ids.length; i++) {
                     CheckBox cBox = findViewById(attire_ids[i]);
                     cBox.setChecked(false);
+                }
+                mapboxMap.removeAnnotations();
+                if (timeSpinnerSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                    findRestaurantsButton.setVisibility(View.VISIBLE);
                 }
                 mSwitch1.setChecked(false);
                 mSwitch2.setChecked(false);
@@ -849,11 +983,28 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     break;
                     case BottomSheetBehavior.STATE_DRAGGING:
+//                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // prevents dragging
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
+                        // previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // prevents dragging
                         break;
                 }
             }
+
+//            @Override public boolean dispatchTouchEvent(MotionEvent event){
+//                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//                    if (previewSheetBehavior.getState()==BottomSheetBehavior.STATE_EXPANDED) {
+//
+//                        Rect outRect = new Rect();
+//                        layoutPreviewBottomSheet.getGlobalVisibleRect(outRect);
+//
+//                        if(!outRect.contains((int)event.getRawX(), (int)event.getRawY()))
+//                            previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+//                    }
+//                }
+//
+//                return super.dispatchTouchEvent(event);
+//            }
 
             @Override
             public void onSlide(@NonNull View previewBottomSheet, float slideOffset) {
@@ -914,7 +1065,15 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         return priceRangeQueryStr;
     }
 
-    private void yelpQueryMaker(Double latitude, Double longitude) {
+    Business restaurant;
+    HashMap names1 = new HashMap<String, String>();
+    HashMap addresses1 = new HashMap<String, String>();
+    HashMap pics1 = new HashMap<String, String>();
+    HashMap placeIDs = new HashMap<String, String>();
+    String resName;
+    String resAddr;
+    String resPic;
+    private void yelpQueryMaker(Double latitude, Double longitude) throws ParseException {
         // docs: https://www.yelp.com/developers/documentation/v3/business_search
         // GOOD FOR KIDS, GOOD FOR GROUPS - NOT POSSIBLE USING API.
         // also no options for attire. - could match to price range instead..
@@ -924,9 +1083,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         params.put("price", getYelpifiedPriceRange());
         params.put("radius", String.valueOf(toleranceSlider.getProgress() + 200)); // wait lol this only shows up after query has been made.
         // ^ Needs some conversion factor, not a static addition. should also account for wait time, in theory...
-        params.put("open_now", "true");
+
+        String rawDate = new Date().toString();
+        String dateString = "" + rawDate.substring(0,3) + ", " + rawDate.substring(8,10) + " " + rawDate.substring(4,7) + " " + rawDate.substring(24) + " " + timePicker.getHour() + ":" + timePicker.getMinute() + ":00 PST";
+        DateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss z");
+        Date date = dateFormat.parse(dateString);
+        long unixTime = (long) (date.getTime() - 60 * 60 * 1000)/1000;
+
+        params.put("open_at", String.valueOf(unixTime));
         params.put("term", "restaurants");
-        params.put("limit", "1"); // 20 by default
+
+        params.put("limit", "2"); // 20 by default
 
         String cuisineQueryString = "";
         for (String str : currentCuisineFilters) {
@@ -958,6 +1125,64 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     getTempRoute(originPosition, destinationPosition, com.mapbox.geojson.Point.fromLngLat(
                             restaurant.getCoordinates().getLongitude(), restaurant.getCoordinates().getLatitude()), restaurant.getName(), true);
+//=======
+//                final SearchResponse searchResponse = response.body();
+//                for (int x = 0; x < searchResponse.getBusinesses().size(); x++) {
+//                    restaurant = searchResponse.getBusinesses().get(x);
+////                    Log.d("YelpQueryMaker", restaurant.getName() + "," + restaurant.getCoordinates().getLatitude());
+//                    LatLng ll = new LatLng(restaurant.getCoordinates().getLatitude(), restaurant.getCoordinates().getLongitude());
+//                    mapboxMap.addMarker(new MarkerViewOptions()
+//                            .position(ll)
+//                            .icon(pinpointIcon));
+//                    names1.put(String.valueOf(restaurant.getCoordinates().getLatitude()) +
+//                            String.valueOf(restaurant.getCoordinates().getLongitude()), restaurant.getName());
+//                    addresses1.put(String.valueOf(restaurant.getCoordinates().getLatitude()) +
+//                            String.valueOf(restaurant.getCoordinates().getLongitude()), restaurant.getLocation().getAddress1() + "\n" + restaurant.getLocation().getCity() + " " + restaurant.getLocation().getState() + " " + String.valueOf(restaurant.getLocation().getZipCode()));
+//                    pics1.put(String.valueOf(restaurant.getCoordinates().getLatitude()) +
+//                            String.valueOf(restaurant.getCoordinates().getLongitude()), restaurant.getImageUrl());
+//                    placeIDs.put(String.valueOf(restaurant.getCoordinates().getLatitude()) +
+//                            String.valueOf(restaurant.getCoordinates().getLongitude()), restaurant.getId());
+//
+//
+//                    mapboxMap.getMarkerViewManager().setOnMarkerViewClickListener(new MapboxMap.OnMarkerViewClickListener() {
+//                        @Override
+//                        public boolean onMarkerClick(@NonNull com.mapbox.mapboxsdk.annotations.Marker marker, @NonNull View view, @NonNull MapboxMap.MarkerViewAdapter adapter) {
+//                            Timber.e(marker.toString());
+//                            //setContentView(R.layout.preview_bottom_sheet);
+//                            TextView tv1 = (TextView)findViewById(R.id.NameOf);
+//                            String namess = String.valueOf(marker.getPosition().getLatitude()) +
+//                                    String.valueOf(marker.getPosition().getLongitude());
+//                            tv1.setText(String.valueOf(names1.get(namess)));
+//                            resName = String.valueOf(names1.get(namess));
+//
+//                            TextView tv2 = (TextView)findViewById(R.id.AddressOf);
+//                            String addressess = String.valueOf(marker.getPosition().getLatitude()) +
+//                                    String.valueOf(marker.getPosition().getLongitude());
+//                            tv2.setText(String.valueOf(addresses1.get(addressess)));
+//                            resAddr = String.valueOf(addresses1.get(addressess));
+//
+//                            selectedPlaceLat = restaurant.getCoordinates().getLatitude();
+//                            selectedPlaceLong = restaurant.getCoordinates().getLongitude();
+//                            placeID = String.valueOf(placeIDs.get(namess));
+//
+//                            ImageView iv1 =(ImageView)findViewById(R.id.PictureOf);
+//                            String picss = String.valueOf(marker.getPosition().getLatitude()) +
+//                                    String.valueOf(marker.getPosition().getLongitude());
+//                            Picasso.with(getApplicationContext()).load(String.valueOf(pics1.get(picss))).into(iv1);
+//                            resPic = String.valueOf(pics1.get(picss));
+//
+//                            if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
+//                                previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+//                            }
+////                            else {
+////                                previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+////                                previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+////
+////                            }
+//                            return false;
+//                        }
+//                    });
+//>>>>>>> origin/master
                 }
             }
             @Override
@@ -984,8 +1209,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 toleranceSlider.setVisibility(View.VISIBLE);
                 navigationRowWrapper.setVisibility(View.GONE);
                 findRestaurantsButton.setVisibility(View.GONE);
-                yelpQueryMaker(originPosition.latitude(), originPosition.longitude());
-                yelpQueryMaker(destinationPosition.latitude(), destinationPosition.longitude());
+                try {
+                    yelpQueryMaker(originPosition.latitude(), originPosition.longitude());
+                    yelpQueryMaker(destinationPosition.latitude(), destinationPosition.longitude());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 // TODO: This and the one in setOnClickForFiltersTrigger just use destination position!!
                 ArrayList<StepIntersection> intersections = new ArrayList<>();
                 for (RouteLeg leg : currentRoute.legs()) { // this is only giving the first step right now.
@@ -995,8 +1224,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                     }
                 }
-                for (final StepIntersection s : intersections) { // added final for thread things
-                    yelpQueryMaker(s.location().latitude(), s.location().longitude());
+
+                for (StepIntersection s : intersections) {
+                    try {
+                        yelpQueryMaker(s.location().latitude(), s.location().longitude());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -1061,6 +1295,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         vTaxi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                DialogFragment newFragment = new RideshareDialog();
+                newFragment.setStyle(R.style.MainFont, R.style.AppDialogTheme);
+                newFragment.show(getFragmentManager(), "hello");
                 vWalk.setBackground(getResources().getDrawable(R.color.white));
                 vWalk.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_walk_24dp));
                 vCar.setBackground(getResources().getDrawable(R.color.white));
@@ -1078,7 +1315,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     //////// MAPBOX THINGS ////////
     /**
-     * Mapboc overrides.
+     * Mapbox overrides.
      */
     @Override
     public void onMapReady(final MapboxMap mapboxMap) {
@@ -1095,8 +1332,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 //                MainActivity.this.getResources(), R.drawable.pinpoint, options);
 //        mapboxMap.addImage(MARKER_IMAGE, icon);
         //addMarkers();
+        System.out.println("map is ready");
 
-        mapboxMap.setOnMapClickListener(new MapboxMap.OnMapClickListener() {
+        mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
             @Override
             public void onMapClick(@NonNull LatLng point) {
                 PointF screenPoint = mapboxMap.getProjection().toScreenLocation(point);
@@ -1106,14 +1344,19 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     String title = selectedFeature.getStringProperty("title");
                     Toast.makeText(getApplicationContext(), "You selected " + title, Toast.LENGTH_SHORT).show();
                 }
-                System.out.println(point);
-                if ((point.getLatitude() <= 37.866528+0.0015 && point.getLatitude() >= 37.866528-0.0015) && (point.getLongitude() <= -122.258722+0.0015 && point.getLongitude() >= -122.258722-0.0015)) {
-                    if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
-                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                    } else {
-                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    }
-                }
+                previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                System.out.println("why are you like this");
+                Toast.makeText(getApplicationContext(), "mapclick", Toast.LENGTH_SHORT).show();
+//                if ((point.getLatitude() <= 37.866528+0.0015 && point.getLatitude() >= 37.866528-0.0015) && (point.getLongitude() <= -122.258722+0.0015 && point.getLongitude() >= -122.258722-0.0015)) {
+//                    if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
+//                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+//                    } else {
+//                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+//                    }
+//                }
+
+                System.out.println("why are you not closing");
+                previewSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
             }
         });
@@ -1146,82 +1389,145 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         double latDist = (java.lang.Math.abs(northPoint - southPoint));
         double lonDist = (java.lang.Math.abs(java.lang.Math.abs(westPoint) - java.lang.Math.abs(eastPoint)));
 
-        westPoint -= lonDist*0.5; eastPoint += lonDist*0.5; southPoint -= latDist*0.4; northPoint += latDist*0.6;
+
+//        westPoint += lonDist*0.2; eastPoint -= lonDist*0.2; southPoint += latDist*0.2; northPoint -= latDist*0.2;
 
         System.out.println(northPoint-southPoint);
         System.out.println(westPoint-eastPoint);
         //hard coded
 
         getRoute(originPosition, destinationPosition);
-        Log.d("First getRoute", "About to start split path calculations");
 
-//        getTempRoute(originPosition, destinationPosition); // clark kerr); com.mapbox.geojson.Point.fromLngLat(-122.2702069, 37.8706731)
 
+        LatLng southWestCorner = new LatLng(southPoint, westPoint);
+        LatLng northEastCorner = new LatLng(northPoint, eastPoint);
+
+        LatLngBounds latLngBounds = new LatLngBounds.Builder()
+                .include(southWestCorner) // Northeast
+                .include(northEastCorner) // Southwest
+                .build();
+
+        mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 200, 600, 200, 400), 2000);
 
     }
 
-private void getTempRoute(final com.mapbox.geojson.Point origin, final com.mapbox.geojson.Point destination, final com.mapbox.geojson.Point restaurant, final String restName, final boolean isParent) {
-    com.mapbox.geojson.Point temp_origin;
-    com.mapbox.geojson.Point temp_destination;
-    if (isParent){
-        temp_origin = origin;
-        temp_destination = restaurant;
-    } else {
-        temp_origin = restaurant;
-        temp_destination = destination;
-    }
-    NavigationRoute.builder()
-        .accessToken(Mapbox.getAccessToken())
-        .origin(temp_origin)
-        .destination(temp_destination)
-        .profile(PROFILE_TYPE)
-        .build()
-        .getRoute(new Callback<DirectionsResponse>() {
-            @Override
-            public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
-                Log.d(TAG, "Doing temp route: " + response.code());
-                if (response.body() == null) {
-                    Log.e(TAG, "No routes found, make sure you set the right user and access token.");
-                    return;
-                } else if (response.body().routes().size() < 1) {
-                    Log.e(TAG, "No routes found");
-                    return;
-                }
-                analyzeRoute = response.body().routes().get(0);
-                curDistance = analyzeRoute.distance();
-                if (isParent) {
-                    if (!(Boolean)testMap.get(restName).get("halfUpdated")) {
-                        testMap.get(restName).put("halfUpdated", true);
-                        testMap.get(restName).put("distance", curDistance);
-                        Log.d("Distance half set to ", String.valueOf(testMap.get(restName)) + ";" + restName);
-                        getTempRoute(origin, destination, restaurant, restName, false);
-                    }
-                } else {
-                    if (!(Boolean)testMap.get(restName).get("fullUpdated")) {
-                        testMap.get(restName).put("fullUpdated", true);
-                        testMap.get(restName).put("distance", (Double)testMap.get(restName).get("distance") + curDistance);
-                        Log.d("Distance full set to ", String.valueOf(testMap.get(restName)) + ";" + restName);
-//                        Log.d("HELLO TIME in async:", testMap.toString());
-                        if (testMap.size() >= 2) {
-                            for (HashMap<String, Object> subMap : testMap.values()) {
-                                Business curRes = (Business)subMap.get("businessObj");
-                                // .notify????? Notify a listener??? Could work that way too.
-                                // do bukllshi alog
-                                LatLng ll = new LatLng(curRes.getCoordinates().getLatitude(), curRes.getCoordinates().getLongitude());
-                                mapboxMap.addMarker(new MarkerViewOptions()
-                                        .position(ll)
-                                        .icon(pinpointIcon));
+    private void getTempRoute(final com.mapbox.geojson.Point origin, final com.mapbox.geojson.Point destination, final com.mapbox.geojson.Point restaurant, final String restName, final boolean isParent) {
+        Log.d("getTempRoute", "called");
+        com.mapbox.geojson.Point temp_origin;
+        com.mapbox.geojson.Point temp_destination;
+        if (isParent) {
+            temp_origin = origin;
+            temp_destination = restaurant;
+        } else {
+            temp_origin = restaurant;
+            temp_destination = destination;
+        }
+        NavigationRoute.builder()
+                .accessToken(Mapbox.getAccessToken())
+                .origin(temp_origin)
+                .destination(temp_destination)
+                .profile(PROFILE_TYPE)
+                .build()
+                .getRoute(new Callback<DirectionsResponse>() {
+                    @Override
+                    public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+                        Log.d(TAG, "Doing temp route: " + response.code());
+                        if (response.body() == null) {
+                            Log.e(TAG, "No routes found, make sure you set the right user and access token.");
+                            return;
+                        } else if (response.body().routes().size() < 1) {
+                            Log.e(TAG, "No routes found");
+                            return;
+                        }
+                        analyzeRoute = response.body().routes().get(0);
+//                        curDistance = analyzeRoute.distance();
+                        curDistance = analyzeRoute.duration();
+                        if (isParent) {
+                            if (!(Boolean) testMap.get(restName).get("halfUpdated")) {
+                                testMap.get(restName).put("halfUpdated", true);
+                                testMap.get(restName).put("distance", curDistance);
+                                Log.d("Distance half set to ", String.valueOf(testMap.get(restName)) + ";" + restName);
+                                getTempRoute(origin, destination, restaurant, restName, false);
+                            }
+                        } else {
+                            if (!(Boolean) testMap.get(restName).get("fullUpdated")) {
+                                testMap.get(restName).put("fullUpdated", true);
+                                testMap.get(restName).put("distance", (Double) testMap.get(restName).get("distance") + curDistance);
+                                Log.d("Distance full set to ", String.valueOf(testMap.get(restName)) + ";" + restName);
+                        Log.d("testMap so far:", testMap.toString());
+                                if (testMap.size() >= 4) {
+                                    for (HashMap<String, Object> subMap : testMap.values()) {
+                                        final Business curRes = (Business) subMap.get("businessObj");
+                                        // .notify????? Notify a listener??? Could work that way too.
+                                        LatLng ll = new LatLng(curRes.getCoordinates().getLatitude(), curRes.getCoordinates().getLongitude());
+//                                        mapboxMap.addMarker(new MarkerViewOptions()
+//                                                .position(ll)
+//                                                .icon(pinpointIcon));
+
+                                        mapboxMap.addMarker(new MarkerViewOptions()
+                                                .position(ll)
+                                                .icon(pinpointIcon));
+                                        names1.put(String.valueOf(curRes.getCoordinates().getLatitude()) +
+                                                String.valueOf(curRes.getCoordinates().getLongitude()), curRes.getName());
+                                        addresses1.put(String.valueOf(curRes.getCoordinates().getLatitude()) +
+                                                String.valueOf(curRes.getCoordinates().getLongitude()), curRes.getLocation().getAddress1() + "\n" + curRes.getLocation().getCity() + " " + curRes.getLocation().getState() + " " + String.valueOf(curRes.getLocation().getZipCode()));
+                                        pics1.put(String.valueOf(curRes.getCoordinates().getLatitude()) +
+                                                String.valueOf(curRes.getCoordinates().getLongitude()), curRes.getImageUrl());
+                                        placeIDs.put(String.valueOf(curRes.getCoordinates().getLatitude()) +
+                                                String.valueOf(curRes.getCoordinates().getLongitude()), curRes.getId());
+
+
+                                        mapboxMap.getMarkerViewManager().setOnMarkerViewClickListener(new MapboxMap.OnMarkerViewClickListener() {
+                                            @Override
+                                            public boolean onMarkerClick(@NonNull com.mapbox.mapboxsdk.annotations.Marker marker, @NonNull View view, @NonNull MapboxMap.MarkerViewAdapter adapter) {
+                                                Timber.e(marker.toString());
+                                                //setContentView(R.layout.preview_bottom_sheet);
+                                                TextView tv1 = (TextView) findViewById(R.id.NameOf);
+                                                String namess = String.valueOf(marker.getPosition().getLatitude()) +
+                                                        String.valueOf(marker.getPosition().getLongitude());
+                                                tv1.setText(String.valueOf(names1.get(namess)));
+                                                resName = String.valueOf(names1.get(namess));
+
+                                                TextView tv2 = (TextView) findViewById(R.id.AddressOf);
+                                                String addressess = String.valueOf(marker.getPosition().getLatitude()) +
+                                                        String.valueOf(marker.getPosition().getLongitude());
+                                                tv2.setText(String.valueOf(addresses1.get(addressess)));
+                                                resAddr = String.valueOf(addresses1.get(addressess));
+
+                                                selectedPlaceLat = curRes.getCoordinates().getLatitude();
+                                                selectedPlaceLong = curRes.getCoordinates().getLongitude();
+                                                placeID = String.valueOf(placeIDs.get(namess));
+
+                                                ImageView iv1 = (ImageView) findViewById(R.id.PictureOf);
+                                                String picss = String.valueOf(marker.getPosition().getLatitude()) +
+                                                        String.valueOf(marker.getPosition().getLongitude());
+                                                Picasso.with(getApplicationContext()).load(String.valueOf(pics1.get(picss))).into(iv1);
+                                                resPic = String.valueOf(pics1.get(picss));
+
+                                                if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
+                                                    previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                                                }
+                                                //                            else {
+                                                //                                previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                                                //                                previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                                                //
+                                                //                            }
+                                                return false;
+                                            }
+                                        });
+
+                                    }
+
+                                }
                             }
                         }
                     }
-                }
-            }
 
-            @Override
-            public void onFailure(Call<DirectionsResponse> call, Throwable throwable) {
-                Log.e(TAG, "onTempRoute error: " + throwable.getMessage());
-            }
-            });
+                    @Override
+                    public void onFailure(Call<DirectionsResponse> call, Throwable throwable) {
+                        Log.e(TAG, "onTempRoute error: " + throwable.getMessage());
+                    }
+                });
     }
 
     private void addMarkers() {
@@ -1394,11 +1700,6 @@ private void getTempRoute(final com.mapbox.geojson.Point origin, final com.mapbo
 
             @Override
             public void onLocationChanged(Location location) {
-//                Log.d("Latitude: ", Double.toString(location.getLatitude()));
-//                Log.d("Longitude: ", Double.toString(location.getLongitude()));
-//                Log.d("Latitude: ", Double.toString(lastLocation.getLatitude()));
-//                Log.d("Longitude: ", Double.toString(lastLocation.getLongitude()));
-//                Log.e("Location: ", lastLocation.toString());
             }
         });
     }
@@ -1408,5 +1709,22 @@ private void getTempRoute(final com.mapbox.geojson.Point origin, final com.mapbo
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            View view = getCurrentFocus();
+            if (view != null && view instanceof EditText) {
+                Rect r = new Rect();
+                view.getGlobalVisibleRect(r);
+                int rawX = (int)ev.getRawX();
+                int rawY = (int)ev.getRawY();
+                if (!r.contains(rawX, rawY)) {
+                    view.clearFocus();
+                }
+            }
+        }
+        return super.dispatchTouchEvent(ev);
     }
 }
