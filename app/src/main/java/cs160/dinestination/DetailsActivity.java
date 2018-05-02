@@ -107,7 +107,7 @@ public class DetailsActivity extends AppCompatActivity {
         yelpApiFactory = new YelpFusionApiFactory();
         yelpFusionApi = null;
         try {
-            yelpFusionApi = yelpApiFactory.createAPI("lpPa7H7FfyvUsUwy3SXzFTPvzT3XMpKigRKwjtVy1DIvzEXFISs5_qc5u33z0-jDB2VbGnXdjAGn9RayJW5ft0Ayx3irRzdfvGMVyOm0yGcWVPtAD3HfF_a8w3XpWnYx");
+            yelpFusionApi = yelpApiFactory.createAPI("o9WT0y8HNBbMeRkwivpXAPaHDeBqqb7OTtlkPqa815Yekd11hlA486TNA1rQWqq5ix1EtXtpOGX5TL_tfd2v9BlLFMKzS10w09MyniKkCObBthJRVi_-FFSyDr7pWnYx");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -210,31 +210,33 @@ public class DetailsActivity extends AppCompatActivity {
         Legend legend = barChart.getLegend();
         legend.setEnabled(false);
 
+        Random random = new Random();
+
         List<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(0f, 80f));
-        entries.add(new BarEntry(1f, 60f));
-        entries.add(new BarEntry(2f, 50f));
-        entries.add(new BarEntry(3f, 40f));
-        entries.add(new BarEntry(4f, 80f));
-        entries.add(new BarEntry(5f, 60f));
-        entries.add(new BarEntry(6f, 60f));
-        entries.add(new BarEntry(7f, 30f));
-        entries.add(new BarEntry(8f, 80f));
-        entries.add(new BarEntry(9f, 60f));
-        entries.add(new BarEntry(10f, 50f));
-        entries.add(new BarEntry(11f, 70f));
-        entries.add(new BarEntry(12f, 60f));
-        entries.add(new BarEntry(13f, 40f));
-        entries.add(new BarEntry(14f, 20f));
-        entries.add(new BarEntry(15f, 80f));
-        entries.add(new BarEntry(16f, 30f));
-        entries.add(new BarEntry(17f, 40f));
-        entries.add(new BarEntry(18f, 60f));
-        entries.add(new BarEntry(19f, 80f));
-        entries.add(new BarEntry(20f, 80f));
-        entries.add(new BarEntry(21f, 80f));
-        entries.add(new BarEntry(22f, 80f));
-        entries.add(new BarEntry(23f, 80f));
+        entries.add(new BarEntry(0f, 0f));
+        entries.add(new BarEntry(1f, 0f));
+        entries.add(new BarEntry(2f, 0f));
+        entries.add(new BarEntry(3f, 0f));
+        entries.add(new BarEntry(4f, 0f));
+        entries.add(new BarEntry(5f, 0f));
+        entries.add(new BarEntry(6f, 0f));
+        entries.add(new BarEntry(7f, 0f));
+        entries.add(new BarEntry(8f, 0f));
+        entries.add(new BarEntry(9f, 0f));
+        entries.add(new BarEntry(10f, random.nextInt(20) + 1));
+        entries.add(new BarEntry(11f, random.nextInt(20) + 1));
+        entries.add(new BarEntry(12f, random.nextInt(60) + 40));
+        entries.add(new BarEntry(13f, random.nextInt(80) + 50));
+        entries.add(new BarEntry(14f, random.nextInt(70) + 30));
+        entries.add(new BarEntry(15f, random.nextInt(40) + 30));
+        entries.add(new BarEntry(16f, random.nextInt(20) + 10));
+        entries.add(new BarEntry(17f, random.nextInt(20) + 1));
+        entries.add(new BarEntry(18f, random.nextInt(20) + 1));
+        entries.add(new BarEntry(19f, random.nextInt(60) + 10));
+        entries.add(new BarEntry(20f, random.nextInt(80) + 40));
+        entries.add(new BarEntry(21f, random.nextInt(70) + 30));
+        entries.add(new BarEntry(22f, random.nextInt(20) + 1));
+        entries.add(new BarEntry(23f, 0f));
 
 
 

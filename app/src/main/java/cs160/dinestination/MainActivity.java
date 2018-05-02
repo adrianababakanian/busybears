@@ -489,8 +489,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
 //            yelpFusionApi = yelpApiFactory.createAPI("dczs4nuyUTOJWGPaXth8Zqt0IwzGoD0Wr-8OZgDmdu4G0oa3M3K-GzlPVYFAh4indjgmImwbDSSaWnh2d7KQgSFly0AresZM9PGy6p4IRUgJcE3ElHJyWyXIb7jeWnYx");
 //            yelpFusionApi = yelpApiFactory.createAPI("x4HzIK9Yg9t9HzBDOVrmPwydPeNPqV3fTJL6pLVj4XBSQ7cEVNuP9G9qqhMOxM_wxlxdq7JQfz-ZJQ6Q8DzbeCDUdA5F7I1uGRrTyFItQQmariY0BYlx7dxPKpXnWnYx");
+//            yelpFusionApi = yelpApiFactory.createAPI("lpPa7H7FfyvUsUwy3SXzFTPvzT3XMpKigRKwjtVy1DIvzEXFISs5_qc5u33z0-jDB2VbGnXdjAGn9RayJW5ft0Ayx3irRzdfvGMVyOm0yGcWVPtAD3HfF_a8w3XpWnYx");
 
-            yelpFusionApi = yelpApiFactory.createAPI("lpPa7H7FfyvUsUwy3SXzFTPvzT3XMpKigRKwjtVy1DIvzEXFISs5_qc5u33z0-jDB2VbGnXdjAGn9RayJW5ft0Ayx3irRzdfvGMVyOm0yGcWVPtAD3HfF_a8w3XpWnYx");
+            yelpFusionApi = yelpApiFactory.createAPI("o9WT0y8HNBbMeRkwivpXAPaHDeBqqb7OTtlkPqa815Yekd11hlA486TNA1rQWqq5ix1EtXtpOGX5TL_tfd2v9BlLFMKzS10w09MyniKkCObBthJRVi_-FFSyDr7pWnYx");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1163,8 +1164,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 try {
                     yelpQueryMaker(originPosition.latitude(), originPosition.longitude());
                     yelpQueryMaker(destinationPosition.latitude(), destinationPosition.longitude());
-                    StepIntersection midway = currentRoute.legs().get(0).steps().get(0).intersections().get(currentRoute.legs().get(0).steps().get(0).intersections().size()/2);
+                    StepIntersection midway = currentRoute.legs().get(0).steps().get(0).intersections().get(currentRoute.legs().get(0).steps().get(0).intersections().size()/3);
+                    StepIntersection quarterway = currentRoute.legs().get(0).steps().get(0).intersections().get(currentRoute.legs().get(0).steps().get(0).intersections().size()/6);
                     yelpQueryMaker(midway.location().latitude(), midway.location().longitude());
+                    yelpQueryMaker(quarterway.location().latitude(), quarterway.location().longitude());
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
