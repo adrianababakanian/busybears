@@ -421,21 +421,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         whereToEditText.setAdapter(mPlaceAutocompleteAdapter);
 
-        whereToEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if(actionId == EditorInfo.IME_ACTION_SEARCH
-                        || actionId == EditorInfo.IME_ACTION_DONE
-                        || keyEvent.getAction() == KeyEvent.ACTION_DOWN
-                        || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER){
-
-                    //execute our method for searching
-                    geoLocate();
-                }
-
-                return false;
-            }
-        });
         exitInputButton.setEnabled(false);
         exitInputButton.setBackgroundColor(getResources().getColor(R.color.lightGray));
         whereToEditText.addTextChangedListener(new TextWatcher() {
@@ -476,10 +461,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-
-
-//        filtersRowTopBar.setVisibility(View.VISIBLE);
         filtersRowGenerator();
+
+        setOnKeyListenerForWhereToPlace();
 
     } // END THE ON CREATE METHOD
 
@@ -774,8 +758,70 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         .build();
 
                 mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 200, 600, 200, 400), 2000);
-//                double currZoom = mapboxMap.getCameraPosition().zoom;
-//                mapboxMap.setZoom(currZoom-0.2);
+
+            }
+        });
+    }
+
+    // all the same things as the on click for the search button, to pass to the key listener
+    private void doAllTheThings() {
+        filtersRowTopBar.setVisibility(View.VISIBLE);
+
+        navigationCarButton.callOnClick(); // to set walk as the default routing option.
+
+        geoLocate();
+
+        destinationInformation.setVisibility(View.VISIBLE);
+        timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        whereToInputViewFlipper.showNext();
+        whereToElement.setVisibility(View.GONE); // this flippiness. search button greyed out until destination input.
+        // search without any input. then tap where to. then cross - then things are overlayed.
+        String whereToText = whereToEditText.getText().toString();
+        whereToPlace.setText(whereToText);
+        String meridian = "am";
+        int hour = timePicker.getCurrentHour();
+        int minute = timePicker.getCurrentMinute();
+        String minuteStr = timePicker.getCurrentMinute().toString();
+        if (hour > 12) {meridian = "pm"; hour = hour - 12;}
+        if (minute < 10) {minuteStr = "0".concat(minuteStr);}
+        String hourStr = Integer.toString(hour);
+        whereToTime.setText("by "+hourStr+":"+minuteStr+meridian);
+        whereToPlace.setTextColor(getResources().getColor(R.color.textColorDark));
+        whereToTime.setTextColor(getResources().getColor(R.color.textColorDark));
+
+        drawRoute();
+        findRestaurantsButton.setVisibility(View.VISIBLE);
+        navigationRowWrapper.setVisibility(View.VISIBLE);
+        toleranceSlider.setVisibility(View.GONE);
+
+        IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
+        Icon icon = iconFactory.fromResource(R.drawable.pinpoint);
+
+        LatLng southWestCorner = new LatLng(southPoint, westPoint);
+        LatLng northEastCorner = new LatLng(northPoint, eastPoint);
+
+        LatLngBounds latLngBounds = new LatLngBounds.Builder()
+                .include(southWestCorner) // Northeast
+                .include(northEastCorner) // Southwest
+                .build();
+
+        mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 200, 600, 200, 400), 2000);
+    }
+
+    private void setOnKeyListenerForWhereToPlace() {
+        whereToEditText.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    switch (keyCode) {
+                        case KeyEvent.KEYCODE_ENTER:
+                            doAllTheThings();
+                            hideSoftKeyboard(MainActivity.this);
+                            return true;
+                        default:
+                            break;
+                    }
+                }
+                return false;
             }
         });
     }
