@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -226,9 +227,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         filtersBottomSheet = findViewById(R.id.filters_bottom_sheet);
         filtersSheetBehavior = BottomSheetBehavior.from(filtersBottomSheet);
 
-        iconFactory = IconFactory.getInstance(MainActivity.this);
-        pinpointIcon = iconFactory.fromResource(R.drawable.pinpoint);
-
         mSeekBar = findViewById(R.id.seekBar);
         mSwitch1 = findViewById(R.id.switch1);
         mSwitch2 = findViewById(R.id.switch2);
@@ -269,39 +267,44 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         navigationBikeButton = findViewById(R.id.navigation_bike_button);
         navigationTaxiButton = findViewById(R.id.navigation_taxi_button);
 
-        navigationBikeButton.setZ(999);
+        // Make icons for pinpoint
+        iconFactory = IconFactory.getInstance(MainActivity.this);
+        pinpointIcon = iconFactory.fromResource(R.drawable.smaller_pinpoint);
 
+        ImageView empty = findViewById(R.id.empty);
+        // empty.setZ(1000);
+
+        empty.setClickable(Boolean.FALSE);
+
+        empty.setOnTouchListener(new View.OnTouchListener(){
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // TODO Auto-generated method stub
+                return true;
+            }
+
+        });
+
+        // Set z-indices.
+        navigationBikeButton.setZ(999);
         topInputElement.setZ(1000);
         whereToInputViewFlipper.setZ(999);
         timeSpinnerBottomSheet.setZ(999);
         filtersBottomSheet.setZ(999);
         timeSpinnerBottomSheet.setZ(2);
         layoutPreviewBottomSheet.setZ(999);
-
         exitInputButton.setZ(1000);
         findRestaurantsButton.setZ(999);
 
-        timeSpinnerSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+        setTimeSpinnerSheetBehavior();
+        setFiltersSheetBehavior();
+
+        empty.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                switch (newState) {
-                    case BottomSheetBehavior.STATE_HIDDEN:
-                        break;
-                    case BottomSheetBehavior.STATE_EXPANDED: { mapView.setVisibility(View.INVISIBLE); }
-                    break;
-                    case BottomSheetBehavior.STATE_COLLAPSED: { }
-                    break;
-                    case BottomSheetBehavior.STATE_DRAGGING:
-                        timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // prevents dragging
-//                        whereToInputViewFlipper.showNext(); // allows dragging instead, but if they drag down and then up again, top input disappears but this remains.
-                        break;
-                    case BottomSheetBehavior.STATE_SETTLING: { mapView.setVisibility(View.VISIBLE); }
-                        // the movement phase between expanded and collapsed.
-                        break;
-                }
-            }
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+            public void onClick(View view) {
+                previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
             }
         });
 
@@ -476,6 +479,58 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         filtersRowGenerator();
 
     } // END THE ON CREATE METHOD
+
+    private void setTimeSpinnerSheetBehavior() {
+        timeSpinnerSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        break;
+                    case BottomSheetBehavior.STATE_EXPANDED: { mapView.setVisibility(View.INVISIBLE); }
+                    break;
+                    case BottomSheetBehavior.STATE_COLLAPSED: { }
+                    break;
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        timeSpinnerSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // prevents dragging
+//                        whereToInputViewFlipper.showNext(); // allows dragging instead, but if they drag down and then up again, top input disappears but this remains.
+                        break;
+                    case BottomSheetBehavior.STATE_SETTLING: { mapView.setVisibility(View.VISIBLE); }
+                    // the movement phase between expanded and collapsed.
+                    break;
+                }
+            }
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+            }
+        });
+    }
+
+    private void setFiltersSheetBehavior() {
+        filtersSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        break;
+                    case BottomSheetBehavior.STATE_EXPANDED: { mapView.setVisibility(View.INVISIBLE); }
+                    break;
+                    case BottomSheetBehavior.STATE_COLLAPSED: { }
+                    break;
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        filtersSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // prevents dragging
+//                        whereToInputViewFlipper.showNext(); // allows dragging instead, but if they drag down and then up again, top input disappears but this remains.
+                        break;
+                    case BottomSheetBehavior.STATE_SETTLING: { mapView.setVisibility(View.VISIBLE); }
+                    // the movement phase between expanded and collapsed.
+                    break;
+                }
+            }
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+            }
+        });
+    }
 
 
     // Gecode and address from the places API.
@@ -715,7 +770,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         .include(northEastCorner) // Southwest
                         .build();
 
-                mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 80, 600, 80, 200), 2000);
+                mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 200, 600, 200, 400), 2000);
 //                double currZoom = mapboxMap.getCameraPosition().zoom;
 //                mapboxMap.setZoom(currZoom-0.2);
             }
@@ -723,7 +778,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     /**
-     * Set up the UI such that the soft keyboard is collapsed.
+     * Set up the UI such that the soft keyboard is collapsed when clicked off of.
      */
     public void setupUI(View view) {
         // Set up touch listener for non-text box views to hide keyboard.
@@ -735,6 +790,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
         }
+//        if (view.getId() != R.id.preview_bottom_sheet) {
+//            view.setOnTouchListener(new View.OnTouchListener() {
+//                public boolean onTouch(View v, MotionEvent event) {
+//                    hidePreviewElement(MainActivity.this);
+//                    return false;
+//                }
+//            });
+//        }
         // If a layout container, iterate over children and seed recursion.
         if (view instanceof ViewGroup) {
             for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
@@ -745,7 +808,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     /**
-     * Hide the soft keyboard.
+     * Hide the soft keyboard and preview element for each marker.
      */
     public static void hideSoftKeyboard(Activity activity) {
         InputMethodManager inputMethodManager =
@@ -754,6 +817,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         inputMethodManager.hideSoftInputFromWindow(
                 activity.getCurrentFocus().getWindowToken(), 0);
     }
+//    public static void hidePreviewElement(Activity activity) {
+//        previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+//    }
 
     /**
      * onClick for filter preferences sheet check mark - applies selected filters.
@@ -850,11 +916,27 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     break;
                     case BottomSheetBehavior.STATE_DRAGGING:
+                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // prevents dragging
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
                         break;
                 }
             }
+
+//            @Override public boolean dispatchTouchEvent(MotionEvent event){
+//                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//                    if (previewSheetBehavior.getState()==BottomSheetBehavior.STATE_EXPANDED) {
+//
+//                        Rect outRect = new Rect();
+//                        layoutPreviewBottomSheet.getGlobalVisibleRect(outRect);
+//
+//                        if(!outRect.contains((int)event.getRawX(), (int)event.getRawY()))
+//                            previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+//                    }
+//                }
+//
+//                return super.dispatchTouchEvent(event);
+//            }
 
             @Override
             public void onSlide(@NonNull View previewBottomSheet, float slideOffset) {
@@ -931,7 +1013,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         // ^ Needs some conversion factor, not a static addition. should also account for wait time, in theory...
         params.put("open_now", "true");
         params.put("term", "restaurants");
-        params.put("limit", "50"); // 20 by default
+        params.put("limit", "2"); // 20 by default
 
         String cuisineQueryString = "";
         for (String str : currentCuisineFilters) {
@@ -946,7 +1028,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 for (int x = 0; x < searchResponse.getBusinesses().size(); x++) {
                     restaurant = searchResponse.getBusinesses().get(x);
 //                    Log.d("YelpQueryMaker", restaurant.getName() + "," + restaurant.getCoordinates().getLatitude());
-                    //Log.d("HELLOHELLOHELLO", restaurant.getLocation().getAddress1());
                     LatLng ll = new LatLng(restaurant.getCoordinates().getLatitude(), restaurant.getCoordinates().getLongitude());
                     mapboxMap.addMarker(new MarkerViewOptions()
                             .position(ll)
@@ -987,8 +1068,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                                 previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                             } else {
                                 previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                                previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
                             }
-                            //Log.d("HELLOHELLOHELLO", "Hi");
                             return false;
                         }
                     });
@@ -1126,13 +1208,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     Toast.makeText(getApplicationContext(), "You selected " + title, Toast.LENGTH_SHORT).show();
                 }
                 System.out.println(point);
-//                if ((point.getLatitude() <= 37.866528+0.0015 && point.getLatitude() >= 37.866528-0.0015) && (point.getLongitude() <= -122.258722+0.0015 && point.getLongitude() >= -122.258722-0.0015)) {
-//                    if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
-//                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-//                    } else {
-//                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-//                    }
-//                }
 
             }
         });
