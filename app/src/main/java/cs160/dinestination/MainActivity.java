@@ -748,19 +748,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 navigationRowWrapper.setVisibility(View.VISIBLE);
                 toleranceSlider.setVisibility(View.GONE);
 
-                IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
-                Icon icon = iconFactory.fromResource(R.drawable.pinpoint);
-
-                LatLng southWestCorner = new LatLng(southPoint, westPoint);
-                LatLng northEastCorner = new LatLng(northPoint, eastPoint);
-
-                LatLngBounds latLngBounds = new LatLngBounds.Builder()
-                        .include(southWestCorner) // Northeast
-                        .include(northEastCorner) // Southwest
-                        .build();
-
-                mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 200, 600, 200, 400), 2000);
-
             }
         });
     }
@@ -796,18 +783,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         navigationRowWrapper.setVisibility(View.VISIBLE);
         toleranceSlider.setVisibility(View.GONE);
 
-        IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
-        Icon icon = iconFactory.fromResource(R.drawable.pinpoint);
-
-        LatLng southWestCorner = new LatLng(southPoint, westPoint);
-        LatLng northEastCorner = new LatLng(northPoint, eastPoint);
-
-        LatLngBounds latLngBounds = new LatLngBounds.Builder()
-                .include(southWestCorner) // Northeast
-                .include(northEastCorner) // Southwest
-                .build();
-
-        mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 200, 600, 200, 400), 2000);
     }
 
     private void setOnKeyListenerForWhereToPlace() {
@@ -1215,10 +1190,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         vTaxi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 DialogFragment newFragment = new RideshareDialog();
+                newFragment.setStyle(R.style.MainFont, R.style.AppDialogTheme);
                 newFragment.show(getFragmentManager(), "hello");
-
                 vWalk.setBackground(getResources().getDrawable(R.color.white));
                 vWalk.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_walk_24dp));
                 vCar.setBackground(getResources().getDrawable(R.color.white));
@@ -1294,6 +1268,16 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         System.out.println(westPoint-eastPoint);
 
         getRoute(originPosition, destinationPosition);
+
+        LatLng southWestCorner = new LatLng(southPoint, westPoint);
+        LatLng northEastCorner = new LatLng(northPoint, eastPoint);
+
+        LatLngBounds latLngBounds = new LatLngBounds.Builder()
+                .include(southWestCorner) // Northeast
+                .include(northEastCorner) // Southwest
+                .build();
+
+        mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 200, 600, 200, 400), 2000);
     }
 
     private void addMarkers() {
