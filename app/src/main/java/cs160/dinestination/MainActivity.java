@@ -243,6 +243,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         whereToElement = findViewById(R.id.where_to_element);
         destinationInformation = findViewById(R.id.destination_information);
         whereToPlace = findViewById(R.id.where_to_place_sub);
+
+        whereToPlace.setSelectAllOnFocus(Boolean.TRUE);
+
         whereToTime = findViewById(R.id.where_to_time_sub);
         topInputElement = findViewById(R.id.top_input_element);
         whereToEditText = (AutoCompleteTextView) findViewById(R.id.destination_top_input_elem);
@@ -817,9 +820,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         inputMethodManager.hideSoftInputFromWindow(
                 activity.getCurrentFocus().getWindowToken(), 0);
     }
-//    public static void hidePreviewElement(Activity activity) {
-//        previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-//    }
 
     /**
      * onClick for filter preferences sheet check mark - applies selected filters.
@@ -916,7 +916,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     break;
                     case BottomSheetBehavior.STATE_DRAGGING:
-                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // prevents dragging
+//                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // prevents dragging
                         break;
                     case BottomSheetBehavior.STATE_SETTLING:
                         break;
@@ -1066,11 +1066,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
                             if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
                                 previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                            } else {
-                                previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                                previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-
                             }
+//                            else {
+//                                previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+//                                previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+//
+//                            }
                             return false;
                         }
                     });
