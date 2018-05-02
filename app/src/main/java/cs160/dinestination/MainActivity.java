@@ -96,6 +96,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
@@ -104,6 +105,13 @@ import retrofit2.Response;
 
 // import com.google.android.gms.maps.model.LatLngBounds;
 // import com.mapbox.mapboxsdk.geometry.LatLng;
+
+import org.jdeferred2.Deferred;
+import org.jdeferred2.DeferredManager;
+import org.jdeferred2.DoneCallback;
+import org.jdeferred2.Promise;
+import org.jdeferred2.impl.DefaultDeferredManager;
+import org.jdeferred2.impl.DeferredObject;
 
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback, LocationEngineListener, PermissionsListener, GoogleApiClient.OnConnectionFailedListener {
@@ -215,6 +223,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     IconFactory iconFactory;
 
     HashMap<String, HashMap<String, Object>> testMap;
+    int count1;
+    int count2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -463,7 +473,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         yelpApiFactory = new YelpFusionApiFactory();
         yelpFusionApi = null;
         try {
-            yelpFusionApi = yelpApiFactory.createAPI("x4HzIK9Yg9t9HzBDOVrmPwydPeNPqV3fTJL6pLVj4XBSQ7cEVNuP9G9qqhMOxM_wxlxdq7JQfz-ZJQ6Q8DzbeCDUdA5F7I1uGRrTyFItQQmariY0BYlx7dxPKpXnWnYx");
+            yelpFusionApi = yelpApiFactory.createAPI("dczs4nuyUTOJWGPaXth8Zqt0IwzGoD0Wr-8OZgDmdu4G0oa3M3K-GzlPVYFAh4indjgmImwbDSSaWnh2d7KQgSFly0AresZM9PGy6p4IRUgJcE3ElHJyWyXIb7jeWnYx");
+//            yelpFusionApi = yelpApiFactory.createAPI("x4HzIK9Yg9t9HzBDOVrmPwydPeNPqV3fTJL6pLVj4XBSQ7cEVNuP9G9qqhMOxM_wxlxdq7JQfz-ZJQ6Q8DzbeCDUdA5F7I1uGRrTyFItQQmariY0BYlx7dxPKpXnWnYx");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -475,6 +486,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         filtersRowGenerator();
 
         testMap = new HashMap<>(); // PUT THE RESTAURANT OBJS INTO THIS
+        count1 = 0;
+        count2 = 0;
 
     } // END THE ON CREATE METHOD
 
@@ -919,7 +932,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         // ^ Needs some conversion factor, not a static addition. should also account for wait time, in theory...
         params.put("open_now", "true");
         params.put("term", "restaurants");
-        params.put("limit", "3"); // 20 by default
+        params.put("limit", "1"); // 20 by default
 
         String cuisineQueryString = "";
         for (String str : currentCuisineFilters) {
@@ -934,10 +947,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 //                originPosition = com.mapbox.geojson.Point.fromLngLat(-122.258875, 37.865593);
 //                destinationPosition = com.mapbox.geojson.Point.fromLngLat(-122.2702069, 37.8706731);
                 for (Business restaurant : searchResponse.getBusinesses()) {
-                    LatLng ll = new LatLng(restaurant.getCoordinates().getLatitude(), restaurant.getCoordinates().getLongitude());
-                    mapboxMap.addMarker(new MarkerViewOptions()
-                            .position(ll)
-                            .icon(pinpointIcon));
+//                    LatLng ll = new LatLng(restaurant.getCoordinates().getLatitude(), restaurant.getCoordinates().getLongitude());
+//                    mapboxMap.addMarker(new MarkerViewOptions()
+//                            .position(ll)
+//                            .icon(pinpointIcon));
                     Log.d("yelpQueryMaker", restaurant.getName());
 
                     if (!testMap.containsKey(restaurant.getName())) {
@@ -988,18 +1001,71 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                     }
                 }
-                for (StepIntersection s : intersections) {
+                for (final StepIntersection s : intersections) { // added final for thread things
+//                    Thread task = new Thread() {
+//                        @Override
+//                        public void run() {
+//                            yelpQueryMaker(s.location().latitude(), s.location().longitude());
+//                        }
+//                    };
+//                    task.run();
                     yelpQueryMaker(s.location().latitude(), s.location().longitude());
                 }
 
                 // wait for results, then draw the markers of whatever you had time to receive.
-                try {
-                    TimeUnit.SECONDS.sleep(15);
-                    Log.d("HELLO TIME", testMap.toString());
-                } catch (InterruptedException e) {
+//                try {
+////                    TimeUnit.SECONDS.sleep(15);
+//                    Thread.sleep(5000); // forcing everything to stop. it's all in the same thread..
+//                    Log.d("HELLO TIME", testMap.toString()); // THIS NEEDS TO CONTAIN TIME, NOT DISTANCE!!!
+//                } catch (InterruptedException e) {
+//
+//                }
 
-                }
+//                while (testMap.size() != 3) { // this just hangs everything
+//
+//                }
+//                Log.d("HELLO TIME", testMap.toString());
 
+
+//                final CountDownLatch cl = new CountDownLatch(1);
+//                Deferred deferred = new DeferredObject();
+//                Promise promise = deferred.promise();
+//                promise.done(new DoneCallback() {
+//                    @Override
+//                    public void onDone(Object result) {
+////                        try {
+////                            cl.await();
+////                        } catch (InterruptedException e) {
+////
+////                        }
+//                        Log.d("HELLO TIME", testMap.toString());
+//                    }
+//                });
+//                try {
+////                    TimeUnit.SECONDS.sleep(5);
+////                    java.util.concurrent.TimeUnit.SECONDS.sleep(10);
+//
+//                    Thread.sleep(5000);
+////                    cl.countDown();
+//                } catch (InterruptedException e) {
+//
+//                }
+//                deferred.resolve(null);
+
+
+//                Thread task = new Thread() {
+//                    @Override
+//                    public void run() {
+//                        try {
+////                            Thread.sleep(5000);
+//                            java.util.concurrent.TimeUnit.SECONDS.sleep(10);
+//                            Log.d("HELLO TIME", testMap.toString());
+//                        } catch (InterruptedException e) {
+//
+//                        }
+//                    }
+//                };
+//                task.run();
 
             }
         });
@@ -1204,6 +1270,18 @@ private void getTempRoute(final com.mapbox.geojson.Point origin, final com.mapbo
                         testMap.get(restName).put("fullUpdated", true);
                         testMap.get(restName).put("distance", (Double)testMap.get(restName).get("distance") + curDistance);
                         Log.d("Distance full set to ", String.valueOf(testMap.get(restName)) + ";" + restName);
+//                        Log.d("HELLO TIME in async:", testMap.toString());
+                        if (testMap.size() >= 2) {
+                            for (HashMap<String, Object> subMap : testMap.values()) {
+                                Business curRes = (Business)subMap.get("businessObj");
+                                // .notify????? Notify a listener??? Could work that way too.
+                                // do bukllshi alog
+                                LatLng ll = new LatLng(curRes.getCoordinates().getLatitude(), curRes.getCoordinates().getLongitude());
+                                mapboxMap.addMarker(new MarkerViewOptions()
+                                        .position(ll)
+                                        .icon(pinpointIcon));
+                            }
+                        }
                     }
                 }
             }
