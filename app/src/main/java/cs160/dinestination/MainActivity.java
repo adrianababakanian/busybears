@@ -1095,7 +1095,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         params.put("latitude", String.valueOf(latitude));
         params.put("longitude", String.valueOf(longitude));
         params.put("price", getYelpifiedPriceRange());
-        params.put("radius", String.valueOf(toleranceSlider.getProgress() + 200)); // wait lol this only shows up after query has been made.
+        params.put("radius", String.valueOf(toleranceSlider.getProgress() + 210)); // wait lol this only shows up after query has been made.
         // ^ Needs some conversion factor, not a static addition. should also account for wait time, in theory...
 
         String rawDate = new Date().toString();
@@ -1107,7 +1107,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         params.put("open_at", String.valueOf(unixTime));
         params.put("term", "restaurants");
 
-        params.put("limit", "2"); // 20 by default
+        params.put("limit", "8"); // 20 by default
 
         String cuisineQueryString = "";
         for (String str : currentCuisineFilters) {
@@ -1298,11 +1298,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 if (!features.isEmpty()) {
                     Feature selectedFeature = features.get(0);
                     String title = selectedFeature.getStringProperty("title");
-                    Toast.makeText(getApplicationContext(), "You selected " + title, Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getApplicationContext(), "You selected " + title, Toast.LENGTH_SHORT).show();
                 }
                 previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 System.out.println("why are you like this");
-                Toast.makeText(getApplicationContext(), "mapclick", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), "mapclick", Toast.LENGTH_SHORT).show();
 //                if ((point.getLatitude() <= 37.866528+0.0015 && point.getLatitude() >= 37.866528-0.0015) && (point.getLongitude() <= -122.258722+0.0015 && point.getLongitude() >= -122.258722-0.0015)) {
 //                    if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
 //                        previewSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -1411,14 +1411,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                                 testMap.get(restName).put("distance", (Double) testMap.get(restName).get("distance") + curDistance);
                                 Log.d("Distance full set to ", String.valueOf(testMap.get(restName)) + ";" + restName);
                         Log.d("testMap so far:", testMap.toString());
-                                if (testMap.size() >= 4) {
+                                if (testMap.size() >= 7) {
                                     for (final HashMap<String, Object> subMap : testMap.values()) {
                                         final Business curRes = (Business) subMap.get("businessObj");
                                         LatLng ll = new LatLng(curRes.getCoordinates().getLatitude(), curRes.getCoordinates().getLongitude());
-
-                                        mapboxMap.addMarker(new MarkerViewOptions()
-                                                .position(ll)
-                                                .icon(pinpointIcon));
 
 //                                        subMap.get("distance"); // THIS IS THE WAIT TIME IN SECONDS
 
@@ -1430,7 +1426,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                                                 String.valueOf(curRes.getCoordinates().getLongitude()), curRes.getImageUrl());
                                         placeIDs.put(String.valueOf(curRes.getCoordinates().getLatitude()) +
                                                 String.valueOf(curRes.getCoordinates().getLongitude()), curRes.getId());
-
 
                                         ArrayList<Pair <Integer, Double>> arr =  getWaitTime(curRes);
 
@@ -1450,7 +1445,25 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                                         String formattedArrivalTime = format1.format(calendar.getTime());
                                         formattedArrivalTime = formattedArrivalTime.replace("AM", "am").replace("PM","pm");
 
-//
+                                        Random rand = new Random();
+                                        int n = rand.nextInt(3);
+
+                                        int eatWaitTravelMins = howLongAtRestaurant.intValue() + 20 + (durationInSecs.intValue()/60);
+                                        float scaledVal = Math.min(((float)1/eatWaitTravelMins) * 30, 1);
+                                        if (n == 0) {
+                                            scaledVal = 0.07f;
+                                        } else if (n == 1) {
+                                            scaledVal = 1.0f;
+                                        } else {
+                                            scaledVal = 0.2f;
+                                        }
+
+                                        Log.d("alpha", String.valueOf(scaledVal));
+                                        mapboxMap.addMarker(new MarkerViewOptions()
+                                                .position(ll)
+                                                .icon(pinpointIcon))
+                                                .setAlpha(scaledVal);
+
 
                                         waitTimes1.put(String.valueOf(curRes.getCoordinates().getLatitude()) +
                                                 String.valueOf(curRes.getCoordinates().getLongitude()), (Double)howLongAtRestaurant);

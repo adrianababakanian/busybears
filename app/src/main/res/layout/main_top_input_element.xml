@@ -88,6 +88,7 @@
         android:background="@color/lighterGray"
         android:hint="Current location"
         android:textColorHint="@color/colorPrimaryDark"
+        android:enabled="false"
         android:inputType="text"
         android:paddingLeft="20dp"
         android:paddingTop="8dp"
