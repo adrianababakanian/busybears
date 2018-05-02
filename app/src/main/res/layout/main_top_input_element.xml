@@ -5,6 +5,8 @@
     android:id="@+id/main_top_input_element"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:background="@drawable/bottom_gradient">
     <!--android:animateLayoutChanges="true"-->
 
@@ -106,6 +108,7 @@
         android:layout_below="@id/curr_location_top_input_elem"
         android:layout_marginTop="105dp"
         android:background="@color/lightGray"
+        android:selectAllOnFocus="true"
         android:hint="Where to?"
         android:inputType="text"
         android:paddingLeft="20dp"
