@@ -1087,6 +1087,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         // docs: https://www.yelp.com/developers/documentation/v3/business_search
         // GOOD FOR KIDS, GOOD FOR GROUPS - NOT POSSIBLE USING API.
         // also no options for attire. - could match to price range instead..
+        Log.d("HELLLO", "WORKING??");
         Map<String, String> params = new HashMap<>();
         params.put("latitude", String.valueOf(latitude));
         params.put("longitude", String.valueOf(longitude));
@@ -1161,13 +1162,15 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 //                toleranceSlider.setVisibility(View.VISIBLE); // never fully implemented
                 navigationRowWrapper.setVisibility(View.GONE);
                 findRestaurantsButton.setVisibility(View.GONE);
+                Log.d("HELLLO", "WORKINGnotinblock??");
                 try {
+                    Log.d("HELLLO", "WORKINGintry??");
                     yelpQueryMaker(originPosition.latitude(), originPosition.longitude());
                     yelpQueryMaker(destinationPosition.latitude(), destinationPosition.longitude());
                     StepIntersection midway = currentRoute.legs().get(0).steps().get(0).intersections().get(currentRoute.legs().get(0).steps().get(0).intersections().size()/3);
                     StepIntersection quarterway = currentRoute.legs().get(0).steps().get(0).intersections().get(currentRoute.legs().get(0).steps().get(0).intersections().size()/6);
                     yelpQueryMaker(midway.location().latitude(), midway.location().longitude());
-                    yelpQueryMaker(quarterway.location().latitude(), quarterway.location().longitude());
+//                    yelpQueryMaker(quarterway.location().latitude(), quarterway.location().longitude());
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -1462,7 +1465,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                                             scaledVal = 0.2f;
                                         }
 
-                                        Log.d("alpha", String.valueOf(scaledVal));
+//                                        Log.d("alpha", String.valueOf(scaledVal));
+//                                        Toast.makeText(getBaseContext(), "ALPHA", Toast.LENGTH_SHORT).show();
                                         mapboxMap.addMarker(new MarkerViewOptions()
                                                 .position(ll)
                                                 .icon(pinpointIcon))
