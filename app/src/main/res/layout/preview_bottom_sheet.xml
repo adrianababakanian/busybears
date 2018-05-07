@@ -13,11 +13,11 @@
 
     <!-- preview popup content wrapper -->
     <LinearLayout
-        android:layout_width="800px"
-        android:layout_height="300px"
+        android:layout_width="850px"
+        android:layout_height="350px"
         android:orientation="horizontal">
         <FrameLayout
-            android:layout_width="300px"
+            android:layout_width="350px"
             android:layout_height="match_parent">
 
             <ImageView

@@ -85,8 +85,6 @@ import com.yelp.fusion.client.connection.YelpFusionApi;
 import com.yelp.fusion.client.connection.YelpFusionApiFactory;
 import com.yelp.fusion.client.models.Business;
 import com.yelp.fusion.client.models.Category;
-import com.yelp.fusion.client.models.Hour;
-import com.yelp.fusion.client.models.Open;
 import com.yelp.fusion.client.models.SearchResponse;
 
 import java.io.IOException;
@@ -591,7 +589,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             destLat = address.getLatitude();
             destLon = address.getLongitude();
             destinationPosition = com.mapbox.geojson.Point.fromLngLat(address.getLongitude(), address.getLatitude());
-            System.out.println(destinationPosition);
 
         }
 
@@ -600,7 +597,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     // Get and draw the route given an origin, destination position, and a profile.
     private void getRoute(com.mapbox.geojson.Point origin, com.mapbox.geojson.Point destination) {
-        System.out.println("GET ROUTE CALLED");
         NavigationRoute.builder()
                 .accessToken(mapboxAccessToken)
                 .origin(origin)
@@ -1092,7 +1088,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         params.put("latitude", String.valueOf(latitude));
         params.put("longitude", String.valueOf(longitude));
         params.put("price", getYelpifiedPriceRange());
-        params.put("radius", String.valueOf(toleranceSlider.getProgress() + 210)); // wait lol this only shows up after query has been made.
+        params.put("radius", String.valueOf(toleranceSlider.getProgress() + 700)); // wait lol this only shows up after query has been made.
         // ^ Needs some conversion factor, not a static addition. should also account for wait time, in theory...
 
         String rawDate = new Date().toString();
@@ -1104,7 +1100,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         params.put("open_at", String.valueOf(unixTime));
         params.put("term", "restaurants");
 
-        params.put("limit", "5"); // 20 by default
+        params.put("limit", "3"); // 20 by default
 
         String cuisineQueryString = "";
         for (String str : currentCuisineFilters) {
@@ -1159,18 +1155,26 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 testMap.clear();
 
                 // TODO: make markers show up on map now
-//                toleranceSlider.setVisibility(View.VISIBLE); // never fully implemented
+//                toleranceSlider.setVisibility(View.VISIBLE); // not fully implemented
                 navigationRowWrapper.setVisibility(View.GONE);
                 findRestaurantsButton.setVisibility(View.GONE);
-                Log.d("HELLLO", "WORKINGnotinblock??");
                 try {
-                    Log.d("HELLLO", "WORKINGintry??");
-                    yelpQueryMaker(originPosition.latitude(), originPosition.longitude());
-                    yelpQueryMaker(destinationPosition.latitude(), destinationPosition.longitude());
-                    StepIntersection midway = currentRoute.legs().get(0).steps().get(0).intersections().get(currentRoute.legs().get(0).steps().get(0).intersections().size()/3);
-                    StepIntersection quarterway = currentRoute.legs().get(0).steps().get(0).intersections().get(currentRoute.legs().get(0).steps().get(0).intersections().size()/6);
+                    StepIntersection midway = currentRoute.legs().get(0).steps().get(currentRoute.legs().get(0).steps().size()/2).intersections().get(0);
+                    Log.d("DIEnestination", String.valueOf(currentRoute.legs().get(0).steps().size()) + midway.toString());
+
+//                    currentRoute.legs().get(0).steps()
+                    StepIntersection quarterway = currentRoute.legs().get(0).steps().get(currentRoute.legs().get(0).steps().size()/4).intersections().get(0);
                     yelpQueryMaker(midway.location().latitude(), midway.location().longitude());
-//                    yelpQueryMaker(quarterway.location().latitude(), quarterway.location().longitude());
+
+//                    LatLng ll = new LatLng(midway.location().latitude(), midway.location().longitude());
+//                    mapboxMap.addMarker(new MarkerViewOptions()
+//                            .position(ll)
+//                            .icon(pinpointIcon))
+//                            .setAlpha(100);
+                    yelpQueryMaker(quarterway.location().latitude(), quarterway.location().longitude());
+//                    yelpQueryMaker(originPosition.latitude(), originPosition.longitude());
+                    yelpQueryMaker(destinationPosition.latitude(), destinationPosition.longitude());
+//
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -1186,7 +1190,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 //                        }
 //                    }
 //                }
-
 
 //                for (StepIntersection s : intersections) {
 //                    try {
@@ -1251,7 +1254,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 vTaxi.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_call_taxi));
                 PROFILE_TYPE = DirectionsCriteria.PROFILE_CYCLING;
                 findRestaurantsButton.setVisibility(View.VISIBLE);
-                System.out.println("wow bicycle click");
                 drawRoute();
             }
         });
@@ -1295,7 +1297,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 //                MainActivity.this.getResources(), R.drawable.pinpoint, options);
 //        mapboxMap.addImage(MARKER_IMAGE, icon);
         //addMarkers();
-        System.out.println("map is ready");
 
         mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
             @Override
@@ -1308,7 +1309,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 //                    Toast.makeText(getApplicationContext(), "You selected " + title, Toast.LENGTH_SHORT).show();
                 }
                 previewSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                System.out.println("why are you like this");
 //                Toast.makeText(getApplicationContext(), "mapclick", Toast.LENGTH_SHORT).show();
 //                if ((point.getLatitude() <= 37.866528+0.0015 && point.getLatitude() >= 37.866528-0.0015) && (point.getLongitude() <= -122.258722+0.0015 && point.getLongitude() >= -122.258722-0.0015)) {
 //                    if (previewSheetBehavior.getState() != previewSheetBehavior.STATE_EXPANDED) {
@@ -1318,7 +1318,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 //                    }
 //                }
 
-                System.out.println("why are you not closing");
                 previewSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
             }
@@ -1355,8 +1354,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
 //        westPoint += lonDist*0.2; eastPoint -= lonDist*0.2; southPoint += latDist*0.2; northPoint -= latDist*0.2;
 
-        System.out.println(northPoint-southPoint);
-        System.out.println(westPoint-eastPoint);
         //hard coded
 
         getRoute(originPosition, destinationPosition);
@@ -1418,7 +1415,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                                 testMap.get(restName).put("distance", (Double) testMap.get(restName).get("distance") + curDistance);
                                 Log.d("Distance full set to ", String.valueOf(testMap.get(restName)) + ";" + restName);
                         Log.d("testMap so far:", testMap.toString());
-                                if (testMap.size() >= 5) {
+                                if (testMap.size() > 5) {
                                     for (final HashMap<String, Object> subMap : testMap.values()) {
                                         final Business curRes = (Business) subMap.get("businessObj");
                                         LatLng ll = new LatLng(curRes.getCoordinates().getLatitude(), curRes.getCoordinates().getLongitude());
@@ -1539,13 +1536,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     private ArrayList<Pair<Integer,Double>> getWaitTime(Business business) {
-
-
         double total = 0;
+        // Google Places weightings
         double popularity = business.getReviewCount();
         ArrayList<Category> cat = business.getCategories();
         total += business.getRating()*2.7;
-
         if (cat.contains("thai")) {
             total *= 0.9;
         }
@@ -1582,69 +1577,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             total*=1.3;
         }
 
-        ArrayList<Hour> Hours = new ArrayList<>();
-        ArrayList<Open> Opens = new ArrayList<>();
+        Integer day1 = 0;
+        Integer day0 = 24;
 
-//        Hour hour = business.getHours().get(0); // WED, probably
-//        Open open = hour.getOpen().get(0);
-        Integer start = 0;// = Integer.valueOf(open.getStart().substring(0, 2)); // usually around 6 or 7 earliest
-        Integer end = 24;// = Integer.valueOf(open.getStart().substring(0, 2)); // usually around 23 at latest
-        /*if (hour != null) {
-            if (open != null) {
-                start = Integer.valueOf(open.getStart().substring(0, 2)); // usually around 6 or 7 earliest
-                end = Integer.valueOf(open.getStart().substring(0, 2)); // usually around 23 at latest
-            }
-        }*/
-
-
-        ArrayList<Pair<Integer, Double>> WaitTimes = new ArrayList<>();
-        Random random = new Random();
-
-        for (int i = start; i < end; i++) {
-            double factor = 1.0;
-            if (i < 6) {
-                factor = 0.0;
-            } else if (i > 6 && i < 8) {
-                double f1 = 0.55;
-                double f2 = 0.66;
-                factor = random.nextBoolean() ? f1 : f2;
-            } else if (i < 8) {
-                double f1 = 0.6;
-                double f2 = 0.7;
-                factor = random.nextBoolean() ? f1 : f2;
-            } else if (i > 8 && i < 11) {
-                double f1 = 0.85;
-                double f2 = 0.93;
-                factor = random.nextBoolean() ? f1 : f2;
-            } else if (i > 11 && i < 13) {
-                double f1 = 1.22;
-                double f2 = 1.32;
-                factor = random.nextBoolean() ? f1 : f2;
-            } else if (i > 13 && i < 15) {
-                double f1 = 1.02;
-                double f2 = 0.93;
-                factor = random.nextBoolean() ? f1 : f2;
-            } else if (i > 15 && i < 17) {
-                double f1 = 0.88;
-                double f2 = 0.78;
-                factor = random.nextBoolean() ? f1 : f2;
-            } else if (i > 17 && i < 20) {
-                double f1 = 1.41;
-                double f2 = 1.51;
-                factor = random.nextBoolean() ? f1 : f2;
-            } else if (i > 20 && i < 24) {
-                double f1 = 1.05;
-                double f2 = 1.11;
-                factor = random.nextBoolean() ? f1 : f2;
-            }
-
-            WaitTimes.add(Pair.create(i, total*factor));
-        }
-
-
-        return WaitTimes;
+        ArrayList<Pair<Integer, Double>> t = new ArrayList<>();
+        partialWaitTimePopularityWeighting(day1, day0, t, total);
+        return t;
     }
-
 
     private void addMarkers() {
         if (!ADDED_MARKERS) {
@@ -1842,5 +1781,48 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
         return super.dispatchTouchEvent(ev);
+    }
+
+    private void partialWaitTimePopularityWeighting(int s, int e, ArrayList<Pair<Integer, Double>> t, double tt) {
+        Random r = new Random();
+        for (int i = s; i < e; i++) {
+            double f = 1.0;
+            if (i < 6) {
+                f = 0.0;
+            } else if (i > 6 && i < 8) {
+                double f1 = 0.55;
+                double f2 = 0.66;
+                f = r.nextBoolean() ? f1 : f2;
+            } else if (i < 8) {
+                double f1 = 0.6;
+                double f2 = 0.7;
+                f = r.nextBoolean() ? f1 : f2;
+            } else if (i > 8 && i < 11) {
+                double f1 = 0.85;
+                double f2 = 0.93;
+                f = r.nextBoolean() ? f1 : f2;
+            } else if (i > 11 && i < 13) {
+                double f1 = 1.22;
+                double f2 = 1.32;
+                f = r.nextBoolean() ? f1 : f2;
+            } else if (i > 13 && i < 15) {
+                double f1 = 1.02;
+                double f2 = 0.93;
+                f = r.nextBoolean() ? f1 : f2;
+            } else if (i > 15 && i < 17) {
+                double f1 = 0.88;
+                double f2 = 0.78;
+                f = r.nextBoolean() ? f1 : f2;
+            } else if (i > 17 && i < 20) {
+                double f1 = 1.41;
+                double f2 = 1.51;
+                f = r.nextBoolean() ? f1 : f2;
+            } else if (i > 20 && i < 24) {
+                double f1 = 1.05;
+                double f2 = 1.11;
+                f = r.nextBoolean() ? f1 : f2;
+            }
+            t.add(Pair.create(i, tt * f));
+        }
     }
 }
