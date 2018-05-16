@@ -13,7 +13,7 @@ The code is run by opening the project in Android Studio and then selecting
 ```
 Run > Run 'app'
 ```
-on your emulator of choice.
+on your emulator of choice. Please note that this project was tested and optimized on a Samsung Galaxy Note 8.
 
 No further steps should be required.
 
